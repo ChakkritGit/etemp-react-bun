@@ -1,4 +1,7 @@
-import { Actiontablehos, DelUserButton, FormBtn, FormFlexBtn, HosTableImage, ManageHospitalsBody, ManageHospitalsContainer, ManageHospitalsHeader, ManageHospitalsHeaderAction, ManageWardAdd, ModalHead, SubWardColumnFlex } from "../../../style/style"
+import {
+  Actiontablehos, DelUserButton, FormBtn, FormFlexBtn, HosTableImage, ManageHospitalsBody, ManageHospitalsContainer,
+  ManageHospitalsHeader, ManageHospitalsHeaderAction, ManageWardAdd, ModalHead, SubWardColumnFlex
+} from "../../../style/style"
 import { useTranslation } from "react-i18next"
 import { hospitalsType } from "../../../types/hospital.type"
 import { swalWithBootstrapButtons } from "../../../components/dropdown/sweetalertLib"
@@ -393,7 +396,8 @@ export default function ManageHospitals() {
   }, [pagestate])
 
   // Filter Data
-  const filteredItems = hospitalsData.filter(item => item.hosName.includes(searchQuery) || item.hosTelephone.includes(searchQuery))
+  const filteredItems = hospitalsData.filter(item => item.hosName.toLowerCase().includes(searchQuery.toLowerCase())
+    || item.hosTelephone.toLowerCase().includes(searchQuery.toLowerCase()))
 
   return (
     <ManageHospitalsContainer>

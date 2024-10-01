@@ -63,26 +63,42 @@ export const resizeImage = (file: File): Promise<File> => {
         const context: CanvasRenderingContext2D | null = canvas.getContext('2d')
         context?.drawImage(image, 0, 0, canvas.width, canvas.height)
 
-        const originalData = e.target?.result as string
-        const exifObj = piexif.load(originalData)
+        const mimeString = file.type
 
-        exifObj["0th"] = exifObj["0th"] || {}
-        exifObj["0th"][piexif.ImageIFD.Copyright] = "SMTrack+ Copyright - Thanes Development Co., Ltd."
+        if (mimeString === 'image/jpeg') {
+          const originalData = e.target?.result as string
+          const exifObj = piexif.load(originalData)
 
-        const exifStr = piexif.dump(exifObj)
-        const newImageData = piexif.insert(exifStr, canvas.toDataURL(file.type))
+          exifObj["0th"] = exifObj["0th"] || {}
+          exifObj["0th"][piexif.ImageIFD.Copyright] = "SMTrack+ Copyright - Thanes Development Co., Ltd."
 
-        const byteString = atob(newImageData.split(',')[1]);
-        const mimeString = newImageData.split(',')[0].split(':')[1].split(';')[0]
-        const ab = new ArrayBuffer(byteString.length)
-        const ia = new Uint8Array(ab)
-        for (let i = 0; i < byteString.length; i++) {
-          ia[i] = byteString.charCodeAt(i)
+          const exifStr = piexif.dump(exifObj)
+          const newImageData = piexif.insert(exifStr, canvas.toDataURL(file.type))
+
+          const byteString = atob(newImageData.split(',')[1])
+          const ab = new ArrayBuffer(byteString.length)
+          const ia = new Uint8Array(ab)
+          for (let i = 0; i < byteString.length; i++) {
+            ia[i] = byteString.charCodeAt(i)
+          }
+
+          const blob = new Blob([ab], { type: mimeString })
+          const resizedFile = new File([blob], file.name, { type: file.type })
+          resolve(resizedFile)
+
+        } else if (mimeString === 'image/png' || mimeString === 'image/gif') {
+          canvas.toBlob((blob) => {
+            if (blob) {
+              const resizedFile = new File([blob], file.name, { type: file.type })
+              resolve(resizedFile)
+            } else {
+              reject(new Error('Failed to convert canvas to Blob for PNG/GIF'))
+            }
+          }, mimeString)
+
+        } else {
+          reject(new Error('Unsupported file format'))
         }
-
-        const blob = new Blob([ab], { type: mimeString });
-        const resizedFile = new File([blob], file.name, { type: file.type })
-        resolve(resizedFile)
       }
     }
 
@@ -93,6 +109,7 @@ export const resizeImage = (file: File): Promise<File> => {
     reader.readAsDataURL(file)
   })
 }
+
 
 export const scheduleDayArray: Schedule[] = [
   {

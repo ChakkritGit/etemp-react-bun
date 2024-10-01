@@ -130,7 +130,7 @@ export default function Home() {
       return
     }
 
-    let filteredDevicesList = wardId !== 'WID-DEVELOPMENT'
+    let filteredDevicesList = wardId !== ''
       ? devices.filter((item) => item.wardId.toLowerCase().includes(wardId.toLowerCase()))
       : devices
 

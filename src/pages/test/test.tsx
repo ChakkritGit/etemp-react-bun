@@ -16,7 +16,7 @@ function Test() {
   const devicesFilter = useSelector((state: RootState) => state.arraySlice.device.devicesFilter)
   const { wardId } = useSelector((state: RootState) => state.utilsState)
 
-  const filter: devicesType[] = wardId !== 'WID-DEVELOPMENT' ? devicesFilter.filter((f) => f.wardId.toLowerCase().includes(wardId.toLowerCase())) : devices
+  const filter: devicesType[] = wardId !== '' ? devicesFilter.filter((f) => f.wardId.toLowerCase().includes(wardId.toLowerCase())) : devices
 
   const getSum = (key: keyof NonNullable<devicesType['_count']>): number =>
     filter.reduce((acc, devItems) => acc + (devItems._count?.[key] ?? 0), 0)

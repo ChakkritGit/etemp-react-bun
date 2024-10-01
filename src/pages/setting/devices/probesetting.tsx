@@ -197,7 +197,7 @@ export default function Probesetting() {
   }
 
   // Filter Data
-  const filteredItems = wardId !== 'WID-DEVELOPMENT' ? probeData.filter(item => item.device.wardId.toLowerCase().includes(wardId.toLowerCase())) : probeData
+  const filteredItems = wardId !== '' ? probeData.filter(item => item.device.wardId.toLowerCase().includes(wardId.toLowerCase())) : probeData
   const filter = filteredItems.filter((f) => f.devSerial && f.devSerial.toLowerCase().includes(searchQuery.toLowerCase()))
 
   return (
@@ -213,7 +213,7 @@ export default function Probesetting() {
               </DeviceInfoSpan>}
             {
               filterdata &&
-              <>
+              <div>
                 {
                   userLevel !== '2' &&
                   <Select
@@ -274,7 +274,7 @@ export default function Probesetting() {
                 <DeviceInfoSpanClose onClick={() => setFilterdata(false)}>
                   <RiCloseLine />
                 </DeviceInfoSpanClose>
-              </>
+              </div>
             }
             <Addprobe
               pagestate={'add'}

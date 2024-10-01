@@ -278,7 +278,7 @@ export default function Addhospitals(addhosprop: addHospitalProp) {
                         <img src={hosPicture ? hosPicture : `${import.meta.env.VITE_APP_IMG}/img/default-pic.png`} alt="down-picture" />
                         <label htmlFor={'user-file-upload'} >
                           <RiEditLine />
-                          <input id="user-file-upload" type="file" onChange={fileSelect} />
+                          <input id="user-file-upload" type="file" accept="image/gif, image/jpg, image/jpeg, image/png" onChange={fileSelect} />
                         </label>
                       </div>
                     </ProfileFlex>

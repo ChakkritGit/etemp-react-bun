@@ -963,14 +963,36 @@ padding: .5rem;
 
 export const CardUserHead = styled.div<{ $primary?: boolean }> `
 display: flex;
-align-items: center;
-justify-content: space-between;
-margin: 1rem 0;
+align-items: start;
+flex-wrap: wrap;
 
-&>div:nth-child(2) {
+  &>div {
+  display: flex;
+  justify-content: space-between;
+  margin: 1rem 0;
+  width: 100%;
+}
+
+&>div>div:nth-child(2) {
   display: flex;
   align-items: center;
-  gap: 1rem;
+  gap: .5rem;
+
+  &>div {
+    display: flex;
+    align-items: center;
+    gap: .5rem;
+  }
+
+  @media (max-width: 430px) {
+  flex-direction: column-reverse;
+  align-items: end;
+
+  &>div {
+    flex-direction: column;
+    align-items: end;
+  }
+}
 }
 
 & h3 {
@@ -1278,7 +1300,6 @@ justify-content: space-between;
 }
 
 @media (max-width: 430px) {
-    flex-direction: column;
     align-items: unset;
     gap: 1rem;
 
@@ -1292,6 +1313,11 @@ export const ManageHospitalsHeaderAction = styled.div<{ $primary?: boolean }>`
 display: flex;
 align-items: center;
 gap: .5rem;
+
+@media (max-width: 430px) {
+  flex-direction: column;
+  align-items: end;
+}
 `
 
 export const SpanStatusDev = styled.span<{ $primary?: boolean }>`
@@ -1702,8 +1728,27 @@ align-items: center;
 gap: 1rem;
 z-index: 99;
 
-@media (max-width: 430px) {
+&>div:nth-child(2) {
+  display: flex;
   gap: .5rem;
+}
+
+@media (max-width: 430px) {
+  flex-direction: column-reverse;
+  align-items: end;
+  gap: .5rem;
+
+  &>div:nth-child(2) {
+    display: flex;
+    gap: .5rem;
+  }
+
+  &>div:nth-child(1) {
+    display: flex;
+    flex-direction: column;
+    align-items: end !important;
+    gap: .5rem !important;
+  }
 }
 
 &>div:nth-child(1) {

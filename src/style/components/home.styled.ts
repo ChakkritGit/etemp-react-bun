@@ -141,7 +141,7 @@ gap: 1rem;
 
 export const ScheduleItem = styled.div`
 display: grid;
-grid-template-columns: repeat(3, 1fr);
+grid-template-columns: repeat(4, 1fr);
 gap: 1rem;
 width: 100%;
 
@@ -156,6 +156,42 @@ width: 100%;
 @media (max-width: 430px) {
   grid-template-columns: repeat(1, 1fr);
   gap: 1rem;
+}
+`
+
+export const ToggleButtonAllDays = styled.button<{ $primary?: boolean }>`
+  position: relative;
+  width: 60px;
+  height: 35px;
+  background-color: ${(props) => (props.$primary ? 'var(--main-color)' : '#ddd')};
+  border: 1px solid ${(props) => (props.$primary ? 'var(--main-color)' : '#ccc')};
+  border-radius: 20px;
+  outline: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  padding: 0;
+  overflow: hidden;
+
+  .icon {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    font-size: 14px;
+    background-color: ${(props) => (props.$primary ? 'var(--white-grey-1)' : 'var(--white-grey-1)')};
+    transition: transform 0.3s ease;
+    transform: ${(propss) =>
+    propss.$primary ? 'translateX(28px)' : 'translateX(2.5px)'};
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: ${(props) => (props.$primary ? 'var(--main-last-color)' : 'var(--main-last-color)')};
+    transition: .3s;
+  }
+
+  &:hover {
+  border-color: var(--main-color);
+  transition: .3s;
 }
 `
 

@@ -751,7 +751,7 @@ export default function Adddevform(managedevices: managedevices) {
                               <img src={devicePicture ? devicePicture : `${import.meta.env.VITE_APP_IMG}/img/default-pic.png`} alt="down-picture" />
                               <label htmlFor={'user-file-upload'} >
                                 <RiEditLine />
-                                <input id="user-file-upload" type="file" onChange={fileSelected} />
+                                <input id="user-file-upload" type="file" accept="image/gif, image/jpg, image/jpeg, image/png" onChange={fileSelected} />
                               </label>
                             </div>
                           </ProfileFlex>

@@ -254,7 +254,7 @@ export default function Account() {
             <img src={userpicture ? userpicture : cookieDecode.userPicture ? `${import.meta.env.VITE_APP_IMG}${cookieDecode.userPicture}` : `${import.meta.env.VITE_APP_IMG}/img/default-pic.png`} alt="user-picture" />
             <label htmlFor={'user-file-upload'} >
               <RiEditLine />
-              <input id="user-file-upload" type="file" onChange={handleChang} />
+              <input id="user-file-upload" type="file" accept="image/gif, image/jpg, image/jpeg, image/png" onChange={handleChang} />
             </label>
           </div>
           <div>

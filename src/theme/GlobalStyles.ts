@@ -487,12 +487,29 @@ img {
   transition: .3s;
 }
 
+.react-select--is-disabled {
+  opacity: .5;
+
+  &>div {
+    background-color: var(--soft-grey);
+  }
+}
+
 ${(props) =>
     props.theme.mode === 'dark' ?
       css`
 body {
   background-color: var(--main-seccond-color);
 }
+
+.react-select--is-disabled {
+  opacity: .3;
+
+  &>div {
+    background-color: var(--main-seccond-color);
+  }
+}
+
 .login-card,
 .modal-content {
   background-color: var(--main-last-color);

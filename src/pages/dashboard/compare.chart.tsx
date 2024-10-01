@@ -1,39 +1,90 @@
 import { Breadcrumbs, Typography } from "@mui/material"
-import { Container, Dropdown, Form, Modal } from "react-bootstrap"
+import { Container, Dropdown, Form } from "react-bootstrap"
 import { useTranslation } from "react-i18next"
-import { RiArrowRightSLine, RiCloseLine, RiDashboardFill, RiFilePdf2Line, RiFolderSharedLine, RiImageLine, RiLoader3Line, RiPrinterLine } from "react-icons/ri"
-import { Link } from "react-router-dom"
+import {
+  RiArrowRightSLine, RiDashboardFill, RiFilePdf2Line,
+  RiFolderSharedLine, RiImageLine, RiLoader2Line, RiLoader3Line
+} from "react-icons/ri"
+import { Link, useNavigate } from "react-router-dom"
 import CompareChartComponent from "../../components/dashboard/compare.chart.component"
 import { DeviceStateStore, UtilsStateStore } from "../../types/redux.type"
 import { useDispatch, useSelector } from "react-redux"
 import Loading from "../../components/loading/loading"
-import { ExportandAuditFlex, FilterContainer, FilterSearchBtn, FullchartBodyChartCon, FullchartHead, FullchartHeadBtn, FullchartHeadExport, FullchartHeadLeft, GlobalButton, GlobalButtoncontainer, LineHr, ModalHead, TableInfoDevice } from "../../style/style"
+import {
+  ExportandAuditFlex, FilterContainer, FilterSearchBtn,
+  FullchartBodyChartCon, FullchartHead, FullchartHeadBtn,
+  FullchartHeadExport, FullchartHeadLeft, LineHr, TableInfoDevice
+} from "../../style/style"
 import { useEffect, useRef, useState } from "react"
 import toast from "react-hot-toast"
 import html2canvas from "html2canvas"
-import { PDFViewer } from "@react-pdf/renderer"
-import Fullchartpdf from "../../components/pdf/fullchartpdf"
 import { setSearchQuery, setShowAlert } from "../../stores/utilsStateSlice"
 import { storeDispatchType } from "../../stores/store"
 import axios, { AxiosError } from "axios"
 import Swal from "sweetalert2"
+import { wardsType } from "../../types/ward.type"
+import { responseType } from "../../types/response.type"
+import { devicesType } from "../../types/device.type"
+import { cookies, styleElement } from "../../constants/constants"
+import ImagesOne from '../../assets/images/Thanes.png'
+import { WaitExportImage } from "../../style/components/page.loading"
 
 const Comparechart = () => {
   const { t } = useTranslation()
   const dispatch = useDispatch<storeDispatchType>()
-  const { expand, cookieDecode } = useSelector<DeviceStateStore, UtilsStateStore>((state) => state.utilsState)
-  const { hosName, token } = cookieDecode
+  const navigate = useNavigate()
+  const { expand, cookieDecode, deviceId } = useSelector<DeviceStateStore, UtilsStateStore>((state) => state.utilsState)
+  const { hosName, token, hosImg } = cookieDecode
   const [pageNumber, setPagenumber] = useState(1)
   const canvasChartRef = useRef<HTMLDivElement | null>(null)
   const tableInfoRef = useRef<HTMLDivElement | null>(null)
-  const [show, setShow] = useState(false)
-  const handleClose = () => setShow(false)
-  const [convertImage, setConvertImage] = useState('')
   const [filterDate, setFilterDate] = useState({
     startDate: '',
     endDate: ''
   })
   const [devices, setDevices] = useState<any>([])
+  const [isloading, setIsLoading] = useState(false)
+  const [validationData, setValidationData] = useState<wardsType>()
+  const [devData, setDevData] = useState<devicesType>()
+
+  const fetchWard = async () => {
+    try {
+      const response = await axios.get<responseType<wardsType>>(`${import.meta.env.VITE_APP_API}/ward/${devData?.wardId}`, { headers: { authorization: `Bearer ${token}` } })
+      setValidationData(response.data.data)
+    } catch (error) {
+      if (error instanceof AxiosError) {
+        console.error(error.response?.data.message)
+      } else {
+        console.error('Uknown Error', error)
+      }
+    }
+  }
+
+  useEffect(() => {
+    if (devData) {
+      fetchWard()
+    }
+  }, [devData])
+
+  const fetchData = async () => {
+    try {
+      const responseData = await axios
+        .get(`${import.meta.env.VITE_APP_API}/device/${deviceId ? deviceId : cookies.get('devid')}`, {
+          headers: { authorization: `Bearer ${token}` }
+        })
+      setDevData(responseData.data.data)
+    } catch (error) {
+      if (error instanceof AxiosError) {
+        if (error.response?.status === 401) {
+          dispatch(setShowAlert(true))
+        } else {
+          console.error('Something wrong' + error)
+        }
+      } else {
+        console.error('Uknown error: ', error)
+      }
+    }
+  }
 
   const fetchCompare = async () => {
     try {
@@ -106,37 +157,58 @@ const Comparechart = () => {
   }, [token])
 
   useEffect(() => {
+    if (String(deviceId) !== 'undefined' && token) fetchData()
+  }, [pageNumber, token, deviceId])
+
+  useEffect(() => {
     return () => {
       dispatch(setSearchQuery(''))
     }
   }, [])
 
-  const handleShow = () => {
-    if (devices.length > 0) {
-      exportChart()
-      setShow(true)
-    } else {
-      toast.error("Data not found")
-    }
-  }
+  const exportChart = () => {
+    setIsLoading(true)
+    return new Promise(async (resolve, reject) => {
+      setTimeout(async () => {
+        try {
+          if (canvasChartRef.current) {
+            canvasChartRef.current.style.width = '1645px'
+            canvasChartRef.current.style.color = 'black'
 
-  const exportChart = async () => {
-    if (canvasChartRef.current) {
-      const canvas = canvasChartRef.current
-      await html2canvas(canvas).then((canvasImage) => {
-        setConvertImage(canvasImage.toDataURL('image/png', 1.0))
-      })
-    }
+            document.head.appendChild(styleElement)
+
+            await new Promise((resolve) => setTimeout(resolve, 500))
+            const canvas = canvasChartRef.current
+
+            html2canvas(canvas).then((canvasImage) => {
+              resolve(canvasImage.toDataURL('image/png', 1.0))
+
+              document.head.removeChild(styleElement)
+            }).catch((error) => {
+              reject(error)
+            })
+          }
+        } catch (error) {
+          reject(error)
+        }
+      }, 600)
+    })
   }
 
   const handleDownload = async (type: string) => {
     if (canvasChartRef.current && tableInfoRef.current) {
-      tableInfoRef.current.style.display = 'flex'
-      const canvas = canvasChartRef.current
-      const promise = html2canvas(canvas).then((canvasImage) => {
-        const dataURL = canvasImage.toDataURL(type === 'png' ? 'image/png' : 'image/jpg', 1.0)
+      document.head.appendChild(styleElement)
 
-        let pagename = ""
+      tableInfoRef.current.style.display = 'flex'
+      tableInfoRef.current.style.color = 'black'
+      canvasChartRef.current.style.color = 'black'
+
+      const canvas = canvasChartRef.current
+
+      const promise = html2canvas(canvas).then((canvasImage) => {
+        const dataURL = canvasImage.toDataURL(type === 'png' ? 'image/png' : 'image/jpg', 1.0);
+
+        let pagename = ''
         if (pageNumber === 1) {
           pagename = 'Day_Chart'
         } else if (pageNumber === 2) {
@@ -147,20 +219,26 @@ const Comparechart = () => {
 
         const link = document.createElement('a')
         link.href = dataURL
-        link.download = pagename + `${type === 'png' ? '.png' : '.jpg'}`
+        link.download = `${pagename}${type === 'png' ? '.png' : '.jpg'}`
 
         document.body.appendChild(link)
-        link.click()
+        link.click();
         document.body.removeChild(link)
+      }).catch((error) => {
+        console.error('Error generating image:', error)
+        throw new Error('Failed to download the image')
+      }).finally(() => {
+        document.head.removeChild(styleElement)
+        if (!tableInfoRef.current) return
+        tableInfoRef.current.style.display = 'none'
       })
-      tableInfoRef.current.style.display = 'none'
 
       toast.promise(
         promise,
         {
           loading: 'Downloading',
           success: <span>Downloaded</span>,
-          error: <span>Something wrong</span>,
+          error: <span>Something went wrong</span>,
         }
       )
     } else {
@@ -200,14 +278,46 @@ const Comparechart = () => {
                 <RiImageLine />
                 <span>JPG</span>
               </Dropdown.Item>
-              <Dropdown.Item onClick={handleShow}>
+              <LineHr $mg={.5} />
+              <Dropdown.Item onClick={async () => {
+                if (devices.length > 0) {
+                  try {
+                    const waitExport = await exportChart()
+                    setIsLoading(false)
+                    navigate('/dashboard/chart/preview', {
+                      state: {
+                        title: 'Chart-Report',
+                        ward: validationData?.wardName,
+                        image: ImagesOne,
+                        hospital: validationData?.hospital.hosName,
+                        devSn: devData?.devSerial,
+                        devName: devData?.devDetail,
+                        chartIMG: waitExport,
+                        dateTime: String(new Date).substring(0, 25),
+                        hosImg: hosImg,
+                      }
+                    })
+                  } catch (error) {
+                    Swal.fire({
+                      title: t('alertHeaderError'),
+                      text: t('descriptionErrorWrong'),
+                      icon: "error",
+                      timer: 2000,
+                      showConfirmButton: false,
+                    })
+                  }
+                } else {
+                  Swal.fire({
+                    title: t('alertHeaderWarning'),
+                    text: t('dataNotReady'),
+                    icon: "warning",
+                    timer: 2000,
+                    showConfirmButton: false,
+                  })
+                }
+              }}>
                 <RiFilePdf2Line />
                 <span>PDF</span>
-              </Dropdown.Item>
-              <LineHr $mg={.5} />
-              <Dropdown.Item>
-                <RiPrinterLine />
-                <span>Print</span>
               </Dropdown.Item>
             </Dropdown.Menu>
           </Dropdown>
@@ -237,39 +347,9 @@ const Comparechart = () => {
             <Loading loading={true} title={t('loading')} icn={<RiLoader3Line />} />
         }
       </FullchartBodyChartCon>
-      <Modal size={'xl'} show={show} onHide={handleClose} scrollable>
-        <Modal.Header>
-          <ModalHead>
-            <Modal.Title>PDF</Modal.Title>
-            <button onClick={handleClose}>
-              <RiCloseLine />
-            </button>
-          </ModalHead>
-        </Modal.Header>
-        <Modal.Body>
-          {
-            convertImage !== '' ?
-              <PDFViewer style={{ width: '100%', height: '100vh' }}>
-                <Fullchartpdf
-                  title={'Chart-Report'}
-                  chartIMG={convertImage}
-                  hospital={'devData.ward.group_name'}
-                  ward={'devData?.ward.group_name'}
-                  dateTime={String(new Date).substring(0, 25)}
-                />
-              </PDFViewer>
-              :
-              null
-          }
-        </Modal.Body>
-        <Modal.Footer>
-          <GlobalButtoncontainer>
-            <GlobalButton onClick={handleClose}>
-              {t('closeButton')}
-            </GlobalButton>
-          </GlobalButtoncontainer>
-        </Modal.Footer>
-      </Modal>
+      {isloading && <WaitExportImage>
+        <Loading loading={true} title={t('loading')} icn={<RiLoader2Line fill="white" />} />
+      </WaitExportImage>}
     </Container>
   )
 }

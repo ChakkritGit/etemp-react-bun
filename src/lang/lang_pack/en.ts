@@ -71,7 +71,8 @@ export default {
     muteDoor: 'Mute Door',
     adjustHumGreater: 'The humidity range cannot be set beyond 0-100%',
     clearShedule: 'Clear',
-    
+    everyDays: 'Every Day',
+
     // notification setting itemp
     choiceOne: '1. Sending message for the first time.',
     choiceTwo: '2. Sending message when the temperature returned to normal level.',
@@ -411,6 +412,7 @@ export default {
     deleteRepairTitle: 'Do you want to delete a repair?',
     optimizeChartText: 'When using this function, the graph will display differently from the actual values and adjust the graph to fit within the range of the maximum and minimum limits (tempMin, tempMax). Please note that this operation will not affect the data in the system; it is merely a temporary adjustment of the graph.',
     dataNotReady: 'Data is not ready to generate PDF!',
+    unSupportFile: 'Unsupported file format',
 
     // time
     thTime: 'en-EN',

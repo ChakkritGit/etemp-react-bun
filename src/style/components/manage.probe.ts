@@ -31,7 +31,6 @@ ${props => props.theme.mode === 'dark' &&
 
 export const ManageProbeHeader = styled.div<{ $primary?: boolean }>`
 display: flex;
-align-items: center;
 justify-content: space-between;
 
 &>div:nth-child(2) {
@@ -39,6 +38,22 @@ justify-content: space-between;
   align-items: center;
   gap: .5rem;
   z-index: 99;
+
+  &>div {
+    display: flex;
+    align-items: center;
+    gap: .5rem;
+
+  @media (max-width: 430px) {
+  flex-direction: column;
+  align-items: end;
+}
+  }
+
+  @media (max-width: 430px) {
+  flex-direction: column-reverse;
+  align-items: end;
+}
 }
 
 & h3 {

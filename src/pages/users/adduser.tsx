@@ -64,7 +64,6 @@ export default function Adduser(AdduserProp: adduserProp) {
     if (e.target && fileInput.files && e.target.files && e.target.files.length > 0) {
       const selectedFile = fileInput.files[0]
 
-      // Resize the image before setting the state
       resizeImage(selectedFile)
         .then((resizedFile) => {
           reader.readAsDataURL(resizedFile)
@@ -453,7 +452,7 @@ export default function Adduser(AdduserProp: adduserProp) {
                         <img src={userPicture ? userPicture : `${import.meta.env.VITE_APP_IMG}/img/default-pic.png`} alt="down-picture" />
                         <label htmlFor={'user-file-upload'} >
                           <RiEditLine />
-                          <input id="user-file-upload" type="file" onChange={fileSelect} />
+                          <input id="user-file-upload" type="file" accept="image/gif, image/jpg, image/jpeg, image/png" onChange={fileSelect} />
                         </label>
                       </div>
                     </ProfileFlex>

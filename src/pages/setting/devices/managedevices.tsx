@@ -268,7 +268,7 @@ export default function Managedev() {
   }
 
   // Filter Data
-  const filteredItems = wardId !== 'WID-DEVELOPMENT' ? devices.filter(item => item.wardId.toLowerCase().includes(wardId.toLowerCase())) : devices
+  const filteredItems = wardId !== '' ? devices.filter(item => item.wardId.toLowerCase().includes(wardId.toLowerCase())) : devices
   const filter = filteredItems.filter((f) => f.devSerial && f.devSerial.toLowerCase().includes(searchQuery.toLowerCase()))
 
   return (
@@ -283,7 +283,7 @@ export default function Managedev() {
             </DeviceInfoSpan>}
           {
             filterdata &&
-            <>
+            <div>
               {
                 userLevel !== '2' &&
                 <Select
@@ -344,10 +344,10 @@ export default function Managedev() {
               <DeviceInfoSpanClose onClick={() => setFilterdata(false)}>
                 <RiCloseLine />
               </DeviceInfoSpanClose>
-            </>
+            </div>
           }
           {
-            userLevel !== '2' && userLevel !== '3' && <>
+            userLevel !== '2' && userLevel !== '3' && <div>
               <Adddevform
                 pagestate={'add'}
                 devdata={{} as devicesType}
@@ -363,7 +363,7 @@ export default function Managedev() {
               })}>
                 <RiTimer2Line size={24} />
               </AdjustTime>
-            </>
+            </div>
           }
         </DevHomeHead>
       </ManageHospitalsHeader>

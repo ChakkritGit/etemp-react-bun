@@ -6,18 +6,18 @@ import {
 import {
   RiAlarmWarningFill, RiArrowDownLine, RiArrowLeftSLine, RiArrowRightLine,
   RiBellFill,
-  RiCloseLine,
-  RiFormatClear
+  RiCloseLine
 } from "react-icons/ri"
-import { Slider } from "@mui/material"
-import { AdjustRealTimeFlex, ModalMuteHead, MuteFlex, NotiActionFlex, OpenSettingBuzzer, ScheduleContainer, ScheduleFlec, ScheduleItem, ScheduleItemFlex } from "../../style/components/home.styled"
+import {
+  AdjustRealTimeFlex, ModalMuteHead, MuteFlex, NotiActionFlex,
+  OpenSettingBuzzer, ScheduleFlec, ScheduleItem, ScheduleItemFlex,
+  ToggleButtonAllDays
+} from "../../style/components/home.styled"
 import { Dispatch, FormEvent, SetStateAction, useEffect, useState } from "react"
 import { DeviceStateStore, UtilsStateStore } from "../../types/redux.type"
 import { AsyncThunk } from "@reduxjs/toolkit"
 import { devicesType } from "../../types/device.type"
 import { useDispatch, useSelector } from "react-redux"
-import axios, { AxiosError } from "axios"
-import Swal from "sweetalert2"
 import { useTranslation } from "react-i18next"
 import { responseType } from "../../types/response.type"
 import { client } from "../../services/mqtt"
@@ -26,9 +26,12 @@ import { ConfigBtn } from "../../style/components/manage.config"
 import { MuteEtemp } from "../../style/components/sound.setting"
 import { storeDispatchType } from "../../stores/store"
 import { setRefetchdata, setShowAlert } from "../../stores/utilsStateSlice"
-import Select, { SingleValue } from 'react-select'
 import { useTheme } from "../../theme/ThemeProvider"
 import { cookieOptions, cookies, scheduleDayArray, scheduleMinuteArray, scheduleTimeArray } from "../../constants/constants"
+import { Slider } from "@mui/material"
+import axios, { AxiosError } from "axios"
+import Select, { SingleValue } from 'react-select'
+import Swal from "sweetalert2"
 
 type modalAdjustType = {
   fetchData: AsyncThunk<devicesType[], string, {}>,
@@ -730,7 +733,7 @@ const ModalAdjust = (modalProps: modalAdjustType) => {
                 {t('notificationSettings')}
               </span>
             </ModalMuteHead>
-            {/* <pre>{JSON.stringify(muteMode, null, 2)}</pre> */}
+            {/* <pre>{JSON.stringify(scheduleDay, null, 2)}</pre> */}
           </ModalHead>
         </Modal.Header>
         <Form onSubmit={handleSubmitNoti}>
@@ -845,23 +848,23 @@ const ModalAdjust = (modalProps: modalAdjustType) => {
                     <Col className="mt-2">
                       <Form.Check
                         type='radio'
-                        id='MessageOn'
-                        label={t('messageOn')}
-                        checked={choichfour === 'on'}
-                        onChange={() => setMuteMode({ ...muteMode, choichfour: 'on' })}
-                      />
-                      <Form.Check
-                        type='radio'
                         id='MessageOff'
                         label={t('messageOff')}
                         checked={choichfour === 'off'}
                         onChange={() => setMuteMode({ ...muteMode, choichfour: 'off' })}
                       />
+                      <Form.Check
+                        type='radio'
+                        id='MessageOn'
+                        label={t('messageOn')}
+                        checked={choichfour === 'on'}
+                        onChange={() => setMuteMode({ ...muteMode, choichfour: 'on' })}
+                      />
                     </Col>
                   </Row>
                 </Row>
               </Col>
-              <Col lg={12}>
+              {/* <Col lg={12}>
                 <ScheduleContainer>
                   <Form.Label className="w-100 mt-3">
                     <span><b>{t('scheduleTile')}</b></span>
@@ -886,7 +889,7 @@ const ModalAdjust = (modalProps: modalAdjustType) => {
                     <span>{t('clearShedule')}</span>
                   </div>
                 </ScheduleContainer>
-              </Col>
+              </Col> */}
               <Col lg={12}>
                 <ScheduleFlec>
                   <LineHr />
@@ -899,6 +902,7 @@ const ModalAdjust = (modalProps: modalAdjustType) => {
                   <div>
                     <span>{t('firstDay')}</span>
                     <Select
+                      isDisabled={scheduleDay.firstDay === 'ALL'}
                       key={String(scheduleDay.firstDay)}
                       options={filterOptions(
                         mapOptions<Schedule, keyof Schedule>(scheduleDayArray, 'scheduleKey', 'scheduleLabel'),
@@ -933,6 +937,7 @@ const ModalAdjust = (modalProps: modalAdjustType) => {
                   <div>
                     <span>{t('seccondDay')}</span>
                     <Select
+                      isDisabled={scheduleDay.seccondDay === 'ALL'}
                       key={String(scheduleDay.seccondDay)}
                       options={filterOptions(
                         mapOptions<Schedule, keyof Schedule>(scheduleDayArray, 'scheduleKey', 'scheduleLabel'),
@@ -967,6 +972,7 @@ const ModalAdjust = (modalProps: modalAdjustType) => {
                   <div>
                     <span>{t('thirdDay')}</span>
                     <Select
+                      isDisabled={scheduleDay.thirdDay === 'ALL'}
                       key={String(scheduleDay.thirdDay)}
                       options={filterOptions(
                         mapOptions<Schedule, keyof Schedule>(scheduleDayArray, 'scheduleKey', 'scheduleLabel'),
@@ -998,6 +1004,20 @@ const ModalAdjust = (modalProps: modalAdjustType) => {
                       classNamePrefix="react-select"
                     />
                   </div>
+                  <div>
+                    <span>{t('everyDays')}</span>
+                    <ToggleButtonAllDays type="button" $primary={scheduleDay.firstDay === 'ALL' && scheduleDay.seccondDay === 'ALL' && scheduleDay.thirdDay === 'ALL' ? true : false} onClick={() => {
+                      if (scheduleDay.firstDay === 'ALL' && scheduleDay.seccondDay === 'ALL' && scheduleDay.thirdDay === 'ALL') {
+                        setScheduleDay({ firstDay: '', seccondDay: '', thirdDay: '' })
+                      } else {
+                        setScheduleDay({ firstDay: 'ALL', seccondDay: 'ALL', thirdDay: 'ALL' })
+                      }
+                    }}>
+                      <div className="icon">
+                        {scheduleDay.firstDay === 'ALL' && scheduleDay.seccondDay === 'ALL' && scheduleDay.thirdDay === 'ALL' ? t('messageOn') : t('messageOff')}
+                      </div>
+                    </ToggleButtonAllDays>
+                  </div>
                 </ScheduleItem>
               </Col>
               <Col lg={12}>
@@ -1012,7 +1032,7 @@ const ModalAdjust = (modalProps: modalAdjustType) => {
                   <span>{t('firstTime')}</span>
                   <div>
                     <Select
-                      key={String(scheduleTime.firstTime)}
+                      // key={String(scheduleTime.firstTime)}
                       options={filterOptions(
                         mapOptions<ScheduleHour, keyof ScheduleHour>(scheduleTimeArray, 'scheduleHourKey', 'scheduleHourLabel'),
                         [String(scheduleTime.secondTime), String(scheduleTime.thirdTime)]
@@ -1043,7 +1063,7 @@ const ModalAdjust = (modalProps: modalAdjustType) => {
                       classNamePrefix="react-select"
                     />
                     <Select
-                      key={String(scheduleTime.firstMinute)}
+                      // key={String(scheduleTime.firstMinute)}
                       options={mapOptions<ScheduleMinute, keyof ScheduleMinute>(scheduleMinuteArray, 'scheduleMinuteKey', 'scheduleMinuteLabel')}
                       value={mapvalue<ScheduleMinute, keyof ScheduleMinute>(scheduleMinuteArray, String(scheduleTime.firstMinute), 'scheduleMinuteKey', 'scheduleMinuteLabel')}
                       onChange={(e) => getScheduleTimeMinute(e, 'firstTimeMinute')}
@@ -1078,7 +1098,7 @@ const ModalAdjust = (modalProps: modalAdjustType) => {
                   <span>{t('seccondTime')}</span>
                   <div>
                     <Select
-                      key={String(scheduleTime.secondTime)}
+                      // key={String(scheduleTime.secondTime)}
                       options={filterOptions(
                         mapOptions<ScheduleHour, keyof ScheduleHour>(scheduleTimeArray, 'scheduleHourKey', 'scheduleHourLabel'),
                         [String(scheduleTime.firstTime), String(scheduleTime.thirdTime)]
@@ -1109,7 +1129,7 @@ const ModalAdjust = (modalProps: modalAdjustType) => {
                       classNamePrefix="react-select"
                     />
                     <Select
-                      key={String(scheduleTime.seccondMinute)}
+                      // key={String(scheduleTime.seccondMinute)}
                       options={mapOptions<ScheduleMinute, keyof ScheduleMinute>(scheduleMinuteArray, 'scheduleMinuteKey', 'scheduleMinuteLabel')}
                       value={mapvalue<ScheduleMinute, keyof ScheduleMinute>(scheduleMinuteArray, String(scheduleTime.seccondMinute), 'scheduleMinuteKey', 'scheduleMinuteLabel')}
                       onChange={(e) => getScheduleTimeMinute(e, 'seccondTimeMinute')}
@@ -1144,7 +1164,7 @@ const ModalAdjust = (modalProps: modalAdjustType) => {
                   <span>{t('thirdTime')}</span>
                   <div>
                     <Select
-                      key={String(scheduleTime.thirdTime)}
+                      // key={String(scheduleTime.thirdTime)}
                       options={filterOptions(
                         mapOptions<ScheduleHour, keyof ScheduleHour>(scheduleTimeArray, 'scheduleHourKey', 'scheduleHourLabel'),
                         [String(scheduleTime.firstTime), String(scheduleTime.secondTime)]
@@ -1175,7 +1195,7 @@ const ModalAdjust = (modalProps: modalAdjustType) => {
                       classNamePrefix="react-select"
                     />
                     <Select
-                      key={String(scheduleTime.thirdMinute)}
+                      // key={String(scheduleTime.thirdMinute)}
                       options={mapOptions<ScheduleMinute, keyof ScheduleMinute>(scheduleMinuteArray, 'scheduleMinuteKey', 'scheduleMinuteLabel')}
                       value={mapvalue<ScheduleMinute, keyof ScheduleMinute>(scheduleMinuteArray, String(scheduleTime.thirdMinute), 'scheduleMinuteKey', 'scheduleMinuteLabel')}
                       onChange={(e) => getScheduleTimeMinute(e, 'thirdTimeMinute')}

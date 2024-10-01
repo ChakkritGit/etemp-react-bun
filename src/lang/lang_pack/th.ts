@@ -71,6 +71,7 @@ export default {
     muteDoor: 'ปิดเสียงประตู',
     adjustHumGreater: 'ช่วงความชื่นไม่สามารถตั้งได้เกินช่วง 0-100%',
     clearShedule: 'ล้าง',
+    everyDays: 'ทุกวัน',
 
     // notification setting itemp
     choiceOne: '1. ส่งข้อความครั้งแรก',
@@ -411,6 +412,7 @@ export default {
     deleteRepairTitle: 'คุณต้องการลบแจ้งซ่อมหรือไม่',
     optimizeChartText: 'เมื่อใช้ฟังก์ชันนี้กราฟจะแสดงผลต่างจากค่าจริงและปรับกราฟให้สมในช่วงของขีดจำกัดสูงสุดและต่ำสุด (tempMin, tempMax) </br> โปรดจำไว้ว่าการดำเนินการดังกล่าวจะไม่มีผลต่อข้อมูลในระบบ</br>เป็นเพียงการปรับแต่งกราฟแค่ชั่วคราว',
     dataNotReady: 'ข้อมูลยังไม่พร้อมสร้าง PDF',
+    unSupportFile: 'ไม่สนับสนุนรูปแบบไฟล์',
 
     // time
     thTime: 'th-TH',

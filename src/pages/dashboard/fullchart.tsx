@@ -32,8 +32,6 @@ import { DeviceStateStore, UtilsStateStore } from "../../types/redux.type"
 import { cookies, getDateNow, styleElement } from "../../constants/constants"
 import { responseType } from "../../types/response.type"
 import { wardsType } from "../../types/ward.type"
-import { motion } from "framer-motion"
-import { items } from "../../animation/animate"
 import { setSearchQuery, setShowAlert } from "../../stores/utilsStateSlice"
 import { storeDispatchType } from "../../stores/store"
 import PageLoading from "../../components/loading/page.loading"
@@ -331,12 +329,7 @@ export default function Fullchart() {
 
 
   return (
-    <Container fluid className="position-relative">
-      <motion.div
-        variants={items}
-        initial="hidden"
-        animate="visible"
-      >
+    <Container fluid>
         <Breadcrumbs className="mt-3"
           separator={<RiArrowRightSLine fontSize={20} />}
         >
@@ -483,12 +476,11 @@ export default function Fullchart() {
                 :
                 <PageLoading reset={pageNumber} />
             }
-            {isloading && <WaitExportImage>
-              <Loading loading={true} title={t('loading')} icn={<RiLoader2Line fill="white" />} />
-            </WaitExportImage>}
           </CustomChart>
         </FullchartBody>
-      </motion.div>
+        {isloading && <WaitExportImage>
+          <Loading loading={true} title={t('loading')} icn={<RiLoader2Line fill="white" />} />
+        </WaitExportImage>}
     </Container>
   )
 }

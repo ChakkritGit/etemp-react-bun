@@ -8,8 +8,6 @@ import Adduser from "./adduser"
 import Paginition from "../../components/filter/paginition"
 import { useDispatch, useSelector } from "react-redux"
 import { DeviceStateStore, UserState, UtilsStateStore } from "../../types/redux.type"
-import { motion } from "framer-motion"
-import { items } from "../../animation/animate"
 import { setHosId, setSearchQuery, setWardId } from "../../stores/utilsStateSlice"
 import { storeDispatchType } from "../../stores/store"
 import Select from "react-select"
@@ -50,7 +48,7 @@ export default function Permission() {
   const [filterdata, setFilterdata] = useState(false)
   const [wardName, setWardname] = useState<wardsType[]>([])
   // Filter Data
-  const filteredItems = wardId !== 'WID-DEVELOPMENT' ? userData.filter(item => item.wardId.toLowerCase().includes(wardId.toLowerCase())) : userData
+  const filteredItems = wardId !== '' ? userData.filter(item => item.wardId.toLowerCase().includes(wardId.toLowerCase())) : userData
   const totalPages = Math.ceil(filteredItems.length / cardsPerPage)
 
   const allWard = { wardId: '', wardName: 'ALL', wardSeq: 0, hosId: '', createAt: '', updateAt: '', hospital: {} as hospitalsType }
@@ -132,12 +130,8 @@ export default function Permission() {
 
   return (
     <Container fluid>
-      <motion.div
-        variants={items}
-        initial="hidden"
-        animate="visible"
-      >
-        <CardUserHead>
+      <CardUserHead>
+        <div>
           <h3>{t('sidePermission')}</h3>
           <div>
             {!filterdata &&
@@ -147,7 +141,7 @@ export default function Permission() {
               </DeviceInfoSpan>}
             {
               filterdata &&
-              <>
+              <div>
                 {
                   userLevel !== '2' &&
                   <Select
@@ -208,43 +202,43 @@ export default function Permission() {
                 <DeviceInfoSpanClose onClick={() => setFilterdata(false)}>
                   <RiCloseLine />
                 </DeviceInfoSpanClose>
-              </>
+              </div>
             }
             <Adduser pagestate={"add"} />
           </div>
-        </CardUserHead>
-        <CardUserBody $primary={expand}>
-          {
-            displayedCards.filter((f) => f.userId !== userId).map((item, index) => (
-              <CardUser
-                key={item.userId}
-                keyindex={index}
-                userPic={item.userPic}
-                displayName={item.displayName}
-                userName={item.userName}
-                userLevel={item.userLevel}
-                userId={item.userId}
-                hosId={item.ward.hosId}
-                userStatus={item.userStatus}
-                wardId={item.wardId}
-              />
-            ))
-          }
-        </CardUserBody>
-        <PaginitionContainer>
-          <div></div>
-          <Paginition
-            currentPage={currentPage}
-            cardsPerPage={cardsPerPage}
-            changePage={changePage}
-            displaySelectDevices={displaySelectDevices}
-            displayedCards={displayedCards}
-            userdata={userData}
-            totalPages={totalPages}
-            pagPerpage={paginationCardUsers}
-          />
-        </PaginitionContainer>
-      </motion.div>
+        </div>
+      </CardUserHead>
+      <CardUserBody $primary={expand}>
+        {
+          displayedCards.filter((f) => f.userId !== userId).map((item, index) => (
+            <CardUser
+              key={item.userId}
+              keyindex={index}
+              userPic={item.userPic}
+              displayName={item.displayName}
+              userName={item.userName}
+              userLevel={item.userLevel}
+              userId={item.userId}
+              hosId={item.ward.hosId}
+              userStatus={item.userStatus}
+              wardId={item.wardId}
+            />
+          ))
+        }
+      </CardUserBody>
+      <PaginitionContainer>
+        <div></div>
+        <Paginition
+          currentPage={currentPage}
+          cardsPerPage={cardsPerPage}
+          changePage={changePage}
+          displaySelectDevices={displaySelectDevices}
+          displayedCards={displayedCards}
+          userdata={userData}
+          totalPages={totalPages}
+          pagPerpage={paginationCardUsers}
+        />
+      </PaginitionContainer>
     </Container >
   )
 }

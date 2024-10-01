@@ -25,7 +25,7 @@ type HomeCardData = {
 function HomeCard({ cardActive, deviceData, wardId, setCardActive, setOnFilteres }: HomeCardData) {
   const { t } = useTranslation()
 
-  const filter = wardId !== 'WID-DEVELOPMENT' ? deviceData.filter((f) => f.wardId.toLowerCase().includes(wardId.toLowerCase())) : deviceData
+  const filter = wardId !== '' ? deviceData.filter((f) => f.wardId.toLowerCase().includes(wardId.toLowerCase())) : deviceData
 
   const getSum = (key: keyof NonNullable<devicesType['_count']>) =>
     filter.reduce((acc, devItems) => acc + (devItems._count?.[key] ?? 0), 0)
