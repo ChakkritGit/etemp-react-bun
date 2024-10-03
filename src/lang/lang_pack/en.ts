@@ -292,7 +292,7 @@ export default {
     consoleText: 'Console',
 
     // sidebar
-    sideShowAllBox: 'Show all eTEMP',
+    sideShowAllBox: 'Show all Devices',
     sideDashboard: 'Dashboard',
     sidePermission: 'Manage Users',
     sideManage: 'Manage',
@@ -378,7 +378,7 @@ export default {
 
     // router
     titleError: 'Oops!',
-    descriptionError: '404 Not found',
+    descriptionError: 'Page Not Found',
     descriptionErrorWrong: 'Something wrong please try again',
     buttonErrorBack: 'Back to home',
     titleNotAccess: 'Access denied',

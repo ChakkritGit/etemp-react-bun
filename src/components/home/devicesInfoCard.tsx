@@ -23,6 +23,7 @@ import { useDispatch } from "react-redux"
 import { storeDispatchType } from "../../stores/store"
 import ModalAdjust from "./modal.adjust"
 import { cookieOptions, cookies } from "../../constants/constants"
+import { logtype } from "../../types/log.type"
 
 type DevicesInfoCard = {
   devicesdata: devicesType,
@@ -113,82 +114,15 @@ export default function DevicesInfoCard(DevicesInfoCard: DevicesInfoCard) {
           {
             !onFilter ?
               <DeviceCardFooterDoorFlex>
-                {
-                  devicesdata.probe[0]?.door === 1 ?
-                    <DeviceCardFooterDoor
-                      $primary={
-                        devicesdata.log[0]?.door1 === "1"
-                      }>
-                      {
-                        devicesdata.log[0]?.door1 === "1" ?
-                          <RiDoorOpenLine />
-                          :
-                          <RiDoorClosedLine />
-                      }
+                {Array.from({ length: devicesdata.probe[0]?.door || 1 }, (_, index) => {
+                  const doorKey = `door${index + 1}` as keyof logtype
+                  const doorLog = devicesdata.log[0]?.[doorKey] === "1"
+                  return (
+                    <DeviceCardFooterDoor key={index} $primary={doorLog}>
+                      {doorLog ? <RiDoorOpenLine /> : <RiDoorClosedLine />}
                     </DeviceCardFooterDoor>
-                    :
-                    devicesdata.probe[0]?.door === 2 ?
-                      <>
-                        <DeviceCardFooterDoor
-                          $primary={
-                            devicesdata.log[0]?.door1 === "1"
-                          }>
-                          {
-                            devicesdata.log[0]?.door1 === "1" ?
-                              <RiDoorOpenLine />
-                              :
-                              <RiDoorClosedLine />
-                          }
-                        </DeviceCardFooterDoor>
-                        <DeviceCardFooterDoor
-                          $primary={
-                            devicesdata.log[0]?.door2 === "1"
-                          }>
-                          {
-                            devicesdata.log[0]?.door2 === "1" ?
-                              <RiDoorOpenLine />
-                              :
-                              <RiDoorClosedLine />
-                          }
-                        </DeviceCardFooterDoor>
-                      </>
-                      :
-                      <>
-                        <DeviceCardFooterDoor
-                          $primary={
-                            devicesdata.log[0]?.door1 === "1"
-                          }>
-                          {
-                            devicesdata.log[0]?.door1 === "1" ?
-                              <RiDoorOpenLine />
-                              :
-                              <RiDoorClosedLine />
-                          }
-                        </DeviceCardFooterDoor>
-                        <DeviceCardFooterDoor
-                          $primary={
-                            devicesdata.log[0]?.door2 === "1"
-                          }>
-                          {
-                            devicesdata.log[0]?.door2 === "1" ?
-                              <RiDoorOpenLine />
-                              :
-                              <RiDoorClosedLine />
-                          }
-                        </DeviceCardFooterDoor>
-                        <DeviceCardFooterDoor
-                          $primary={
-                            devicesdata.log[0]?.door3 === "1"
-                          }>
-                          {
-                            devicesdata.log[0]?.door3 === "1" ?
-                              <RiDoorOpenLine />
-                              :
-                              <RiDoorClosedLine />
-                          }
-                        </DeviceCardFooterDoor>
-                      </>
-                }
+                  )
+                })}
                 <TooltipSpan>
                   {t('deviceDoor')}
                 </TooltipSpan>

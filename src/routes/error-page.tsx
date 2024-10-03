@@ -33,11 +33,18 @@ export default function ErrorPage() {
 
   return (
     <ErrorPageStyled>
-      <h1>{t('titleError')}</h1>
-      <p>{t('descriptionError')}</p>
-      <p>
-        <i onClick={() => navigate('/')}>{t('buttonErrorBack')}</i>
-      </p>
+      <div>
+      </div>
+      <div>
+        <span>{t('titleError')}</span>
+        <div>
+          <span>404</span>
+          <p>{t('descriptionError')}</p>
+          <p>
+            <button onClick={() => navigate('/')}>{t('buttonErrorBack')}</button>
+          </p>
+        </div>
+      </div>
     </ErrorPageStyled>
   )
 }

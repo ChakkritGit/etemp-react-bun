@@ -40,6 +40,7 @@ import { useTheme } from "../../theme/ThemeProvider"
 import HomeCard from "../../components/home/home.card"
 import { hospitalsType } from "../../types/hospital.type"
 import Paginition from "../../components/filter/paginition"
+import { DoorKey } from "../../types/log.type"
 
 type Option = {
   value: string,
@@ -125,10 +126,10 @@ export default function Home() {
   }
 
   useEffect(() => {
-    if (!wardId) {
-      dispatch(setFilterDevice(devices))
-      return
-    }
+    // if (!wardId) {
+    //   dispatch(setFilterDevice(devices))
+    //   return
+    // }
 
     let filteredDevicesList = wardId !== ''
       ? devices.filter((item) => item.wardId.toLowerCase().includes(wardId.toLowerCase()))
@@ -139,25 +140,36 @@ export default function Home() {
       item.devDetail?.toLowerCase().includes(searchQuery.toLowerCase())
     )
 
-    if (cardActive === '1') {
-      dispatch(setFilterDevice(filteredDevicesList.filter(dev => dev.noti.some(n => ['LOWER', 'OVER'].includes(n.notiDetail.split('/')[1])))))
-    } else if (cardActive === '2') {
-      dispatch(setFilterDevice(filteredDevicesList.filter(dev => dev.noti.some(n => n.notiDetail.split('/')[0].startsWith('PROBE')))))
-    } else if (cardActive === '3') {
-      dispatch(setFilterDevice(filteredDevicesList.filter(dev => dev._count?.log)))
-    } else if (cardActive === '4') {
-      dispatch(setFilterDevice(filteredDevicesList.filter(dev => dev.noti.some(n => n.notiDetail.split('/')[0] === 'AC'))))
-    } else if (cardActive === '5') {
-      dispatch(setFilterDevice(filteredDevicesList.filter(dev => dev.noti.some(n => n.notiDetail.split('/')[0] === 'SD'))))
-    } else if (cardActive === '6') {
-      navigate("/management/logadjust")
-    } else if (cardActive === '7') {
-      navigate("/repair")
-    } else if (cardActive === '8') {
-      navigate("/warranty")
-    } else {
-      dispatch(setFilterDevice(filteredDevicesList))
+    switch (cardActive) {
+      case '1':
+        dispatch(setFilterDevice(filteredDevicesList.filter(dev => dev.noti.some(n => ['LOWER', 'OVER'].includes(n.notiDetail.split('/')[1])))))
+        break;
+      case '2':
+        dispatch(setFilterDevice(filteredDevicesList.filter(dev => dev.noti.some(n => n.notiDetail.split('/')[0].startsWith('PROBE')))))
+        break;
+      case '3':
+        dispatch(setFilterDevice(filteredDevicesList.filter(dev => dev._count?.log)))
+        break;
+      case '4':
+        dispatch(setFilterDevice(filteredDevicesList.filter(dev => dev.noti.some(n => n.notiDetail.split('/')[0] === 'AC'))))
+        break;
+      case '5':
+        dispatch(setFilterDevice(filteredDevicesList.filter(dev => dev.noti.some(n => n.notiDetail.split('/')[0] === 'SD'))))
+        break;
+      case '6':
+        navigate("/management/logadjust")
+        break;
+      case '7':
+        navigate("/repair")
+        break;
+      case '8':
+        navigate("/warranty")
+        break;
+      default:
+        dispatch(setFilterDevice(filteredDevicesList))
+        break;
     }
+
   }, [searchQuery, devices, wardId, cardActive])
 
   const isLeapYear = (year: number): boolean => {
@@ -167,192 +179,127 @@ export default function Home() {
   const columns: TableColumn<devicesType>[] = [
     {
       name: t('deviceNameTb'),
-      selector: (items) => items.devDetail ? items.devDetail : 'Name is not assigned',
+      selector: items => items.devDetail || 'Name is not assigned',
       sortable: false,
-      center: true
+      center: true,
     },
     {
       name: t('deviceSerialTb'),
-      cell: (items) => items.devSerial,
+      cell: items => items.devSerial,
       sortable: false,
-      center: true
+      center: true,
     },
     {
       name: t('deviceLocationTb'),
-      cell: (items) => <span title={items.locInstall ? items.locInstall : '- -'}>{items.locInstall ? items.locInstall : '- -'}</span>,
+      cell: items => <span title={items.locInstall || '- -'}>{items.locInstall || '- -'}</span>,
       sortable: false,
-      center: true
+      center: true,
     },
     {
       name: t('deviceTempTb'),
-      cell: (items) => <span key={items.devSerial}>{items.log[0]?.tempAvg ? items.log[0]?.tempAvg.toFixed(2) + '°C' : 'No data'}</span>,
+      cell: items => (
+        <span key={items.devSerial}>
+          {items.log[0]?.tempAvg ? `${items.log[0].tempAvg.toFixed(2)}°C` : 'No data'}
+        </span>
+      ),
       sortable: false,
       center: true,
-      width: '85px'
+      width: '85px',
     },
     {
       name: t('deviceHumiTb'),
-      selector: (items) => items.log[0]?.humidityAvg ? items.log[0].humidityAvg.toFixed(2) + '%' : 'No data',
+      selector: items =>
+        items.log[0]?.humidityAvg ? `${items.log[0].humidityAvg.toFixed(2)}%` : 'No data',
       sortable: false,
       center: true,
-      width: '85px'
+      width: '85px',
     },
     {
       name: t('deviceProbeTb'),
-      cell: ((items) => {
-        const temp = items.log.filter((logItems) => logItems.devSerial === items.devSerial)
-        const probe = items.probe.filter((logItems) => logItems.devSerial === items.devSerial)
-        return (
-          !onFilteres ?
-            <DeviceCardFooterInfo
-              $size
-              $primary={temp[0]?.tempAvg >= probe[0]?.tempMax || temp[0]?.tempAvg <= probe[0]?.tempMin}>
-              {temp[0]?.tempAvg >= probe[0]?.tempMax || temp[0]?.tempAvg <= probe[0]?.tempMin ?
-                <RiErrorWarningLine />
-                :
-                <RiTempColdLine />
-              }
-            </DeviceCardFooterInfo>
-            :
-            <div>
-              {`${items.noti.filter((n) => n.notiDetail.split('/')[1] === 'LOWER' || n.notiDetail.split('/')[1] === 'OVER').length} ${t('countNormalUnit')}`}
-            </div>
-        )
-      }),
+      cell: items => {
+        const [temp] = items.log.filter(log => log.devSerial === items.devSerial)
+        const [probe] = items.probe.filter(probe => probe.devSerial === items.devSerial)
+        const isTempOutOfRange = temp?.tempAvg >= probe?.tempMax || temp?.tempAvg <= probe?.tempMin
+
+        return !onFilteres ? (
+          <DeviceCardFooterInfo $size $primary={isTempOutOfRange}>
+            {isTempOutOfRange ? <RiErrorWarningLine /> : <RiTempColdLine />}
+          </DeviceCardFooterInfo>
+        ) : (
+          <div>
+            {`${items.noti.filter(n => ['LOWER', 'OVER'].includes(n.notiDetail.split('/')[1])).length} ${t('countNormalUnit')}`}
+          </div>
+        );
+      },
       sortable: false,
       center: true,
-      width: '80px'
+      width: '80px',
     },
     {
       name: t('deviceDoorTb'),
-      cell: ((items) => (
-        !onFilteres ?
+      cell: items => {
+        const doorCount: number = items.probe[0]?.door || 0
+        const doors: DoorKey[] = ['door1', 'door2', 'door3']
+
+        return !onFilteres ? (
           <DeviceCardFooterDoorFlex key={items.devId} $primary>
-            {
-              items.probe[0]?.door === 1 ?
-                <DeviceCardFooterDoor
-                  $primary={items.log[0]?.door1 === "1"}
-                >
-                  {
-                    items.log[0]?.door1 === "1" ?
-                      <RiDoorOpenLine />
-                      :
-                      <RiDoorClosedLine />
-                  }
-                </DeviceCardFooterDoor>
-                :
-                items.probe[0]?.door === 2 ?
-                  <>
-                    <DeviceCardFooterDoor
-                      $primary={items.log[0]?.door1 === "1"}
-                    >
-                      {
-                        items.log[0]?.door1 === "1" ?
-                          <RiDoorOpenLine />
-                          :
-                          <RiDoorClosedLine />
-                      }
-                    </DeviceCardFooterDoor>
-                    <DeviceCardFooterDoor
-                      $primary={items.log[0]?.door2 === "1"}
-                    >
-                      {
-                        items.log[0]?.door2 === "1" ?
-                          <RiDoorOpenLine />
-                          :
-                          <RiDoorClosedLine />
-                      }
-                    </DeviceCardFooterDoor>
-                  </>
-                  :
-                  <>
-                    <DeviceCardFooterDoor
-                      $primary={items.log[0]?.door1 === "1"}
-                    >
-                      {
-                        items.log[0]?.door1 === "1" ?
-                          <RiDoorOpenLine />
-                          :
-                          <RiDoorClosedLine />
-                      }
-                    </DeviceCardFooterDoor>
-                    <DeviceCardFooterDoor
-                      $primary={items.log[0]?.door2 === "1"}
-                    >
-                      {
-                        items.log[0]?.door2 === "1" ?
-                          <RiDoorOpenLine />
-                          :
-                          <RiDoorClosedLine />
-                      }
-                    </DeviceCardFooterDoor>
-                    <DeviceCardFooterDoor
-                      $primary={items.log[0]?.door3 === "1"}
-                    >
-                      {
-                        items.log[0]?.door3 === "1" ?
-                          <RiDoorOpenLine />
-                          :
-                          <RiDoorClosedLine />
-                      }
-                    </DeviceCardFooterDoor>
-                  </>
-            }
+            {doors.slice(0, doorCount).map(doorKey => (
+              <DeviceCardFooterDoor $primary={items.log[0]?.[doorKey] === "1"} key={doorKey}>
+                {items.log[0]?.[doorKey] === "1" ? <RiDoorOpenLine /> : <RiDoorClosedLine />}
+              </DeviceCardFooterDoor>
+            ))}
           </DeviceCardFooterDoorFlex>
-          :
+        ) : (
           <div>
-            {`${items.noti.filter((n) => n.notiDetail.split('/')[0].substring(0, 5) === 'PROBE' && n.notiDetail.split('/')[2].substring(0, 5) === 'ON').length} ${t('countNormalUnit')}`}
+            {`${items.noti.filter(n => n.notiDetail.startsWith('PROBE') && n.notiDetail.split('/')[2].startsWith('ON')).length} ${t('countNormalUnit')}`}
           </div>
-      )),
+        );
+      },
       sortable: false,
-      center: true
+      center: true,
     },
     {
       name: t('deviceConnectTb'),
-      cell: (items) => {
-        return (
-          !onFilteres ?
-            <DeviceStateNetwork $primary={items.backupStatus === '0'}>
-              {items.backupStatus === '0' ? t('deviceOffline') : t('deviceOnline')}
-            </DeviceStateNetwork>
-            :
-            <div>
-              {`${items._count?.log} ${t('countNormalUnit')}`}
-            </div>
+      cell: items => (
+        !onFilteres ? (
+          <DeviceStateNetwork $primary={items.backupStatus === '0'}>
+            {items.backupStatus === '0' ? t('deviceOffline') : t('deviceOnline')}
+          </DeviceStateNetwork>
+        ) : (
+          <div>{`${items._count?.log} ${t('countNormalUnit')}`}</div>
         )
-      },
+      ),
       sortable: false,
       center: true,
-      width: '90px'
+      width: '90px',
     },
     {
       name: t('devicePlugTb'),
-      cell: (items) => {
-        return (
-          !onFilteres ?
-            <span>{items.log[0]?.ac === '1' ? t('stateProblem') : t('stateNormal')}</span>
-            :
-            <div>{`${items.noti.filter((n) => n.notiDetail.split('/')[0] === 'AC').length} ${t('countNormalUnit')}`}</div>
+      cell: items => (
+        !onFilteres ? (
+          <span>{items.log[0]?.ac === '1' ? t('stateProblem') : t('stateNormal')}</span>
+        ) : (
+          <div>{`${items.noti.filter(n => n.notiDetail.split('/')[0] === 'AC').length} ${t('countNormalUnit')}`}</div>
         )
-      },
+      ),
       sortable: false,
       center: true,
-      width: '80px'
+      width: '80px',
     },
     {
       name: t('deviceBatteryTb'),
-      selector: (items) => items.log[0]?.battery ? items.log[0]?.battery + '%' : '- -',
+      selector: items => items.log[0]?.battery ? `${items.log[0].battery}%` : '- -',
       sortable: false,
       center: true,
-      width: '83px'
+      width: '83px',
     },
     {
       name: t('deviceWarrantyTb'),
-      cell: ((items) => {
+      cell: items => {
         const today = new Date()
-        const targetDate = new Date(items.dateInstall)
-        targetDate.setFullYear(targetDate.getFullYear() + 1)
-        const timeDifference = targetDate.getTime() - today.getTime()
+        const expiredDate = new Date(String(items.warranty[0]?.expire))
+        // Use the expiredDate directly
+        const timeDifference = expiredDate.getTime() - today.getTime()
         const daysRemaining = Math.ceil(timeDifference / (1000 * 60 * 60 * 24))
 
         let remainingDays = daysRemaining
@@ -400,24 +347,18 @@ export default function Home() {
                 : `${remainingDays} ${t('day')}`
             : t('tabWarrantyExpired')}
         </span>
-      }),
+      },
       sortable: false,
-      center: true
+      center: true,
     },
     {
       name: t('deviceActionTb'),
-      cell: ((items) => {
-        return (
-          <TableModal
-            key={items.devSerial}
-            deviceData={items}
-            fetchData={filtersDevices}
-          />
-        )
-      }),
+      cell: items => (
+        <TableModal key={items.devSerial} deviceData={items} fetchData={filtersDevices} />
+      ),
       sortable: false,
-      center: true
-    }
+      center: true,
+    },
   ]
 
   const subDeviceColumns: TableColumn<probeType>[] = [
@@ -425,134 +366,97 @@ export default function Home() {
       name: t('probeChannelSubTb'),
       cell: (items, index) => <span key={index}>{items.probeCh}</span>,
       sortable: false,
-      center: true
+      center: true,
     },
     {
       name: t('probeNameSubTb'),
-      cell: (items, index) => <span key={index}>{items.probeName ? items.probeName : 'Name is not assigned'}</span>,
+      cell: (items, index) => (
+        <span key={index}>{items.probeName || 'Name is not assigned'}</span>
+      ),
       sortable: false,
-      center: true
+      center: true,
     },
     {
       name: t('probeTypeSubTb'),
-      cell: (items, index) => <span key={index}>{items.probeType ? items.probeType : 'Type is not assigned'}</span>,
+      cell: (items, index) => (
+        <span key={index}>{items.probeType || 'Type is not assigned'}</span>
+      ),
       sortable: false,
-      center: true
+      center: true,
     },
     {
       name: t('probeTempSubTb'),
-      cell: (items, index) => <span key={index}>{devicesFilter.filter((devItems) => devItems.devSerial === items.devSerial)[0]?.log.filter((logItems) => logItems.probe === items.probeCh)[0]?.tempAvg ? devicesFilter.filter((devItems) => devItems.devSerial === items.devSerial)[0]?.log.filter((logItems) => logItems.probe === items.probeCh)[0]?.tempAvg.toFixed(2) + '°C' : 'Data not found'}</span>,
+      cell: (items, index) => {
+        const deviceLog = devicesFilter
+          .find(dev => dev.devSerial === items.devSerial)
+          ?.log.find(log => log.probe === items.probeCh)
+
+        return (
+          <span key={index}>
+            {deviceLog?.tempAvg ? `${deviceLog?.tempAvg.toFixed(2)}°C` : 'Data not found'}
+          </span>
+        );
+      },
       sortable: false,
-      center: true
+      center: true,
     },
     {
       name: t('probeHumiSubTb'),
-      cell: (items, index) => <span key={index}>{devicesFilter.filter((devItems) => devItems.devSerial === items.devSerial)[0]?.log.filter((logItems) => logItems.probe === items.probeCh)[0]?.humidityAvg ? devicesFilter.filter((devItems) => devItems.devSerial === items.devSerial)[0]?.log.filter((logItems) => logItems.probe === items.probeCh)[0]?.humidityAvg.toFixed(2) + '%' : 'Data not found'}</span>,
+      cell: (items, index) => {
+        const deviceLog = devicesFilter
+          .find(dev => dev.devSerial === items.devSerial)
+          ?.log.find(log => log.probe === items.probeCh)
+
+        return (
+          <span key={index}>
+            {deviceLog?.humidityAvg ? `${deviceLog?.humidityAvg.toFixed(2)}%` : 'Data not found'}
+          </span>
+        );
+      },
       sortable: false,
-      center: true
+      center: true,
     },
     {
       name: t('deviceProbeTb'),
-      cell: ((items) => {
-        const temp = devicesFilter.filter((devItems) => devItems.devSerial === items.devSerial)[0]?.log.filter((logItems) => logItems.probe === items.probeCh)
-        return <DeviceCardFooterInfo
-          $size
-          $primary={temp[0]?.tempAvg >= items.tempMax || temp[0]?.tempAvg <= items.tempMin ? true : false}>
-          {temp[0]?.tempAvg >= items.tempMax || temp[0]?.tempAvg <= items.tempMin ?
-            <RiErrorWarningLine />
-            :
-            <RiTempColdLine />
-          }
-        </DeviceCardFooterInfo>
-      }),
+      cell: items => {
+        const deviceLog = devicesFilter
+          .find(dev => dev.devSerial === items.devSerial)
+          ?.log.find(log => log.probe === items.probeCh)
+
+        const isTempOutOfRange =
+          deviceLog!?.tempAvg >= items.tempMax || deviceLog!?.tempAvg <= items.tempMin
+
+        return (
+          <DeviceCardFooterInfo $size $primary={isTempOutOfRange}>
+            {isTempOutOfRange ? <RiErrorWarningLine /> : <RiTempColdLine />}
+          </DeviceCardFooterInfo>
+        );
+      },
       sortable: false,
       center: true,
-      width: '80px'
+      width: '80px',
     },
     {
       name: t('probeDoorSubTb'),
-      cell: ((items) =>
-      (<DeviceCardFooterDoorFlex $primary>
-        {
-          items.door === 1 ?
-            <DeviceCardFooterDoor
-              $primary={
-                devicesFilter.filter((devItems) => devItems.devSerial === items.devSerial)[0]?.log.find((value) => value.probe === items.probeCh)?.door1 === "1"
-              }>
-              {
-                devicesFilter.filter((devItems) => devItems.devSerial === items.devSerial)[0]?.log.find((value) => value.probe === items.probeCh)?.door1 === "1" ?
-                  <RiDoorOpenLine />
-                  :
-                  <RiDoorClosedLine />
-              }
-            </DeviceCardFooterDoor>
-            :
-            items.door === 2 ?
-              <>
-                <DeviceCardFooterDoor
-                  $primary={
-                    devicesFilter.filter((devItems) => devItems.devSerial === items.devSerial)[0]?.log.find((value) => value.probe === items.probeCh)?.door1 === "1"
-                  }>
-                  {
-                    devicesFilter.filter((devItems) => devItems.devSerial === items.devSerial)[0]?.log.find((value) => value.probe === items.probeCh)?.door1 === "1" ?
-                      <RiDoorOpenLine />
-                      :
-                      <RiDoorClosedLine />
-                  }
-                </DeviceCardFooterDoor>
-                <DeviceCardFooterDoor
-                  $primary={
-                    devicesFilter.filter((devItems) => devItems.devSerial === items.devSerial)[0]?.log.find((value) => value.probe === items.probeCh)?.door2 === "1"
-                  }>
-                  {
-                    devicesFilter.filter((devItems) => devItems.devSerial === items.devSerial)[0]?.log.find((value) => value.probe === items.probeCh)?.door2 === "1" ?
-                      <RiDoorOpenLine />
-                      :
-                      <RiDoorClosedLine />
-                  }
-                </DeviceCardFooterDoor>
-              </>
-              :
-              <>
-                <DeviceCardFooterDoor
-                  $primary={
-                    devicesFilter.filter((devItems) => devItems.devSerial === items.devSerial)[0]?.log.find((value) => value.probe === items.probeCh)?.door1 === "1"
-                  }>
-                  {
-                    devicesFilter.filter((devItems) => devItems.devSerial === items.devSerial)[0]?.log.find((value) => value.probe === items.probeCh)?.door1 === "1" ?
-                      <RiDoorOpenLine />
-                      :
-                      <RiDoorClosedLine />
-                  }
-                </DeviceCardFooterDoor>
-                <DeviceCardFooterDoor
-                  $primary={
-                    devicesFilter.filter((devItems) => devItems.devSerial === items.devSerial)[0]?.log.find((value) => value.probe === items.probeCh)?.door2 === "1"
-                  }>
-                  {
-                    devicesFilter.filter((devItems) => devItems.devSerial === items.devSerial)[0]?.log.find((value) => value.probe === items.probeCh)?.door2 === "1" ?
-                      <RiDoorOpenLine />
-                      :
-                      <RiDoorClosedLine />
-                  }
-                </DeviceCardFooterDoor>
-                <DeviceCardFooterDoor
-                  $primary={
-                    devicesFilter.filter((devItems) => devItems.devSerial === items.devSerial)[0]?.log.find((value) => value.probe === items.probeCh)?.door3 === "1"
-                  }>
-                  {
-                    devicesFilter.filter((devItems) => devItems.devSerial === items.devSerial)[0]?.log.find((value) => value.probe === items.probeCh)?.door3 === "1" ?
-                      <RiDoorOpenLine />
-                      :
-                      <RiDoorClosedLine />
-                  }
-                </DeviceCardFooterDoor>
-              </>
-        }
-      </DeviceCardFooterDoorFlex>
-      )),
+      cell: items => {
+        const deviceLog = devicesFilter
+          .find(dev => dev.devSerial === items.devSerial)
+          ?.log.find(log => log.probe === items.probeCh)
+
+        const renderDoor = (doorKey: 'door1' | 'door2' | 'door3') => (
+          <DeviceCardFooterDoor $primary={deviceLog?.[doorKey] === '1'} key={doorKey}>
+            {deviceLog?.[doorKey] === '1' ? <RiDoorOpenLine /> : <RiDoorClosedLine />}
+          </DeviceCardFooterDoor>
+        )
+
+        return (
+          <DeviceCardFooterDoorFlex $primary>
+            {Array.from({ length: items.door }, (_, i) => renderDoor(`door${i + 1}` as 'door1'))}
+          </DeviceCardFooterDoorFlex>
+        );
+      },
       sortable: false,
-      center: true
+      center: true,
     },
   ]
 

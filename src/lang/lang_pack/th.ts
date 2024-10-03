@@ -378,7 +378,7 @@ export default {
 
     // router
     titleError: 'อุ๊ปส์!',
-    descriptionError: '404 ไม่พบหน้า',
+    descriptionError: 'ไม่พบหน้า',
     descriptionErrorWrong: 'มีบางอย่างผิดพลาด โปรดลองอีกครั้ง',
     buttonErrorBack: 'กลับไปหน้าแรก',
     titleNotAccess: 'ปฏิเสธการเข้าใช้',

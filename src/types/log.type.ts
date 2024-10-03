@@ -23,4 +23,6 @@ type logtype = {
   device: devicesType
 }
 
-export type { logtype }
+type DoorKey = 'door1' | 'door2' | 'door3'
+
+export type { logtype, DoorKey }

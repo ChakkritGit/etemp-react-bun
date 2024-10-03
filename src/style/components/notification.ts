@@ -21,9 +21,9 @@ export const NotiHeadBtn = styled.button<{ $primary?: boolean }>`
   max-width: 150px;
   max-height: 35px;
   border-radius: var(--border-radius-big);
-  border: 2px solid var(--grey-75);
   background-color: unset;
-  color: var(--grey-75);
+  border: 2px solid ${props => props.theme.mode === 'dark' ? 'var(--white)' : 'var(--grey-75)'};
+  color: ${props => props.theme.mode === 'dark' ? 'var(--white)' : 'var(--black)'};
   font-weight: bold;
   padding: 0.5rem;
 

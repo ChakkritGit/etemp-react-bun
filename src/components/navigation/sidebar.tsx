@@ -245,9 +245,9 @@ export default function sidebar() {
             </TooltipSpan>
           </Li> */}
           <Li $primary={expand}>
-            <Link to="/setting" onClick={resetAsideandCardcount} className={location.pathname === "/setting" ? "nav-link d-flex align-items-center gap-2  active" : "nav-link d-flex align-items-center gap-2 text-dark"}>
+            <Link to="/settings" onClick={resetAsideandCardcount} className={location.pathname === "/settings" ? "nav-link d-flex align-items-center gap-2  active" : "nav-link d-flex align-items-center gap-2 text-dark"}>
               {
-                location.pathname === "/setting" ?
+                location.pathname === "/settings" ?
                   <RiSettings3Fill />
                   :
                   <RiSettings3Line />

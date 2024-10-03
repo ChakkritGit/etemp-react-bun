@@ -36,7 +36,7 @@ import { fetchHospitals, fetchWards, filtersDevices } from '../stores/dataArrayS
 import { fetchUserData } from '../stores/userSlice'
 import { fetchDevicesLog } from '../stores/LogsSlice'
 import { fetchProbeData } from '../stores/probeSlice'
-import Logs from '../pages/setting/Logs'
+// import Logs from '../pages/setting/Logs'
 import PreviewPDF from '../components/pdf/preview.pdf'
 // import Test from '../pages/test/test'
 
@@ -79,11 +79,11 @@ export const router = createBrowserRouter([
                 element: <Setting />,
                 errorElement: <SomethingWrong />
               },
-              {
-                path: 'logs',
-                element: <Logs />,
-                errorElement: <SomethingWrong />
-              }
+              // {
+              //   path: 'logs',
+              //   element: <Logs />,
+              //   errorElement: <SomethingWrong />
+              // }
             ],
           },
           {
@@ -102,7 +102,7 @@ export const router = createBrowserRouter([
           //   errorElement: <SomethingWrong />
           // },
           {
-            path: "setting",
+            path: "settings",
             element: <System />,
             errorElement: <SomethingWrong />
           },

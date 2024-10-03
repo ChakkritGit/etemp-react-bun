@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react"
 import { useTranslation } from "react-i18next"
 import { useLocation, useNavigate, useRouteError } from "react-router-dom"
-import { ErrorPageStyled } from "../style/components/error.page"
+import { SomethingWrongPageStyled } from "../style/components/error.page"
 
 export default function SomethingWrong() {
   const { t, i18n } = useTranslation()
@@ -26,7 +26,7 @@ export default function SomethingWrong() {
   }, [error])
 
   return (
-    <ErrorPageStyled>
+    <SomethingWrongPageStyled>
       <h1>{t('titleError')}</h1>
       <p>{t('descriptionErrorWrong')}</p>
       <pre>
@@ -37,6 +37,6 @@ export default function SomethingWrong() {
           pathName.pathname !== '/' && <i onClick={() => navigate('/')}>{t('buttonErrorBack')}</i>
         }
       </p>
-    </ErrorPageStyled>
+    </SomethingWrongPageStyled>
   )
 }

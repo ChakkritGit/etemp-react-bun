@@ -296,7 +296,7 @@ margin-right: .5rem;
 `
 
 export const FloatingTop = styled.div<{ $primary?: boolean }>`
-  display: flex;
+  display: ${props => (props.$primary ? 'flex' : 'none')};
   justify-content: center;
   align-items: center;
   position: fixed;
@@ -307,9 +307,7 @@ export const FloatingTop = styled.div<{ $primary?: boolean }>`
   background-color: var(--main-color);
   color: var(--white);
   border-radius: var(--border-radius-small);
-  opacity: ${props => (props.$primary ? 1 : 0)};
   box-shadow: 5px 8px 15px -5px rgba(0, 0, 0, .3);
-  transition: opacity 0.3s ease;
   cursor: pointer;
 
   &:hover {

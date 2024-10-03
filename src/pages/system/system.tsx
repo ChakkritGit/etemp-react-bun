@@ -7,7 +7,7 @@ import { useTranslation } from "react-i18next"
 import { RiAlarmWarningLine, RiFileTextLine, RiLogoutBoxRLine, RiPaletteLine, RiTranslate2, RiUser6Line } from "react-icons/ri"
 import { useState } from "react"
 import Color from "./display"
-import { useNavigate, Link } from "react-router-dom"
+import { useNavigate } from "react-router-dom"
 import Account from "./account"
 import { useDispatch, useSelector } from "react-redux"
 import { DeviceStateStore, UtilsStateStore } from "../../types/redux.type"
@@ -19,16 +19,15 @@ import { swalWithBootstrapButtons } from "../../components/dropdown/sweetalertLi
 import { cookieOptions, cookies } from "../../constants/constants"
 import { setCookieEncode, setDeviceId, setSerial } from "../../stores/utilsStateSlice"
 import { storeDispatchType } from "../../stores/store"
-import { useTheme } from "../../theme/ThemeProvider"
+import Logs from "../setting/Logs"
 
 export default function System() {
   const { t } = useTranslation()
   const dispatch = useDispatch<storeDispatchType>()
   const { expand, cookieDecode } = useSelector<DeviceStateStore, UtilsStateStore>((state) => state.utilsState)
   const { userLevel } = cookieDecode
-  const [pagenumber, setPagenumber] = useState(1)
+  const [pagenumber, setPagenumber] = useState(localStorage.getItem('settingTab') ?? '1')
   const navigate = useNavigate()
-  const { theme } = useTheme()
 
   const logOut = () => {
     dispatch(setCookieEncode(''))
@@ -54,36 +53,36 @@ export default function System() {
         <SettingSystemContainer>
           <SettingLeftContainer $primary={expand}>
             <div>
-              <ListMenu $primary={pagenumber === 1} onClick={() => setPagenumber(1)}>
+              <ListMenu $primary={pagenumber === '1'} onClick={() => { setPagenumber('1'); localStorage.setItem('settingTab', '1') }}>
                 <RiUser6Line />
                 <span>{t('tabAccount')}</span>
               </ListMenu>
-              <ListMenu $primary={pagenumber === 2} onClick={() => setPagenumber(2)}>
+              <ListMenu $primary={pagenumber === '2'} onClick={() => { setPagenumber('2'); localStorage.setItem('settingTab', '2') }}>
                 <RiPaletteLine />
                 <span>
                   {t('tabDisplay')}
                 </span>
               </ListMenu>
-              <ListMenu $primary={pagenumber === 3} onClick={() => setPagenumber(3)}>
+              <ListMenu $primary={pagenumber === '3'} onClick={() => { setPagenumber('3'); localStorage.setItem('settingTab', '3') }}>
                 <RiTranslate2 />
                 <span>
                   {t('tabLanguage')}
                 </span>
               </ListMenu>
-              <ListMenu $primary={pagenumber === 4} onClick={() => setPagenumber(4)}>
+              <ListMenu $primary={pagenumber === '4'} onClick={() => { setPagenumber('4'); localStorage.setItem('settingTab', '4') }}>
                 <RiAlarmWarningLine />
                 <span>
                   {t('titleNotification')}
                 </span>
               </ListMenu>
-              {userLevel === '0' && <Link to={'/logs'} style={{ color: theme.mode === 'dark' ? 'white' : 'black', textDecoration: 'none' }}>
-                <ListMenu>
+              {userLevel === '0' &&
+                <ListMenu $primary={pagenumber === '5'} onClick={() => { setPagenumber('5'); localStorage.setItem('settingTab', '5') }}>
                   <RiFileTextLine />
                   <span>
                     Logs
                   </span>
                 </ListMenu>
-              </Link>}
+              }
             </div>
             <ListMenu $logout onClick={() =>
               swalWithBootstrapButtons
@@ -109,20 +108,23 @@ export default function System() {
           <LineHeightSystem />
           <SettingRightContainer>
             {
-              pagenumber === 1 ?
+              pagenumber === '1' ?
                 <div>
                   <Account />
                 </div>
                 :
-                pagenumber === 2 ?
+                pagenumber === '2' ?
                   <div>
                     <Color />
                   </div>
                   :
-                  pagenumber === 3 ?
+                  pagenumber === '3' ?
                     <Lang />
                     :
-                    <Noti />
+                    pagenumber === '4' ?
+                      <Noti />
+                      :
+                      <Logs />
             }
           </SettingRightContainer>
         </SettingSystemContainer>

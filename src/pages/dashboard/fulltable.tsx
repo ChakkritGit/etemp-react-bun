@@ -201,164 +201,106 @@ export default function Fulltable() {
   const columns: TableColumn<logtype>[] = [
     {
       name: t('deviceNoTb'),
-      cell: (item, index) => {
-        return <div
-          key={item.devSerial}>
+      cell: (item, index) => (
+        <div key={item.devSerial}>
           {logData.length - index}
         </div>
-      },
+      ),
       sortable: false,
       center: true,
-      width: '65px'
+      width: '65px',
     },
     {
       name: t('deviceDate'),
-      cell: (items) => new Date(items.sendTime).toLocaleString('th-TH', {
-        day: '2-digit',
-        month: '2-digit',
-        year: '2-digit',
-        timeZone: 'UTC'
-      }),
+      cell: (items) =>
+        new Date(items.sendTime).toLocaleString('th-TH', {
+          day: '2-digit',
+          month: '2-digit',
+          year: '2-digit',
+          timeZone: 'UTC',
+        }),
       sortable: false,
       center: true,
-      width: '90px'
+      width: '90px',
     },
     {
       name: t('deviceTime'),
-      cell: (items) => new Date(items.sendTime).toLocaleString('th-TH', {
-        hour: '2-digit',
-        minute: '2-digit',
-        timeZone: 'UTC'
-      }),
+      cell: (items) =>
+        new Date(items.sendTime).toLocaleString('th-TH', {
+          hour: '2-digit',
+          minute: '2-digit',
+          timeZone: 'UTC',
+        }),
       sortable: false,
       center: true,
-      width: '70px'
+      width: '70px',
     },
     {
       name: t('deviceTempTb'),
-      selector: (items) => items.tempAvg + ' °C',
+      selector: (items) => `${items.tempAvg} °C`,
       sortable: false,
-      center: true
+      center: true,
     },
     {
       name: t('deviceHumiTb'),
-      selector: (items) => items.humidityAvg + ' %',
+      selector: (items) => `${items.humidityAvg} %`,
       sortable: false,
-      center: true
+      center: true,
     },
     {
       name: t('deviceSdCard'),
-      cell: (items) => items.sdCard === "1" ? <span>{t('stateProblem')}</span> : <span>{t('stateNormal')}</span>,
+      cell: (items) => (
+        <span>{items.sdCard === '1' ? t('stateProblem') : t('stateNormal')}</span>
+      ),
       sortable: false,
-      center: true
+      center: true,
     },
     {
       name: t('deviceProbeTb'),
-      cell: (items) => {
-        if (items.tempAvg === 0 || items.tempAvg >= 120 || items.tempAvg <= -40) {
-          return <span>{t('stateProblem')}</span>
-        } else {
-          return <span>{t('stateNormal')}</span>
-        }
-      },
+      cell: (items) => (
+        <span>
+          {items.tempAvg === 0 || items.tempAvg >= 120 || items.tempAvg <= -40
+            ? t('stateProblem')
+            : t('stateNormal')}
+        </span>
+      ),
       sortable: false,
-      center: true
+      center: true,
     },
     {
       name: t('deviceDoorTb'),
-      cell: (items) => (
-        <DoorTableContainer>
-          {items.device.probe[0]?.door === 1 ?
-            <DeviceCardFooterDoor
-              $primary={
-                items.door1 === "1"
-              }>
-              {
-                items.door1 === "1" ?
-                  <RiDoorOpenLine />
-                  :
-                  <RiDoorClosedLine />
-              }
-            </DeviceCardFooterDoor>
-            :
-            items.device.probe[0]?.door === 2 ?
-              <>
-                <DeviceCardFooterDoor
-                  $primary={
-                    items.door1 === "1"
-                  }>
-                  {
-                    items.door1 === "1" ?
-                      <RiDoorOpenLine />
-                      :
-                      <RiDoorClosedLine />
-                  }
-                </DeviceCardFooterDoor>
-                <DeviceCardFooterDoor
-                  $primary={
-                    items.door2 === "1"
-                  }>
-                  {
-                    items.door2 === "1" ?
-                      <RiDoorOpenLine />
-                      :
-                      <RiDoorClosedLine />
-                  }
-                </DeviceCardFooterDoor>
-              </>
-              :
-              <>
-                <DeviceCardFooterDoor
-                  $primary={
-                    items.door1 === "1"
-                  }>
-                  {
-                    items.door1 === "1" ?
-                      <RiDoorOpenLine />
-                      :
-                      <RiDoorClosedLine />
-                  }
-                </DeviceCardFooterDoor>
-                <DeviceCardFooterDoor
-                  $primary={
-                    items.door2 === "1"
-                  }>
-                  {
-                    items.door2 === "1" ?
-                      <RiDoorOpenLine />
-                      :
-                      <RiDoorClosedLine />
-                  }
-                </DeviceCardFooterDoor>
-                <DeviceCardFooterDoor
-                  $primary={
-                    items.door3 === "1"
-                  }>
-                  {
-                    items.door3 === "1" ?
-                      <RiDoorOpenLine />
-                      :
-                      <RiDoorClosedLine />
-                  }
-                </DeviceCardFooterDoor>
-              </>}
-        </DoorTableContainer>
-      ),
+      cell: (items) => {
+        const renderDoor = (doorKey: 'door1' | 'door2' | 'door3') => (
+          <DeviceCardFooterDoor $primary={items[doorKey] === '1'} key={doorKey}>
+            {items[doorKey] === '1' ? <RiDoorOpenLine /> : <RiDoorClosedLine />}
+          </DeviceCardFooterDoor>
+        )
+
+        return (
+          <DoorTableContainer>
+            {Array.from({ length: items.device.probe[0]?.door }, (_, i) =>
+              renderDoor(`door${i + 1}` as 'door1')
+            )}
+          </DoorTableContainer>
+        )
+      },
       sortable: false,
-      center: true
+      center: true,
     },
     {
       name: t('devicePlugTb'),
-      cell: (items) => items.ac === '0' ? <span>{t('stateNormal')}</span> : <span>{t('stateProblem')}</span>,
+      cell: (items) => (
+        <span>{items.ac === '0' ? t('stateNormal') : t('stateProblem')}</span>
+      ),
       sortable: false,
-      center: true
+      center: true,
     },
     {
       name: t('deviceBatteryTb'),
-      cell: (items) => items.battery + '%',
+      cell: (items) => `${items.battery}%`,
       sortable: false,
-      center: true
-    }
+      center: true,
+    },
   ]
 
   const convertArrayOfObjectsToExcel = (array: logtype[]) => {

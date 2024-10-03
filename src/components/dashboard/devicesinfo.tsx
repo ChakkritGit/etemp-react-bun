@@ -188,11 +188,11 @@ export default function Devicesinfo(devicesinfo: devicesinfo) {
   }
 
   const calulateDate = (devicesData: devicesType) => {
-    const { dateInstall } = devicesData
+    const { warranty } = devicesData
     const today = new Date()
-    const targetDate = new Date(dateInstall)
-    targetDate.setFullYear(targetDate.getFullYear() + 1)
-    const timeDifference = targetDate.getTime() - today.getTime()
+    const expiredDate = new Date(String(warranty[0]?.expire))
+    // Use the expiredDate directly
+    const timeDifference = expiredDate.getTime() - today.getTime()
     const daysRemaining = Math.ceil(timeDifference / (1000 * 60 * 60 * 24))
 
     let remainingDays = daysRemaining
@@ -554,7 +554,7 @@ export default function Devicesinfo(devicesinfo: devicesinfo) {
                     <span>{t('currentTemp')}</span>
                     <div>
                       <span>
-                        <span>{mqttData.temp.toFixed(2)}</span> %
+                        <span>{mqttData.temp.toFixed(2)}</span> °C
                       </span>
                     </div>
                   </div>
@@ -576,7 +576,7 @@ export default function Devicesinfo(devicesinfo: devicesinfo) {
                     <span>{t('currentHum')}</span>
                     <div>
                       <span>
-                        <span>{mqttData.humi.toFixed(2)}</span> °C
+                        <span>{mqttData.humi.toFixed(2)}</span> %
                       </span>
                     </div>
                   </div>

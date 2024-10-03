@@ -31,6 +31,9 @@ interface devicesType extends devices {
   probe: probeType[],
   config: configType,
   noti: notificationType[],
+  warranty: {
+    expire: String
+  }[],
   _count?: {
     warranty: number,
     repair: number,

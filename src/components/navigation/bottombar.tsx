@@ -66,10 +66,10 @@ export default function Bottombar({ isScrollingDown }: BottombarProps) {
           :
           <></>
       }
-      <NavigationItems $primary={location.pathname === "/setting"} onClick={() => navigate('/setting')}>
+      <NavigationItems $primary={location.pathname === "/settings"} onClick={() => navigate('/settings')}>
         <NavProfile $primary src={userPicture ? `${import.meta.env.VITE_APP_IMG}${userPicture}` : `${import.meta.env.VITE_APP_IMG}/img/default-pic.png`} alt="profile" />
         <span>{t('tabAccount')}</span>
-        <ActiveNavBlur $primary={location.pathname === "/setting"} />
+        <ActiveNavBlur $primary={location.pathname === "/settings"} />
       </NavigationItems>
     </NavigationBottom>
   )

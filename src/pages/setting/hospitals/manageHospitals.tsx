@@ -391,10 +391,6 @@ export default function ManageHospitals() {
     }
   }
 
-  useEffect(() => {
-    console.log(pagestate)
-  }, [pagestate])
-
   // Filter Data
   const filteredItems = hospitalsData.filter(item => item.hosName.toLowerCase().includes(searchQuery.toLowerCase())
     || item.hosTelephone.toLowerCase().includes(searchQuery.toLowerCase()))

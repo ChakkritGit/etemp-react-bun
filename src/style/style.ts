@@ -405,7 +405,7 @@ export const DeviceStateNetwork = styled.span<{ $primary?: boolean }>`
   display: flex;
   justify-content: center;
   align-items: center;
-  max-width: 90px;
+  max-width: 70px;
   max-height: 30px;
   width: max-content;
   height: 30px;
@@ -414,6 +414,14 @@ export const DeviceStateNetwork = styled.span<{ $primary?: boolean }>`
   padding: 5px;
   border-radius: .5rem;
   overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+
+  &>div {
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+  }
 
   ${props => props.theme.mode === 'dark' &&
     css`
@@ -698,8 +706,9 @@ export const NavLogout = styled.div<{ $primary?: boolean }> `
   align-items: center;
   gap: 5px;
   width: 100%;
-  max-height: 80px;
-  border-radius: var(--border-radius-big);
+  height: 40px;
+  max-height: 40px;
+  border-radius: var(--border-radius-small);
   padding: 5px;
   box-sizing: border-box;
   cursor: pointer;
@@ -719,7 +728,7 @@ color: red;
 export const NavProfileContainer = styled.div<{ $primary?: boolean }>`
   display: flex;
   align-items: center;
-  gap: 5px;
+  gap: .5rem;
   width: 100%;
   max-height: 80px;
   border-radius: var(--border-radius-small);
@@ -733,9 +742,11 @@ export const NavProfileContainer = styled.div<{ $primary?: boolean }>`
   transition: .3s;
 }
 
-  svg {
-    font-size: 24px;
-  }
+&>div {
+  display: flex;
+  flex-direction: column;
+  align-items: start;
+}
 
   @media (max-width: 430px) {
   & span {
@@ -748,6 +759,15 @@ export const NavProfileContainer = styled.div<{ $primary?: boolean }>`
 
   & span {
     font-size: 14px;
+    max-width: 200px;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+  }
+
+  & span:nth-child(2) {
+    font-size: 12px;
+    font-weight: bold;
     max-width: 200px;
     overflow: hidden;
     white-space: nowrap;
@@ -776,10 +796,10 @@ export const NavProfileFlex = styled.div<{ $primary?: boolean }>`
 
 export const NavProfile = styled.img<{ $primary?: boolean }>`
   background-color: var(--white-grey-1);
-  max-width: 32px;
-  max-height: 32px;
-  width: 32px;
-  height: 32px;
+  max-width: 35px;
+  max-height: 35px;
+  width: 35px;
+  height: 35px;
   border-radius: 50%;
   padding: 1px;
   box-sizing: border-box;
@@ -2200,6 +2220,10 @@ ${props => props.$primary &&
     css`
   background-color: var(--danger-color);
   border-color: var(--danger-color);
+
+  & span {
+    color: var(--white-grey-1);
+  }
 
   & svg {
     color: var(--white-grey-1);
