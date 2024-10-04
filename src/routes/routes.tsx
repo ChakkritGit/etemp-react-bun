@@ -38,6 +38,7 @@ import { fetchDevicesLog } from '../stores/LogsSlice'
 import { fetchProbeData } from '../stores/probeSlice'
 // import Logs from '../pages/setting/Logs'
 import PreviewPDF from '../components/pdf/preview.pdf'
+import Policy from '../pages/policy/policy'
 // import Test from '../pages/test/test'
 
 export const router = createBrowserRouter([
@@ -150,6 +151,11 @@ export const router = createBrowserRouter([
         ],
       }
     ],
+  },
+  {
+    path: "/privacy-policy",
+    element: <Policy />,
+    errorElement: <SomethingWrong />
   },
   {
     path: "/login",

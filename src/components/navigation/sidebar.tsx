@@ -1,4 +1,5 @@
-import { RiDashboardFill, RiDashboardLine,
+import {
+  RiDashboardFill, RiDashboardLine,
   RiFileSettingsFill, RiFileSettingsLine, RiHome3Fill, RiHome3Line,
   RiListSettingsFill, RiListSettingsLine, RiSettings3Fill, RiSettings3Line, RiShieldCheckFill,
   RiShieldCheckLine, RiUser6Fill, RiUser6Line
@@ -262,7 +263,8 @@ export default function sidebar() {
           </Li>
         </Ul>
       </SettingSystem>
-      <AboutVersion $primary={expand} $click={import.meta.env.VITE_APP_NODE_ENV === 'development'} onClick={() => { import.meta.env.VITE_APP_NODE_ENV === 'development' ? navigate('/changeLog') : null; resetAsideandCardcount() }}>{import.meta.env.VITE_APP_VERSION}</AboutVersion>
+      <AboutVersion $primary={expand} $click onClick={() => { navigate('/changeLog'); resetAsideandCardcount() }}>{import.meta.env.VITE_APP_VERSION}</AboutVersion>
+      {/* <AboutVersion $primary={expand} $click={import.meta.env.VITE_APP_NODE_ENV === 'development'} onClick={() => { import.meta.env.VITE_APP_NODE_ENV === 'development' ? navigate('/changeLog') : null; resetAsideandCardcount() }}>{import.meta.env.VITE_APP_VERSION}</AboutVersion> */}
     </Sidebar>
   )
 }

@@ -87,6 +87,14 @@ export default {
     messageOn: 'เปิด',
     messageOff: 'ปิด',
     notificationButtonSubmit: 'บันทึก',
+    tempBackToNormal: 'อุณหภูมิกลับมาปกติ',
+    tempBelowLimmit: 'อุณหภูมิต่ำกว่าขีดจำกัด',
+    tempHigherLimmit: 'อุณหภูมิเกินขีดจำกัด',
+    plugProblem: 'ปลั๊กมีปัญหา',
+    plugBackToNormal: 'ปลั๊กกลับมาปกติ',
+    SdCardProblem: 'เอสดีการ์ดมีปัญหา',
+    SdCardBackToNormal: 'เอสดีการ์ดกลับมาปกติ',
+    doorNum: 'ประตู',
 
     // device cards
     deviceOnline: 'ออนไลน์',
@@ -241,6 +249,7 @@ export default {
     titlePassword: 'รหัสผ่าน',
     changPassword: 'เปลี่ยน',
     newPassword: 'รหัสผ่านใหม่',
+    oldPassword: 'รหัสผ่านเดิม',
     passLower: 'ต่ำมาก',
     passLow: 'ต่ำ',
     passNormal: 'ปานกลาง',
@@ -416,6 +425,8 @@ export default {
 
     // time
     thTime: 'th-TH',
+    backToPre: 'กลับ',
+    privacy: 'นโยบายความเป็นส่วนตัว',
 
     // reload sw
     appOffline: 'แอพพร้อมใช้งานแบบออฟไลน์',

@@ -44,7 +44,7 @@ export const cookieOptions: CookieSetOptions = {
   sameSite: true // ตัวเลือก 'strict', 'lax', หรือ 'none'
 }
 
-export const resizeImage = (file: File): Promise<File> => {
+export const resizeImage = (file: File, targetDPI: number = 300): Promise<File> => {
   return new Promise((resolve, reject) => {
     const reader = new FileReader()
 
@@ -54,14 +54,24 @@ export const resizeImage = (file: File): Promise<File> => {
 
       image.onload = () => {
         const canvas = document.createElement('canvas')
+        const context: CanvasRenderingContext2D | null = canvas.getContext('2d')
+
         const maxDimensions = { width: 720, height: 720 }
         const scaleFactor = Math.min(maxDimensions.width / image.width, maxDimensions.height / image.height)
 
-        canvas.width = image.width * scaleFactor
-        canvas.height = image.height * scaleFactor
+        const originalWidth = image.width * scaleFactor;
+        const originalHeight = image.height * scaleFactor;
 
-        const context: CanvasRenderingContext2D | null = canvas.getContext('2d')
-        context?.drawImage(image, 0, 0, canvas.width, canvas.height)
+        const dpiScale = targetDPI / 96
+        canvas.width = originalWidth * dpiScale
+        canvas.height = originalHeight * dpiScale
+
+        canvas.style.width = `${originalWidth}px`
+        canvas.style.height = `${originalHeight}px`
+
+        context?.scale(dpiScale, dpiScale)
+
+        context?.drawImage(image, 0, 0, originalWidth, originalHeight)
 
         const mimeString = file.type
 
@@ -69,8 +79,8 @@ export const resizeImage = (file: File): Promise<File> => {
           const originalData = e.target?.result as string
           const exifObj = piexif.load(originalData)
 
-          exifObj["0th"] = exifObj["0th"] || {}
-          exifObj["0th"][piexif.ImageIFD.Copyright] = "SMTrack+ Copyright - Thanes Development Co., Ltd."
+          exifObj['0th'] = exifObj['0th'] || {}
+          exifObj['0th'][piexif.ImageIFD.Copyright] = 'SMTrack+ Copyright - Thanes Development Co., Ltd.'
 
           const exifStr = piexif.dump(exifObj)
           const newImageData = piexif.insert(exifStr, canvas.toDataURL(file.type))
@@ -109,7 +119,6 @@ export const resizeImage = (file: File): Promise<File> => {
     reader.readAsDataURL(file)
   })
 }
-
 
 export const scheduleDayArray: Schedule[] = [
   {

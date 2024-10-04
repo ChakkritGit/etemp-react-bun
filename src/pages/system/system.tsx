@@ -1,7 +1,8 @@
 import { Container } from "react-bootstrap"
 import {
-  H3mt, LineHeightSystem, ListMenu, SettingLeftContainer,
-  SettingRightContainer, SettingSystemContainer
+  H3mt, LineHeightSystem, ListMenu, ListPrivacy, SettingLeftContainer,
+  SettingRightContainer, SettingSystemContainer,
+  SubSideBottomContainer
 } from "../../style/style"
 import { useTranslation } from "react-i18next"
 import { RiAlarmWarningLine, RiFileTextLine, RiLogoutBoxRLine, RiPaletteLine, RiTranslate2, RiUser6Line } from "react-icons/ri"
@@ -84,26 +85,33 @@ export default function System() {
                 </ListMenu>
               }
             </div>
-            <ListMenu $logout onClick={() =>
-              swalWithBootstrapButtons
-                .fire({
-                  title: t('logoutDialog'),
-                  text: t('logoutDialogText'),
-                  icon: "warning",
-                  showCancelButton: true,
-                  confirmButtonText: t('confirmButton'),
-                  cancelButtonText: t('cancelButton'),
-                  reverseButtons: false,
-                })
-                .then((result) => {
-                  if (result.isConfirmed) {
-                    logOut()
-                  }
-                })
-            }>
-              <RiLogoutBoxRLine />
-              <span>{t('tabLogout')}</span>
-            </ListMenu>
+            <SubSideBottomContainer>
+              <ListPrivacy onClick={() => navigate('/privacy-policy')}>
+                <span>
+                  {t('privacy')}
+                </span>
+              </ListPrivacy>
+              <ListMenu $logout onClick={() =>
+                swalWithBootstrapButtons
+                  .fire({
+                    title: t('logoutDialog'),
+                    text: t('logoutDialogText'),
+                    icon: "warning",
+                    showCancelButton: true,
+                    confirmButtonText: t('confirmButton'),
+                    cancelButtonText: t('cancelButton'),
+                    reverseButtons: false,
+                  })
+                  .then((result) => {
+                    if (result.isConfirmed) {
+                      logOut()
+                    }
+                  })
+              }>
+                <RiLogoutBoxRLine />
+                <span>{t('tabLogout')}</span>
+              </ListMenu>
+            </SubSideBottomContainer>
           </SettingLeftContainer>
           <LineHeightSystem />
           <SettingRightContainer>

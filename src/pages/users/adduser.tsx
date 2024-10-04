@@ -1,6 +1,6 @@
 import { Modal, Form, Row, Col, InputGroup } from "react-bootstrap"
-import { AddUserButton, FormBtn, FormFlexBtn, ModalHead, ProfileFlex } from "../../style/style"
-import { RiCloseLine, RiEditLine, RiUserAddLine } from "react-icons/ri"
+import { AddUserButton, Checkboxbsoveride, FormBtn, FormFlexBtn, ModalHead, PasswordChangeFlex, ProfileFlex } from "../../style/style"
+import { RiArrowLeftSLine, RiCloseLine, RiEditLine, RiLockPasswordLine, RiUserAddLine } from "react-icons/ri"
 import { useTranslation } from "react-i18next"
 import { ChangeEvent, FormEvent, useState } from "react"
 import { adduserProp } from "../../types/prop.type"
@@ -18,6 +18,8 @@ import { accessToken, cookieOptions, cookies, resizeImage } from "../../constant
 import { setCookieEncode, setShowAlert } from "../../stores/utilsStateSlice"
 import Select, { SingleValue } from 'react-select'
 import { useTheme } from "../../theme/ThemeProvider"
+import { ModalMuteHead } from "../../style/components/home.styled"
+import { OpenResetPasswordModalButton } from "../../style/components/manage.user"
 
 type Option = {
   value: string,
@@ -36,6 +38,7 @@ export default function Adduser(AdduserProp: adduserProp) {
   const { tokenDecode, cookieDecode } = useSelector<DeviceStateStore, UtilsStateStore>((state) => state.utilsState)
   const { token, displayName, userLevel } = cookieDecode
   const [show, setShow] = useState(false)
+  const [showPass, setShowPass] = useState(false)
   const [form, setform] = useState({
     group_id: pagestate !== "add" ? String(userData?.userId) : '',
     user_name: pagestate !== "add" ? String(userData?.userName) : '',
@@ -48,14 +51,30 @@ export default function Adduser(AdduserProp: adduserProp) {
   const [hosid, setHosid] = useState('')
   const [userPicture, setUserPicture] = useState<string>(userData?.userPic ? `${import.meta.env.VITE_APP_IMG}${userData?.userPic}` : '')
   const { theme } = useTheme()
+  const [pass, setPass] = useState({
+    oldPassword: '',
+    newPassword: ''
+  })
+  const { oldPassword, newPassword } = pass
+  const [showpassword, setShowpassword] = useState(false)
 
-  const openmodal = () => {
+  const openModal = () => {
     setShow(true)
   }
 
-  const closemodal = () => {
+  const closeModal = () => {
     setShow(false)
     setHosid('')
+  }
+
+  const openModalPass = () => {
+    closeModal()
+    setShowPass(true)
+  }
+
+  const closeModalPass = () => {
+    setShowPass(false)
+    openModal()
   }
 
   const fileSelect = (e: ChangeEvent<HTMLInputElement>) => {
@@ -271,6 +290,63 @@ export default function Adduser(AdduserProp: adduserProp) {
     }
   }
 
+  const handleSubmitPassReset = async (e: FormEvent) => {
+    e.preventDefault()
+    if (userLevel === '0' || userLevel === '1' ? (newPassword !== '') : (newPassword !== '' && oldPassword !== '')) {
+      try {
+        const response = await axios.patch(`${import.meta.env.VITE_APP_API}/auth/reset/${userData?.userId}`, {
+          oldPassword: oldPassword,
+          password: newPassword
+        }, {
+          headers: {
+            Accept: "application/json",
+            authorization: `Bearer ${token}`
+          }
+        })
+        setShowPass(false)
+        setPass({ newPassword: '', oldPassword: '' })
+        Swal.fire({
+          title: t('alertHeaderSuccess'),
+          text: response.data.data,
+          icon: "success",
+          timer: 2000,
+          showConfirmButton: false,
+        })
+        reFetchdata()
+      } catch (error) {
+        if (error instanceof AxiosError) {
+          if (error.response?.status === 401) {
+            dispatch(setShowAlert(true))
+          } else {
+            Swal.fire({
+              title: t('alertHeaderError'),
+              text: error.response?.data.message,
+              icon: "error",
+              timer: 2000,
+              showConfirmButton: false,
+            })
+          }
+        } else {
+          Swal.fire({
+            title: t('alertHeaderError'),
+            text: 'Uknown Error',
+            icon: "error",
+            timer: 2000,
+            showConfirmButton: false,
+          })
+        }
+      }
+    } else {
+      Swal.fire({
+        title: t('alertHeaderWarning'),
+        text: t('completeField'),
+        icon: "warning",
+        timer: 2000,
+        showConfirmButton: false,
+      })
+    }
+  }
+
   const userlevel =
     userLevel === '0' ?
       [{ value: '0', name: t('levelSuper') },
@@ -308,14 +384,15 @@ export default function Adduser(AdduserProp: adduserProp) {
   return (
     <>
       {pagestate === "add" ?
-        <AddUserButton onClick={openmodal} style={{ width: 'max-content', height: '45px' }}>
+        <AddUserButton onClick={openModal} style={{ width: 'max-content', height: '45px' }}>
           {t('addUserButton')}
           <RiUserAddLine />
         </AddUserButton>
-        : <AddUserButton onClick={openmodal} $primary>
+        : <AddUserButton onClick={openModal} $primary>
           <RiEditLine />
         </AddUserButton>}
-      <Modal size="lg" show={show} onHide={closemodal}>
+
+      <Modal size="lg" show={show} onHide={closeModal}>
         <Modal.Header>
           <ModalHead>
             <strong>
@@ -327,7 +404,7 @@ export default function Adduser(AdduserProp: adduserProp) {
               }
             </strong>
             {/* <pre>{JSON.stringify(form, null, 2)}</pre> */}
-            <button onClick={closemodal}>
+            <button onClick={closeModal}>
               <RiCloseLine />
             </button>
           </ModalHead>
@@ -462,42 +539,142 @@ export default function Adduser(AdduserProp: adduserProp) {
               {
                 pagestate !== "add" ?
                   <Col lg={6}>
+                    <Col lg={12}>
+                      <InputGroup className="mb-3">
+                        <Form.Label className="w-100">
+                          {t('userStatus')}
+                          <Select
+                            options={mapOptions<dataType, keyof dataType>(userstatus, 'value', 'name')}
+                            defaultValue={mapDefaultValue<dataType, keyof dataType>(userstatus, String(form.user_status), 'value', 'name')}
+                            onChange={setStatus}
+                            autoFocus={false}
+                            placeholder={t('selectStatus')}
+                            styles={{
+                              control: (baseStyles, state) => ({
+                                ...baseStyles,
+                                backgroundColor: theme.mode === 'dark' ? "var(--main-last-color)" : "var(--white-grey-1)",
+                                borderColor: theme.mode === 'dark' ? "var(--border-dark-color)" : "var(--grey)",
+                                boxShadow: state.isFocused ? "0 0 0 1px var(--main-color)" : "",
+                                borderRadius: "var(--border-radius-big)"
+                              }),
+                            }}
+                            theme={(theme) => ({
+                              ...theme,
+                              colors: {
+                                ...theme.colors,
+                                primary50: 'var(--main-color-opacity2)',
+                                primary25: 'var(--main-color-opacity2)',
+                                primary: 'var(--main-color)',
+                              },
+                            })}
+                            className="react-select-container"
+                            classNamePrefix="react-select"
+                          />
+                        </Form.Label>
+                      </InputGroup>
+                    </Col>
+                    <Col lg={12}>
+                      <OpenResetPasswordModalButton type="button" onClick={openModalPass}>
+                        <RiLockPasswordLine size={24} />
+                        <span>{t('titlePassword')}</span>
+                      </OpenResetPasswordModalButton>
+                    </Col>
+                  </Col>
+                  :
+                  <>
+                  </>
+              }
+            </Row>
+          </Modal.Body>
+          <Modal.Footer>
+            <FormFlexBtn>
+              <FormBtn type="submit">
+                {t('saveButton')}
+              </FormBtn>
+            </FormFlexBtn>
+          </Modal.Footer>
+        </Form>
+      </Modal>
+
+      <Modal show={showPass} onHide={closeModalPass}>
+        <Modal.Header>
+          <ModalHead>
+            <ModalMuteHead onClick={closeModalPass}>
+              <button>
+                <RiArrowLeftSLine />
+              </button>
+              <span>
+                {t('titlePassword')}
+              </span>
+            </ModalMuteHead>
+          </ModalHead>
+        </Modal.Header>
+        <Form onSubmit={handleSubmitPassReset}>
+          <Modal.Body>
+            <Row>
+              <Row>
+                {
+                  userLevel === '2' || userLevel === '3' && <Col lg={12}>
                     <InputGroup className="mb-3">
                       <Form.Label className="w-100">
-                        {t('userStatus')}
-                        <Select
-                          options={mapOptions<dataType, keyof dataType>(userstatus, 'value', 'name')}
-                          defaultValue={mapDefaultValue<dataType, keyof dataType>(userstatus, String(form.user_status), 'value', 'name')}
-                          onChange={setStatus}
-                          autoFocus={false}
-                          placeholder={t('selectStatus')}
-                          styles={{
-                            control: (baseStyles, state) => ({
-                              ...baseStyles,
-                              backgroundColor: theme.mode === 'dark' ? "var(--main-last-color)" : "var(--white-grey-1)",
-                              borderColor: theme.mode === 'dark' ? "var(--border-dark-color)" : "var(--grey)",
-                              boxShadow: state.isFocused ? "0 0 0 1px var(--main-color)" : "",
-                              borderRadius: "var(--border-radius-big)"
-                            }),
-                          }}
-                          theme={(theme) => ({
-                            ...theme,
-                            colors: {
-                              ...theme.colors,
-                              primary50: 'var(--main-color-opacity2)',
-                              primary25: 'var(--main-color-opacity2)',
-                              primary: 'var(--main-color)',
-                            },
-                          })}
-                          className="react-select-container"
-                          classNamePrefix="react-select"
+                        {t('oldPassword')}
+                        <Form.Control
+                          spellCheck={false}
+                          autoComplete='off'
+                          type={showpassword ? 'text' : 'password'}
+                          value={oldPassword}
+                          onChange={(e) => setPass({ ...pass, oldPassword: e.target.value })}
                         />
                       </Form.Label>
                     </InputGroup>
                   </Col>
-                  :
-                  <></>
-              }
+                }
+                <Col lg={12}>
+                  <InputGroup className="mb-3">
+                    <Form.Label className="w-100">
+                      {t('newPassword')}
+                      <Form.Control
+                        spellCheck={false}
+                        autoComplete='off'
+                        type={showpassword ? 'text' : 'password'}
+                        value={newPassword}
+                        onChange={(e) => setPass({ ...pass, newPassword: e.target.value })}
+                      />
+                    </Form.Label>
+                  </InputGroup>
+                  <PasswordChangeFlex $primary={newPassword.length}>
+                    <div></div>
+                    <span>
+                      {
+                        newPassword.length === 0 ?
+                          t('passLower')
+                          :
+                          newPassword.length < 4 ?
+                            t('passLow')
+                            :
+                            newPassword.length < 8 ?
+                              t('passNormal')
+                              :
+                              newPassword.length < 12 ?
+                                t('passGood')
+                                :
+                                t('passExcellent')
+                      }
+                    </span>
+                  </PasswordChangeFlex>
+                  <Form.Group className="mb-3">
+                    <Checkboxbsoveride>
+                      <Form.Check
+                        inline
+                        label={t('showPass')}
+                        type="checkbox"
+                        checked={showpassword}
+                        onChange={() => setShowpassword(!showpassword)}
+                      />
+                    </Checkboxbsoveride>
+                  </Form.Group>
+                </Col>
+              </Row>
             </Row>
           </Modal.Body>
           <Modal.Footer>

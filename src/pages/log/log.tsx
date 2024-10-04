@@ -4,6 +4,11 @@ export default function Log() {
   return (
     <div className="p-2">
       <h2>Change Log</h2>
+      <LogSpan className="mt-3 mw-50"><b>Version 1.0.1-Stable</b> <span>03/10/67</span></LogSpan>
+      <ul className="mt-2">
+        <li>Bug fixes.</li>
+        <li>Improve performance.</li>
+      </ul>
       <LogSpan className="mt-3 mw-50"><b>Version 1.0-Stable</b> <span>17/07/67</span></LogSpan>
       <ul className="mt-2">
         <li>Release stable version.</li>

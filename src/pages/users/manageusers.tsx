@@ -1,5 +1,5 @@
 import { Container } from "react-bootstrap"
-import { CardUserBody, CardUserHead, DeviceInfoSpan, DeviceInfoSpanClose, PaginitionContainer } from "../../style/style"
+import { CardUserBody, CardUserHead, PaginitionContainer } from "../../style/style"
 import { useTranslation } from "react-i18next"
 import { ChangeEvent, useEffect, useState } from "react"
 import CardUser from "../../components/users/cardUser"
@@ -8,29 +8,10 @@ import Adduser from "./adduser"
 import Paginition from "../../components/filter/paginition"
 import { useDispatch, useSelector } from "react-redux"
 import { DeviceStateStore, UserState, UtilsStateStore } from "../../types/redux.type"
-import { setHosId, setSearchQuery, setWardId } from "../../stores/utilsStateSlice"
+import { setSearchQuery } from "../../stores/utilsStateSlice"
 import { storeDispatchType } from "../../stores/store"
-import Select from "react-select"
-import { RiCloseLine, RiFilter3Line } from "react-icons/ri"
-import { useTheme } from "../../theme/ThemeProvider"
-import { cookieOptions, cookies, paginationCardUsers } from "../../constants/constants"
-import { wardsType } from "../../types/ward.type"
-import { hospitalsType } from "../../types/hospital.type"
-
-type Option = {
-  value: string,
-  label: string,
-}
-
-interface Hospital {
-  hosId: string,
-  hosName: string,
-}
-
-interface Ward {
-  wardId: string,
-  wardName: string,
-}
+import { paginationCardUsers } from "../../constants/constants"
+import FilterHosAndWard from "../../components/dropdown/filter.hos.ward"
 
 export default function Permission() {
   const { t } = useTranslation()
@@ -39,21 +20,11 @@ export default function Permission() {
   const [currentPage, setCurrentPage] = useState<number>(0)
   const [cardsPerPage, setCardsPerPage] = useState<number>(50)
   const [displayedCards, setDisplayedCards] = useState<usersType[]>(userData ? userData.slice(0, cardsPerPage) : [])
-  const { searchQuery, expand, tokenDecode, cookieDecode, hosId, wardId } = useSelector<DeviceStateStore, UtilsStateStore>((state) => state.utilsState)
-  const hospitalsData = useSelector<DeviceStateStore, hospitalsType[]>((state) => state.arraySlice.hospital.hospitalsData)
-  const wardData = useSelector<DeviceStateStore, wardsType[]>((state) => state.arraySlice.ward.wardData)
-  const { userLevel, groupId } = cookieDecode
+  const { searchQuery, expand, tokenDecode, hosId, wardId } = useSelector<DeviceStateStore, UtilsStateStore>((state) => state.utilsState)
   const { userId } = tokenDecode
-  const { theme } = useTheme()
-  const [filterdata, setFilterdata] = useState(false)
-  const [wardName, setWardname] = useState<wardsType[]>([])
   // Filter Data
   const filteredItems = wardId !== '' ? userData.filter(item => item.wardId.toLowerCase().includes(wardId.toLowerCase())) : userData
   const totalPages = Math.ceil(filteredItems.length / cardsPerPage)
-
-  const allWard = { wardId: '', wardName: 'ALL', wardSeq: 0, hosId: '', createAt: '', updateAt: '', hospital: {} as hospitalsType }
-
-  const updatedWardData = [allWard, ...wardName]
 
   useEffect(() => {
     return () => {
@@ -93,117 +64,13 @@ export default function Permission() {
     setCardsPerPage(Number(event.target.value))
   }
 
-  const updateLocalStorageAndDispatch = (key: string, id: string | undefined, action: Function) => {
-    cookies.set(key, String(id), cookieOptions)
-    dispatch(action(String(id)))
-  }
-
-  const getHospital = (hospitalID: string | undefined) => {
-    updateLocalStorageAndDispatch('selectHos', hospitalID, setHosId)
-    setWardname(wardData.filter((items) => items.hospital.hosId === hospitalID))
-  }
-
-  useEffect(() => {
-    setWardname(wardData)
-  }, [wardData])
-
-  const getWard = (wardID: string | undefined) => {
-    if (wardID !== '') {
-      updateLocalStorageAndDispatch('selectWard', wardID, setWardId)
-    } else {
-      cookies.remove('selectWard', cookieOptions)
-      dispatch(setWardId(''))
-    }
-  }
-
-  const mapOptions = <T, K extends keyof T>(data: T[], valueKey: K, labelKey: K): Option[] =>
-    data.map(item => ({
-      value: item[valueKey] as unknown as string,
-      label: item[labelKey] as unknown as string
-    }))
-
-  const mapDefaultValue = <T, K extends keyof T>(data: T[], id: string, valueKey: K, labelKey: K): Option | undefined =>
-    data.filter(item => item[valueKey] === id).map(item => ({
-      value: item[valueKey] as unknown as string,
-      label: item[labelKey] as unknown as string
-    }))[0]
-
   return (
     <Container fluid>
       <CardUserHead>
         <div>
           <h3>{t('sidePermission')}</h3>
           <div>
-            {!filterdata &&
-              <DeviceInfoSpan onClick={() => setFilterdata(true)}>
-                {t('deviceFilter')}
-                <RiFilter3Line />
-              </DeviceInfoSpan>}
-            {
-              filterdata &&
-              <div>
-                {
-                  userLevel !== '2' &&
-                  <Select
-                    options={mapOptions<Hospital, keyof Hospital>(hospitalsData, 'hosId', 'hosName')}
-                    defaultValue={mapDefaultValue<Hospital, keyof Hospital>(hospitalsData, hosId || tokenDecode.hosId, 'hosId', 'hosName')}
-                    onChange={(e) => getHospital(e?.value)}
-                    autoFocus={false}
-                    styles={{
-                      control: (baseStyles, state) => ({
-                        ...baseStyles,
-                        backgroundColor: theme.mode === 'dark' ? "var(--main-last-color)" : "var(--white-grey-1)",
-                        borderColor: theme.mode === 'dark' ? "var(--border-dark-color)" : "var(--grey)",
-                        boxShadow: state.isFocused ? "0 0 0 1px var(--main-color)" : "",
-                        borderRadius: "var(--border-radius-big)",
-                        width: "200px"
-                      }),
-                    }}
-                    theme={(theme) => ({
-                      ...theme,
-                      colors: {
-                        ...theme.colors,
-                        primary50: 'var(--main-color-opacity2)',
-                        primary25: 'var(--main-color-opacity2)',
-                        primary: 'var(--main-color)',
-                      },
-                    })}
-                    className="react-select-container"
-                    classNamePrefix="react-select"
-                  />
-                }
-                <Select
-                  options={mapOptions<Ward, keyof Ward>(updatedWardData, 'wardId', 'wardName')}
-                  defaultValue={mapDefaultValue<Ward, keyof Ward>(wardName, wardId !== groupId ? groupId : wardId, 'wardId', 'wardName')}
-                  onChange={(e) => getWard(e?.value)}
-                  autoFocus={false}
-                  styles={{
-                    control: (baseStyles, state) => ({
-                      ...baseStyles,
-                      backgroundColor: theme.mode === 'dark' ? "var(--main-last-color)" : "var(--white-grey-1)",
-                      borderColor: theme.mode === 'dark' ? "var(--border-dark-color)" : "var(--grey)",
-                      boxShadow: state.isFocused ? "0 0 0 1px var(--main-color)" : "",
-                      borderRadius: "var(--border-radius-big)",
-                      width: "200px"
-                    }),
-                  }}
-                  theme={(theme) => ({
-                    ...theme,
-                    colors: {
-                      ...theme.colors,
-                      primary50: 'var(--main-color-opacity2)',
-                      primary25: 'var(--main-color-opacity2)',
-                      primary: 'var(--main-color)',
-                    },
-                  })}
-                  className="react-select-container"
-                  classNamePrefix="react-select"
-                />
-                <DeviceInfoSpanClose onClick={() => setFilterdata(false)}>
-                  <RiCloseLine />
-                </DeviceInfoSpanClose>
-              </div>
-            }
+            <FilterHosAndWard />
             <Adduser pagestate={"add"} />
           </div>
         </div>

@@ -242,6 +242,7 @@ export default {
     titlePassword: 'Password',
     changPassword: 'Change',
     newPassword: 'New Password',
+    oldPassword: 'Old Password',
     passLower: 'Lower',
     passLow: 'Low',
     passNormal: 'Normal',
@@ -269,6 +270,14 @@ export default {
     notificationAll: 'All',
     notificationSound: 'Sound',
     notificationPopup: 'Notofications',
+    tempBackToNormal: 'The temperature is back to normal',
+    tempBelowLimmit: 'Temperature is below the limit',
+    tempHigherLimmit: 'Temperature exceeds the limit',
+    plugProblem: 'There is an issue with the power plug',
+    plugBackToNormal: 'The power plug is back to normal',
+    SdCardProblem: 'There is an issue with the SD card',
+    SdCardBackToNormal: 'The SD card is back to normal',
+    doorNum: 'Door',
 
     // devices
     deviceDetail: 'Device Detail',
@@ -416,6 +425,8 @@ export default {
 
     // time
     thTime: 'en-EN',
+    backToPre: 'Back',
+    privacy: 'Privacy & Policy',
 
     // reload sw
     appOffline: 'App ready to work offline',

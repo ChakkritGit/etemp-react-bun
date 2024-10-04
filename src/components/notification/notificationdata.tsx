@@ -50,27 +50,27 @@ export default function Notificationdata(notilist: notilist) {
       const probe = text.split('/')
       const probeNumber = probe[0].replace('PROBE', '')
       const doorNumber = probe[1].replace('DOOR', '')
-      const status = probe[2] === 'ON' ? 'เปิด' : 'ปิด'
-      return `โพรบ ${probeNumber} ประตู ${doorNumber} ${status}`
+      const status = probe[2] === 'ON' ? t('stateOn') : t('stateOff')
+      return `${t('deviceProbeTb')} ${probeNumber} ${t('doorNum')} ${doorNumber} ${status}`
     } else if (text.split('/')[0] === 'TEMP') {
       if (text.split('/')[1] === 'OVER') {
-        return 'อุณหภูมิเกินขีดจำกัด'
+        return t('tempHigherLimmit')
       } else if (text.split('/')[1] === 'LOWER') {
-        return 'อุณหภูมิต่ำกว่าขีดจำกัด'
+        return t('tempBelowLimmit')
       } else {
-        return 'อุณหภูมิกลับมาปกติ'
+        return t('tempBackToNormal')
       }
     } else if (text.split('/')[0] === 'AC') {
       if (text.split('/')[1] === 'ON') {
-        return 'ปลั๊กมีปัญหา'
+        return t('plugProblem')
       } else {
-        return 'ปลั๊กกลับมาปกติ'
+        return t('plugBackToNormal')
       }
     } else if (text.split('/')[0] === 'SD') {
       if (text.split('/')[1] === 'ON') {
-        return 'เอสดีการ์ดมีปัญหา'
+        return t('SdCardProblem')
       } else {
-        return 'เอสดีการ์ดกลับมาปกติ'
+        return t('SdCardBackToNormal')
       }
     } else {
       return text

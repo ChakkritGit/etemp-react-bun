@@ -4304,6 +4304,26 @@ transition: .3s;
 }
 `
 
+export const SubSideBottomContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+`
+
+export const ListPrivacy = styled.div`
+  display: flex;
+  align-items: center;
+  gap: .5rem;
+  padding: .5rem .8rem;
+  border-radius: var(--border-radius-big);
+  cursor: pointer;
+
+  &:hover {
+    opacity: .5;
+    transition: .3s;
+  }
+`
+
 export const ListMenu = styled.div<{ $primary?: boolean, $logout?: boolean }>`
   display: flex;
   align-items: center;
@@ -4327,6 +4347,7 @@ export const ListMenu = styled.div<{ $primary?: boolean, $logout?: boolean }>`
 span {
   font-size: 18px;
 }
+
 svg {
   font-size: 24px;
 }
