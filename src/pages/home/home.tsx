@@ -1,14 +1,15 @@
 import { Container } from "react-bootstrap"
-// import DevicesCard from "../../components/home/devicesCard"
 import {
+  RiArrowDownWideLine,
+  RiArrowUpWideLine,
   RiDoorClosedLine, RiDoorOpenLine, RiErrorWarningLine,
   RiFileCloseLine,
-  RiLayoutGridLine, RiListUnordered, RiSkipUpLine, RiTempColdLine
+  RiLayoutGridLine, RiListUnordered, RiSettings3Line, RiSkipUpLine, RiTempColdLine
 } from "react-icons/ri"
 import {
-  AboutBox, DatatableHome, DevHomeDetails, DevHomeHeadTile,
+  AboutBox, CardDevBtn, DatatableHome, DevHomeDetails, DevHomeHeadTile,
   DevHomeSecctionOne, DeviceCardFooterDoor, DeviceCardFooterDoorFlex,
-  DeviceCardFooterInfo, DeviceInfoflex,
+  DeviceCardFooterInfo, DeviceCardHeadHandle, DeviceInfoflex,
   DeviceListFlex, DeviceStateNetwork, HomeContainerFlex, ListBtn,
   PaginitionContainer,
   SubWardColumnFlex
@@ -25,16 +26,17 @@ import { setDeviceId, setSerial, setSearchQuery } from "../../stores/utilsStateS
 import { filtersDevices, setFilterDevice } from "../../stores/dataArraySlices"
 import { RootState, storeDispatchType } from "../../stores/store"
 import DataTable, { TableColumn } from "react-data-table-component"
-import TableModal from "../../components/home/table.modal"
 import PageLoading from "../../components/loading/page.loading"
 import { probeType } from "../../types/probe.type"
-// import { FilterText } from "../../types/component.type"
 import { cookieOptions, cookies, paginationCardHome } from "../../constants/constants"
 import { FloatingTop, TagCurrentHos } from "../../style/components/home.styled"
 import HomeCard from "../../components/home/home.card"
 import Paginition from "../../components/filter/paginition"
 import { DoorKey } from "../../types/log.type"
 import FilterHosAndWard from "../../components/dropdown/filter.hos.ward"
+import ModalAdjust from "../../components/home/modal.adjust"
+import ModalNotification from "../../components/home/modal.noti"
+import ModalMute from "../../components/home/modal.mute"
 
 export default function Home() {
   const dispatch = useDispatch<storeDispatchType>()
@@ -45,8 +47,6 @@ export default function Home() {
   const wardData = useSelector((state: RootState) => state.arraySlice.ward.wardData)
   const { t } = useTranslation()
   const navigate = useNavigate()
-
-  // const [showticks, setShowticks] = useState(false)
   const [listAndgrid, setListandgrid] = useState(Number(localStorage.getItem('listGrid') ?? 1))
   const { userLevel, hosName } = cookieDecode
   const [onFilteres, setOnFilteres] = useState(false)
@@ -57,10 +57,27 @@ export default function Home() {
   const [displayedCards, setDisplayedCards] = useState<devicesType[]>(devicesFilter ? devicesFilter.slice(0, cardsPerPage) : [])
   const totalPages = Math.ceil(devicesFilter.length / cardsPerPage)
   const [visible, setVisible] = useState(false)
+  const [show, setShow] = useState(false)
+  const [deviceData, setDeviceData] = useState<devicesType | null>(null)
+  const [showSetting, setShowSetting] = useState(false)
+  const [showSettingMute, setShowSettingMute] = useState(false)
+  const [scrolled, setScrolled] = useState(false)
+  const [expand, setExpand] = useState(false)
 
-  // const isshowtk = () => {
-  //   setShowticks(false)
-  // }
+  const openSettingMute = () => {
+    setShow(false)
+    setShowSettingMute(true)
+  }
+
+  const openSetting = () => {
+    setShow(false)
+    setShowSetting(true)
+  }
+
+  const openmodal = (deviceData: devicesType) => {
+    setDeviceData(deviceData)
+    setShow(true)
+  }
 
   useEffect(() => {
     return () => {
@@ -148,7 +165,7 @@ export default function Home() {
       name: t('deviceTempTb'),
       cell: items => (
         <span key={items.devSerial}>
-          {items.log[0]?.tempAvg ? `${items.log[0].tempAvg.toFixed(2)}°C` : 'No data'}
+          {items.log[0]?.tempAvg ? `${items.log[0].tempAvg.toFixed(2)}°C` : '- -'}
         </span>
       ),
       sortable: false,
@@ -158,7 +175,7 @@ export default function Home() {
     {
       name: t('deviceHumiTb'),
       selector: items =>
-        items.log[0]?.humidityAvg ? `${items.log[0].humidityAvg.toFixed(2)}%` : 'No data',
+        items.log[0]?.humidityAvg ? `${items.log[0].humidityAvg.toFixed(2)}%` : '- -',
       sortable: false,
       center: true,
       width: '85px',
@@ -303,7 +320,12 @@ export default function Home() {
     {
       name: t('deviceActionTb'),
       cell: items => (
-        <TableModal key={items.devSerial} deviceData={items} fetchData={filtersDevices} />
+        <DeviceCardHeadHandle>
+          <CardDevBtn
+            onClick={() => openmodal(items)}>
+            <RiSettings3Line />
+          </CardDevBtn>
+        </DeviceCardHeadHandle>
       ),
       sortable: false,
       center: true,
@@ -342,7 +364,7 @@ export default function Home() {
 
         return (
           <span key={index}>
-            {deviceLog?.tempAvg ? `${deviceLog?.tempAvg.toFixed(2)}°C` : 'Data not found'}
+            {deviceLog?.tempAvg ? `${deviceLog?.tempAvg.toFixed(2)}°C` : '- -'}
           </span>
         );
       },
@@ -358,7 +380,7 @@ export default function Home() {
 
         return (
           <span key={index}>
-            {deviceLog?.humidityAvg ? `${deviceLog?.humidityAvg.toFixed(2)}%` : 'Data not found'}
+            {deviceLog?.humidityAvg ? `${deviceLog?.humidityAvg.toFixed(2)}%` : '- -'}
           </span>
         );
       },
@@ -477,6 +499,20 @@ export default function Home() {
     }
   }, [])
 
+  useEffect(() => {
+    const handleScroll = () => {
+      if (window.scrollY > 50) {
+        setScrolled(true)
+      } else {
+        setScrolled(false)
+        setExpand(false)
+      }
+    }
+
+    window.addEventListener('scroll', handleScroll)
+    return () => window.removeEventListener('scroll', handleScroll)
+  }, [])
+
   return (
     <Container className="home-lg">
       {
@@ -494,14 +530,22 @@ export default function Home() {
                 </TagCurrentHos>
               }
             </DevHomeHeadTile>
-            <DevHomeSecctionOne>
-              <HomeCard
-                deviceData={devices}
-                cardActive={cardActive}
-                setCardActive={setCardActive}
-                wardId={wardId}
-                setOnFilteres={setOnFilteres}
-              />
+            <DevHomeSecctionOne $primary={scrolled} $expand={expand}>
+              <div>
+                <HomeCard
+                  deviceData={devices}
+                  cardActive={cardActive}
+                  setCardActive={setCardActive}
+                  wardId={wardId}
+                  setOnFilteres={setOnFilteres}
+                />
+              </div>
+              <div>
+                {
+                  !expand ? <RiArrowUpWideLine size={24} onClick={() => setExpand(true)} /> :
+                    <RiArrowDownWideLine size={24} onClick={() => setExpand(false)} />
+                }
+              </div>
             </DevHomeSecctionOne>
             <AboutBox>
               <h5>{t('detailAllBox')}</h5>
@@ -548,13 +592,13 @@ export default function Home() {
                   <div>
                     {
                       displayedCards.length > 0 ?
-                        displayedCards.map((item, index) =>
+                        displayedCards.map((item) =>
                           <DevicesInfoCard
-                            devicesdata={item}
-                            keyindex={index}
                             key={item.devSerial}
-                            fetchData={filtersDevices}
+                            devicesdata={item}
                             onFilter={onFilteres}
+                            setDeviceData={setDeviceData}
+                            setShow={setShow}
                           />
                         )
                         :
@@ -585,54 +629,36 @@ export default function Home() {
         <RiSkipUpLine size={24} />
       </FloatingTop>
 
-      {/* <Modal show={showticks} onHide={isshowtk}>
-        <Modal.Header closeButton>
-          <strong>Info</strong>
-        </Modal.Header>
-        <Modal.Body>
-          <div style={{ display: 'flex', alignItems: 'center', flexDirection: 'column', gap: '1rem', width: '100%' }}>
-            <div style={{ display: 'flex', gap: '1rem', justifyContent: 'center', width: '100%' }}>
-              <div>
-                <DevicesCard
-                  title={'โพรบ'}
-                  count={Math.floor(Math.random() * 9)}
-                  times={'ครั้ง'}
-                  svg={<RiTempColdLine />}
-                  cardname={'' as FilterText}
-                  active={true}
-                />
-              </div>
-              <div style={{ textAlign: 'left', width: '250px' }}>
-                <strong>พื้นหลังการ์ดเป็นสีฟ้า</strong>
-                <br />
-                <span>
-                  เมื่อพื้นหลังเป็นสีฟ้าแสดงว่าคุณกำลังฟิลเตอร์
-                  รายการอุปกรณ์จะแสดงตามการ์ดที่คุณฟิลเตอร์
-                </span>
-              </div>
-            </div>
-            <div style={{ display: 'flex', gap: '1rem', justifyContent: 'center', width: '100%' }}>
-              <div style={{ textAlign: 'right', width: '250px' }}>
-                <strong>คลิกที่การ์ดอีกครั้งเพื่อยกเลิก</strong>
-                <br />
-                <span>
-                  เมื่อคลิกที่การ์ดอีกครั้งจะเป็นการยกเลิกการฟิลเตอร์รายการอุปกรณ์
-                </span>
-              </div>
-              <div>
-                <DevicesCard
-                  title={'โพรบ'}
-                  count={Math.floor(Math.random() * 9)}
-                  times={'ครั้ง'}
-                  svg={<RiTempColdLine />}
-                  cardname={'' as FilterText}
-                  active={false}
-                />
-              </div>
-            </div>
-          </div>
-        </Modal.Body>
-      </Modal> */}
+      {
+        show && deviceData && <ModalAdjust
+          key={deviceData.devId}
+          devicesdata={deviceData}
+          fetchData={filtersDevices}
+          setShow={setShow}
+          show={show}
+          openSetting={openSetting}
+          openSettingMute={openSettingMute}
+        />
+      }
+      {
+        showSetting && deviceData && <ModalNotification
+          key={deviceData.devId}
+          devicesdata={deviceData}
+          fetchData={filtersDevices}
+          setShow={setShow}
+          showSetting={showSetting}
+          setShowSetting={setShowSetting}
+        />
+      }
+      {
+        showSettingMute && deviceData && <ModalMute
+          key={deviceData.devId}
+          devicesdata={deviceData}
+          setShow={setShow}
+          showSettingMute={showSettingMute}
+          setShowSettingMute={setShowSettingMute}
+        />
+      }
     </Container>
   )
 }

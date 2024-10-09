@@ -268,6 +268,19 @@ overflow: hidden;
   flex-wrap: wrap;
   padding: 0px 0.5rem;
 }
+
+@media (max-width: 1185px) {
+  width: 130px;
+  max-height: 120px;
+
+  &>span {
+    font-size: 12px !important;
+  }
+
+  &>h3 {
+    font-size: 20px;
+  }
+}
 `
 
 export const CountStyle = styled.h3<{ $primary?: boolean }>`

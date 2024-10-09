@@ -1,10 +1,10 @@
 import { useSelector } from "react-redux"
-import { devicesType } from "../../types/device.type"
 import Chart from "react-apexcharts"
 import { DeviceStateStore, UtilsStateStore } from "../../types/redux.type"
+import { CompareType } from "../../types/log.type"
 
 type compareChart = {
-  chartData: devicesType[]
+  chartData: CompareType[]
 }
 
 interface seriesType {

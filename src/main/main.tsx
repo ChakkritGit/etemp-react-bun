@@ -2,15 +2,15 @@ import { Outlet } from "react-router-dom"
 import Sidebar from "../components/navigation/sidebar"
 import { SideParent, SideChild, SideChildOutlet, SideChildSide, HamburgerExpand } from "../style/style"
 import Navbar from "../components/navigation/navbar"
-import { MouseEventHandler, useEffect, useRef, useState } from "react"
+import { MouseEventHandler, useEffect, useState } from "react"
 import Offcanvas from 'react-bootstrap/Offcanvas'
 import { Button } from "react-bootstrap"
 import { RiMenuFoldLine } from "react-icons/ri"
 import { jwtToken } from "../types/component.type"
 import { jwtDecode } from "jwt-decode"
 import { useDispatch, useSelector } from "react-redux"
-import { DeviceState, DeviceStateStore, UtilsStateStore } from "../types/redux.type"
-import { setShowAside, setTokenDecode } from "../stores/utilsStateSlice"
+import { DeviceStateStore, UtilsStateStore } from "../types/redux.type"
+import { setRefetchdata, setShowAside, setTokenDecode } from "../stores/utilsStateSlice"
 import { fetchHospitals, fetchWards, filtersDevices } from "../stores/dataArraySlices"
 import { storeDispatchType } from "../stores/store"
 import { fetchDevicesLog } from "../stores/LogsSlice"
@@ -25,17 +25,12 @@ import Popupcomponent from "../components/utils/popupcomponent"
 
 export default function Main() {
   const dispatch = useDispatch<storeDispatchType>()
-  const { socketData, showAside, deviceId, cookieDecode, reFetchData, onFilter } = useSelector<DeviceStateStore, UtilsStateStore>((state) => state.utilsState)
-  const { devices } = useSelector<DeviceStateStore, DeviceState>((state) => state.devices)
+  const { socketData, showAside, deviceId, cookieDecode, reFetchData } = useSelector<DeviceStateStore, UtilsStateStore>((state) => state.utilsState)
   const { token } = cookieDecode
   const handleClose = () => dispatch(setShowAside(false))
   const handleShow = () => dispatch(setShowAside(true))
   const [isScrollingDown, setIsScrollingDown] = useState(false)
   const [lastScrollY, setLastScrollY] = useState(0)
-  // const location = useLocation()
-  const dispatchedDevices = useRef(new Map()).current
-  const isFirstLoad = useRef(true)
-  const maxDevices = devices.filter(f => f.backupStatus === '1').length || 15
 
   const decodeToken = async () => {
     const decoded: jwtToken = await jwtDecode(token)
@@ -54,54 +49,19 @@ export default function Main() {
 
   useEffect(() => {
     if (!token) return
-    if (onFilter) return
-
-    if (isFirstLoad.current) {
-      dispatch(fetchDevicesData(token))
-      isFirstLoad.current = false
-      return
-    }
-
-    const { device: rawDeviceKey, message: rawMessage } = socketData || {}
-
-    const deviceKey = rawDeviceKey?.trim().toLowerCase()
-    const message = rawMessage?.trim().toLowerCase()
-
-    if (!deviceKey || !message) return
-
-    // console.log('Checking hasSameEntry for:', deviceKey, message)
-    // console.log('Current dispatchedDevices:', Array.from(dispatchedDevices.entries()))
-
-    const hasSameEntry = Array.from(dispatchedDevices.entries()).some(
-      ([key, msg]) => key.toLowerCase().includes(deviceKey.toLowerCase()) && msg.toLowerCase().includes(message.toLowerCase())
-    )
-
-    if (hasSameEntry) {
-      // console.log(`\x1b[42mDevice ${deviceKey} already dispatched, waiting 30 seconds.\x1b[0m`)
-      return
-    }
 
     dispatch(fetchDevicesData(token))
 
-    if (dispatchedDevices.size > maxDevices) {
-      const oldestKey = dispatchedDevices.keys().next().value
-      dispatchedDevices.delete(oldestKey)
-      // console.log('\x1b[41mRemoved oldest entry to maintain size:', Array.from(dispatchedDevices.entries()), '\x1b[0m')
+  }, [socketData, token, dispatch])
+
+  useEffect(() => {
+    if (!token) return
+    if (reFetchData) {
+      dispatch(fetchDevicesData(token))
+      dispatch(fetchProbeData(token))
+      dispatch(setRefetchdata(false))
     }
-
-    // console.log('Setting new device entry:', deviceKey, message)
-    dispatchedDevices.set(deviceKey, message)
-
-    // console.log('\x1b[44mMap after set:', Array.from(dispatchedDevices.entries()), '\x1b[0m')
-
-    const timer = setTimeout(() => {
-      dispatchedDevices.delete(deviceKey)
-      // console.log('\x1b[41mMap after delete:', Array.from(dispatchedDevices.entries()), '\x1b[0m')
-    }, 30000)
-
-    return () => clearTimeout(timer)
-  }, [socketData, token, dispatch, reFetchData, onFilter])
-
+  }, [reFetchData, token])
 
   useEffect(() => {
     if (deviceId !== "undefined" && token) dispatch(fetchDevicesLog({ deviceId, token }))

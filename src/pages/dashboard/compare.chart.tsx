@@ -15,7 +15,7 @@ import {
   FullchartBodyChartCon, FullchartHead, FullchartHeadBtn,
   FullchartHeadExport, FullchartHeadLeft, LineHr, TableInfoDevice
 } from "../../style/style"
-import { useEffect, useRef, useState } from "react"
+import { useEffect, useMemo, useRef, useState } from "react"
 import toast from "react-hot-toast"
 import html2canvas from "html2canvas"
 import { setSearchQuery, setShowAlert } from "../../stores/utilsStateSlice"
@@ -28,12 +28,14 @@ import { devicesType } from "../../types/device.type"
 import { cookies, styleElement } from "../../constants/constants"
 import ImagesOne from '../../assets/images/Thanes.png'
 import { WaitExportImage } from "../../style/components/page.loading"
+import FilterHosAndWard from "../../components/dropdown/filter.hos.ward"
+import { CompareType } from "../../types/log.type"
 
 const Comparechart = () => {
   const { t } = useTranslation()
   const dispatch = useDispatch<storeDispatchType>()
   const navigate = useNavigate()
-  const { expand, cookieDecode, deviceId } = useSelector<DeviceStateStore, UtilsStateStore>((state) => state.utilsState)
+  const { expand, cookieDecode, deviceId, wardId } = useSelector<DeviceStateStore, UtilsStateStore>((state) => state.utilsState)
   const { hosName, token, hosImg } = cookieDecode
   const [pageNumber, setPagenumber] = useState(1)
   const canvasChartRef = useRef<HTMLDivElement | null>(null)
@@ -42,7 +44,7 @@ const Comparechart = () => {
     startDate: '',
     endDate: ''
   })
-  const [devices, setDevices] = useState<any>([])
+  const [devices, setDevices] = useState<CompareType[]>([])
   const [isloading, setIsLoading] = useState(false)
   const [validationData, setValidationData] = useState<wardsType>()
   const [devData, setDevData] = useState<devicesType>()
@@ -90,7 +92,8 @@ const Comparechart = () => {
     try {
       setDevices([])
       const res = await axios.get(`${import.meta.env.VITE_APP_API}/utils/compare`, {
-        headers: { authorization: `Bearer ${token}` }
+        headers: { authorization: `Bearer ${token}` },
+        signal: AbortSignal.timeout(600000)
       })
       setDevices(res.data.data)
     } catch (error) {
@@ -117,7 +120,8 @@ const Comparechart = () => {
         try {
           setDevices([])
           const res = await axios.get(`${import.meta.env.VITE_APP_API}/utils/compare?start=${startDate}&end=${endDate}`, {
-            headers: { authorization: `Bearer ${token}` }
+            headers: { authorization: `Bearer ${token}` },
+            signal: AbortSignal.timeout(600000)
           })
           setDevices(res.data.data)
         } catch (error) {
@@ -246,6 +250,12 @@ const Comparechart = () => {
     }
   }
 
+  let filteredDevicesList = useMemo(() => {
+    return wardId !== ''
+      ? devices.filter((item) => item.wardId.toLowerCase().includes(wardId.toLowerCase()))
+      : devices;
+  }, [wardId, devices])
+
   return (
     <Container fluid>
       <Breadcrumbs className="mt-3"
@@ -261,67 +271,70 @@ const Comparechart = () => {
           <FullchartHeadBtn $primary={pageNumber === 1} onClick={() => setPagenumber(1)}>{t('month')}</FullchartHeadBtn>
           <FullchartHeadBtn $primary={pageNumber === 3} onClick={() => setPagenumber(3)}>{t('chartCustom')}</FullchartHeadBtn>
         </FullchartHeadLeft>
-        <ExportandAuditFlex>
-          <Dropdown>
-            <Dropdown.Toggle variant="0" className="border-0 p-0">
-              <FullchartHeadExport>
-                <RiFolderSharedLine />
-                {t('export')}
-              </FullchartHeadExport>
-            </Dropdown.Toggle>
-            <Dropdown.Menu>
-              <Dropdown.Item onClick={() => handleDownload('png')}>
-                <RiImageLine />
-                <span>PNG</span>
-              </Dropdown.Item>
-              <Dropdown.Item onClick={() => handleDownload('jpg')}>
-                <RiImageLine />
-                <span>JPG</span>
-              </Dropdown.Item>
-              <LineHr $mg={.5} />
-              <Dropdown.Item onClick={async () => {
-                if (devices.length > 0) {
-                  try {
-                    const waitExport = await exportChart()
-                    setIsLoading(false)
-                    navigate('/dashboard/chart/preview', {
-                      state: {
-                        title: 'Chart-Report',
-                        ward: validationData?.wardName,
-                        image: ImagesOne,
-                        hospital: validationData?.hospital.hosName,
-                        devSn: devData?.devSerial,
-                        devName: devData?.devDetail,
-                        chartIMG: waitExport,
-                        dateTime: String(new Date).substring(0, 25),
-                        hosImg: hosImg,
-                      }
-                    })
-                  } catch (error) {
+        <div>
+          <FilterHosAndWard />
+          <ExportandAuditFlex>
+            <Dropdown>
+              <Dropdown.Toggle variant="0" className="border-0 p-0">
+                <FullchartHeadExport>
+                  <RiFolderSharedLine />
+                  {t('export')}
+                </FullchartHeadExport>
+              </Dropdown.Toggle>
+              <Dropdown.Menu>
+                <Dropdown.Item onClick={() => handleDownload('png')}>
+                  <RiImageLine />
+                  <span>PNG</span>
+                </Dropdown.Item>
+                <Dropdown.Item onClick={() => handleDownload('jpg')}>
+                  <RiImageLine />
+                  <span>JPG</span>
+                </Dropdown.Item>
+                <LineHr $mg={.5} />
+                <Dropdown.Item onClick={async () => {
+                  if (devices.length > 0) {
+                    try {
+                      const waitExport = await exportChart()
+                      setIsLoading(false)
+                      navigate('/dashboard/chart/preview', {
+                        state: {
+                          title: 'Chart-Report',
+                          ward: validationData?.wardName,
+                          image: ImagesOne,
+                          hospital: validationData?.hospital.hosName,
+                          devSn: devData?.devSerial,
+                          devName: devData?.devDetail,
+                          chartIMG: waitExport,
+                          dateTime: String(new Date).substring(0, 25),
+                          hosImg: hosImg,
+                        }
+                      })
+                    } catch (error) {
+                      Swal.fire({
+                        title: t('alertHeaderError'),
+                        text: t('descriptionErrorWrong'),
+                        icon: "error",
+                        timer: 2000,
+                        showConfirmButton: false,
+                      })
+                    }
+                  } else {
                     Swal.fire({
-                      title: t('alertHeaderError'),
-                      text: t('descriptionErrorWrong'),
-                      icon: "error",
+                      title: t('alertHeaderWarning'),
+                      text: t('dataNotReady'),
+                      icon: "warning",
                       timer: 2000,
                       showConfirmButton: false,
                     })
                   }
-                } else {
-                  Swal.fire({
-                    title: t('alertHeaderWarning'),
-                    text: t('dataNotReady'),
-                    icon: "warning",
-                    timer: 2000,
-                    showConfirmButton: false,
-                  })
-                }
-              }}>
-                <RiFilePdf2Line />
-                <span>PDF</span>
-              </Dropdown.Item>
-            </Dropdown.Menu>
-          </Dropdown>
-        </ExportandAuditFlex>
+                }}>
+                  <RiFilePdf2Line />
+                  <span>PDF</span>
+                </Dropdown.Item>
+              </Dropdown.Menu>
+            </Dropdown>
+          </ExportandAuditFlex>
+        </div>
       </FullchartHead>
       {pageNumber === 3 &&
         <FilterContainer>
@@ -340,9 +353,9 @@ const Comparechart = () => {
           <h4>{hosName}</h4>
         </TableInfoDevice>
         {
-          devices.length > 0 ?
+          filteredDevicesList.length > 0 ?
             <CompareChartComponent
-              chartData={devices} />
+              chartData={filteredDevicesList} />
             :
             <Loading loading={true} title={t('loading')} icn={<RiLoader3Line />} />
         }

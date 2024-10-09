@@ -1,4 +1,4 @@
-import { useState } from "react"
+import { useMemo, useState } from "react"
 import { useDispatch, useSelector } from "react-redux"
 import { DeviceState, DeviceStateStore, UtilsStateStore } from "../../types/redux.type"
 import { setDeviceId, setSerial } from "../../stores/utilsStateSlice"
@@ -26,7 +26,7 @@ export default function Dropdown() {
   const { t } = useTranslation()
   const dispatch = useDispatch<storeDispatchType>()
   const { devices } = useSelector<DeviceStateStore, DeviceState>((state) => state.devices)
-  const { deviceId, Serial } = useSelector<DeviceStateStore, UtilsStateStore>((state) => state.utilsState)
+  const { deviceId, Serial, wardId } = useSelector<DeviceStateStore, UtilsStateStore>((state) => state.utilsState)
   const [val, setVal] = useState(`${deviceId}-${Serial}`)
   const { theme } = useTheme()
 
@@ -35,6 +35,7 @@ export default function Dropdown() {
     if (!selectedValue) return
     const newDeviceId = selectedValue.substring(0, 40)
     const newSerial = selectedValue.substring(41)
+    if (Serial === newSerial) return
     setVal(selectedValue)
     dispatch(setDefaultLogs({} as devicesType))
     cookies.set('devid', newDeviceId, cookieOptions)
@@ -55,37 +56,39 @@ export default function Dropdown() {
       label: item[labelKey] as unknown as string
     }))[0]
 
+  let filteredDevicesList = useMemo(() => {
+    return wardId !== ''
+      ? devices.filter((item) => item.wardId.toLowerCase().includes(wardId.toLowerCase()))
+      : devices;
+  }, [wardId, devices])
+
   return (
-    <>
-      {
-        devices.length > 0 && <Select
-          options={mapOptions<Device, keyof Device>(devices, 'devId', 'devSerial', 'devDetail')}
-          defaultValue={mapDefaultValue<Device, keyof Device>(devices, val, 'devId', 'devSerial', 'devDetail')}
-          onChange={selectchang}
-          autoFocus={false}
-          placeholder={t('selectDeviceDrop')}
-          styles={{
-            control: (baseStyles, state) => ({
-              ...baseStyles,
-              backgroundColor: theme.mode === 'dark' ? "var(--main-last-color)" : "var(--white-grey-1)",
-              borderColor: theme.mode === 'dark' ? "var(--border-dark-color)" : "var(--grey)",
-              boxShadow: state.isFocused ? "0 0 0 1px var(--main-color)" : "",
-              borderRadius: "var(--border-radius-big)"
-            }),
-          }}
-          theme={(theme) => ({
-            ...theme,
-            colors: {
-              ...theme.colors,
-              primary50: 'var(--main-color-opacity2)',
-              primary25: 'var(--main-color-opacity2)',
-              primary: 'var(--main-color)',
-            },
-          })}
-          className="react-select-container"
-          classNamePrefix="react-select"
-        />
-      }
-    </>
+    <Select
+      options={mapOptions<Device, keyof Device>(filteredDevicesList, 'devId', 'devSerial', 'devDetail')}
+      defaultValue={mapDefaultValue<Device, keyof Device>(filteredDevicesList, val, 'devId', 'devSerial', 'devDetail')}
+      onChange={selectchang}
+      autoFocus={false}
+      placeholder={t('selectDeviceDrop')}
+      styles={{
+        control: (baseStyles, state) => ({
+          ...baseStyles,
+          backgroundColor: theme.mode === 'dark' ? "var(--main-last-color)" : "var(--white-grey-1)",
+          borderColor: theme.mode === 'dark' ? "var(--border-dark-color)" : "var(--grey)",
+          boxShadow: state.isFocused ? "0 0 0 1px var(--main-color)" : "",
+          borderRadius: "var(--border-radius-big)"
+        }),
+      }}
+      theme={(theme) => ({
+        ...theme,
+        colors: {
+          ...theme.colors,
+          primary50: 'var(--main-color-opacity2)',
+          primary25: 'var(--main-color-opacity2)',
+          primary: 'var(--main-color)',
+        },
+      })}
+      className="react-select-container"
+      classNamePrefix="react-select"
+    />
   )
 }

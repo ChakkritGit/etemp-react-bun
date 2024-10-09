@@ -236,8 +236,10 @@ export default {
     deviceRepairInfo: 'อุปกรณ์ที่นำมาด้วย',
 
     // contact
-    contactUs: 'ติดต่อเรา',
+    contactUs: 'ติดต่อ',
     contactInfo1: '61/34 ซอยอมรพันธ์ 4( วิภาวดี42) เขตจตุจักร ถนนวิภาวดีรังสิต กรุงเทพ 10900 Bangkok, จังหวัด กรุงเทพมหานคร 10900',
+    neddHelp: 'ต้องการความช่วยเหลือใช่ไหม?',
+    contactSupport: 'ติดต่อฝ่ายสนับสนุน',
 
     // system
     tabAccount: 'บัญชี',

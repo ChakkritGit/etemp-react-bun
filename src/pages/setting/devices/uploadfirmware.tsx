@@ -31,6 +31,12 @@ import TerminalComponent from "../../../components/settings/terminal"
 import { storeDispatchType } from "../../../stores/store"
 import { setSearchQuery, setShowAlert } from "../../../stores/utilsStateSlice"
 
+interface FirmwareItem {
+  fileName: string;
+  fileSize: string;
+  createDate: string;
+}
+
 const term = new Terminal({ cols: 150, rows: 40 })
 term.options = {
   fontSize: 12,
@@ -546,6 +552,38 @@ export default function Uploadfirmware() {
     }
   }, [])
 
+  const versionCompare = (a: FirmwareItem, b: FirmwareItem) => {
+    const versionA = a.fileName.match(/(\d+)\.(\d+)\.(\d+)/)
+    const versionB = b.fileName.match(/(\d+)\.(\d+)\.(\d+)/)
+
+    if (a.fileName.startsWith('i-TeM') && !b.fileName.startsWith('i-TeM')) return 1
+    if (b.fileName.startsWith('i-TeM') && !a.fileName.startsWith('i-TeM')) return -1
+
+    if (versionA && versionB) {
+      const majorA = parseInt(versionA[1], 10)
+      const minorA = parseInt(versionA[2], 10)
+      const patchA = parseInt(versionA[3], 10)
+
+      const majorB = parseInt(versionB[1], 10)
+      const minorB = parseInt(versionB[2], 10)
+      const patchB = parseInt(versionB[3], 10)
+
+      return (
+        majorA - majorB ||
+        minorA - minorB ||
+        patchA - patchB
+      )
+    }
+    return 0
+  }
+
+  const combinedList = displayedCards
+    .filter((filter) =>
+      !filter.fileName.startsWith('bootloader') &&
+      !filter.fileName.startsWith('partition')
+    )
+    .sort(versionCompare)
+
   return (
     <FirmwareContainer>
       <FirmwareHeader>
@@ -568,13 +606,13 @@ export default function Uploadfirmware() {
           cardsPerPage={cardsPerPage}
           changePage={changePage}
           displaySelectDevices={displaySelectDevices}
-          displayedCards={displayedCards}
+          displayedCards={combinedList}
           userdata={dataFiles}
         />
       </PaginitionContainer>
       <FirewareContent>
         {
-          displayedCards.filter((filter) => !filter.fileName.startsWith('bootloader') && !filter.fileName.startsWith('partition')).map((items, index) => (
+          combinedList.map((items: FirmwareItem, index: number) => (
             <FileList key={items.fileName + index}>
               <div>
                 <img src={BinIco} alt="Icon" />
@@ -592,16 +630,16 @@ export default function Uploadfirmware() {
                   !items.fileName.startsWith('bootloader') && !items.fileName.startsWith('partition') &&
                   <div>
                     <button onClick={() => {
-                      downloadFw(items.fileName)
-                      getBootLoader()
-                      getPartition()
+                      downloadFw(items.fileName);
+                      getBootLoader();
+                      getPartition();
                     }}>
                       <RiDownloadCloud2Line size={32} />
                     </button>
                     <button onClick={() => swalWithBootstrapButtons
                       .fire({
                         title: t('deleteFirmware'),
-                        text: t('deleteFirmwareText'),
+                        html: `${items.fileName}<br />${t('deleteFirmwareText')}`,
                         icon: "warning",
                         showCancelButton: true,
                         confirmButtonText: t('confirmButton'),
@@ -610,7 +648,7 @@ export default function Uploadfirmware() {
                       })
                       .then((result) => {
                         if (result.isConfirmed) {
-                          deleteFw(items.fileName)
+                          deleteFw(items.fileName);
                         }
                       })}>
                       <RiDeleteBin2Line size={32} />

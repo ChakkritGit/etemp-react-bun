@@ -1,6 +1,4 @@
 import {
-  RiArrowDownLine,
-  RiArrowRightLine,
   RiBatteryChargeLine,
   RiCloseLine, RiCollageLine, RiCpuLine, RiDoorClosedLine, RiFolderSettingsLine,
   RiPlugLine, RiSdCardMiniLine, RiSettings3Line, RiShieldCheckLine,
@@ -11,28 +9,24 @@ import {
   DashboardDevicesDetails, DashboardDevicesInfo,
   DeviceDetailsBody, DeviceDetailsBodyInfo, DeviceDetailsBodyimg,
   DeviceDetailsHead, DevicesBodyStatus, ExpandPicture, FormBtn,
-  FormFlexBtn, FormSliderRange, ModalHead,
-  RangeInputText, SliderFlex, SliderLabelFlex, SliderRangeFlex,
-  SpanCardDash,
-  TooltipSpanLeft
+  FormFlexBtn, ModalHead, SpanCardDash, TooltipSpanLeft
 } from "../../style/style"
 import { devicesType } from "../../types/device.type"
 import { CardstatusNomal, CardstatusSpecial } from "./cardstatus"
 import { FormEvent, useEffect, useState } from "react"
-import { Col, Form, InputGroup, Modal, Row } from "react-bootstrap"
-import { Slider } from "@mui/material"
+import { Form, Modal, Row } from "react-bootstrap"
 import axios, { AxiosError } from "axios"
 import { useTranslation } from "react-i18next"
 import Swal from "sweetalert2"
-import { AdjustRealTimeFlex } from "../../style/components/home.styled"
 import { client } from "../../services/mqtt"
 import { responseType } from "../../types/response.type"
 import { probeType } from "../../types/probe.type"
 import { useDispatch, useSelector } from "react-redux"
 import { DeviceStateStore, UtilsStateStore } from "../../types/redux.type"
-import { setShowAlert } from "../../stores/utilsStateSlice"
+import { setRefetchdata, setShowAlert } from "../../stores/utilsStateSlice"
 import { storeDispatchType } from "../../stores/store"
 import { fetchDevicesLog } from "../../stores/LogsSlice"
+import Adjustment from "../adjustments/adjustment"
 
 type devicesinfo = {
   devicesData: devicesType,
@@ -51,13 +45,13 @@ export default function Devicesinfo(devicesinfo: devicesinfo) {
   const dispatch = useDispatch<storeDispatchType>()
   const { t } = useTranslation()
   const { cookieDecode } = useSelector<DeviceStateStore, UtilsStateStore>((state) => state.utilsState)
-  const { userLevel, token } = cookieDecode
+  const { token } = cookieDecode
   const [show, setShow] = useState(false)
   const [showPic, setShowpic] = useState(false)
   const { probe } = devicesData
   const [formdata, setFormdata] = useState({
-    adjust_temp: probe[0]?.adjustTemp,
-    adjust_hum: probe[0]?.adjustHum
+    adjustTemp: probe[0]?.adjustTemp,
+    adjustHum: probe[0]?.adjustHum
   })
   const [tempvalue, setTempvalue] = useState<number[]>([probe[0]?.tempMin, probe[0]?.tempMax])
   const [humvalue, setHumvalue] = useState<number[]>([probe[0]?.humMin, probe[0]?.humMax])
@@ -72,11 +66,11 @@ export default function Devicesinfo(devicesinfo: devicesinfo) {
   }
 
   const handleAdjusttempChange = (_event: Event, newValue: number | number[]) => {
-    setFormdata({ ...formdata, adjust_temp: newValue as number })
+    setFormdata({ ...formdata, adjustTemp: newValue as number })
   }
 
   const handleAdjusthumChange = (_event: Event, newValue: number | number[]) => {
-    setFormdata({ ...formdata, adjust_hum: newValue as number })
+    setFormdata({ ...formdata, adjustHum: newValue as number })
   }
 
   const openmodal = () => {
@@ -111,8 +105,8 @@ export default function Devicesinfo(devicesinfo: devicesinfo) {
         tempMax: tempvalue[1],
         humMin: humvalue[0],
         humMax: humvalue[1],
-        adjustTemp: formdata.adjust_temp,
-        adjustHum: formdata.adjust_hum,
+        adjustTemp: formdata.adjustTemp,
+        adjustHum: formdata.adjustHum,
       }, {
         headers: {
           authorization: `Bearer ${token}`
@@ -120,6 +114,7 @@ export default function Devicesinfo(devicesinfo: devicesinfo) {
       })
       setShow(false)
       dispatch(fetchDevicesLog({ deviceId: devicesData.devId, token: token }))
+      dispatch(setRefetchdata(true))
       Swal.fire({
         title: t('alertHeaderSuccess'),
         text: response.data.message,
@@ -396,202 +391,20 @@ export default function Devicesinfo(devicesinfo: devicesinfo) {
         <Form onSubmit={handleSubmit}>
           <Modal.Body>
             <Row>
-              <Col lg={6}>
-                <InputGroup className="mb-3">
-                  <Form.Label className="w-100">
-                    <SliderFlex>
-                      <SliderLabelFlex>
-                        <span>{t('tempMin')}</span>
-                        <div>
-                          <RangeInputText type="number"
-                            min={-40}
-                            max={tempvalue[1]}
-                            step={.1}
-                            value={tempvalue[0]}
-                            onChange={(e) => setTempvalue([Number(e.target.value), tempvalue[1]])} />
-                          <strong>°C</strong>
-                        </div>
-                      </SliderLabelFlex>
-                      <SliderLabelFlex>
-                        <span>{t('tempMax')}</span>
-                        <div>
-                          <RangeInputText type="number"
-                            min={tempvalue[0]}
-                            max={120}
-                            step={.1}
-                            value={tempvalue[1]}
-                            onChange={(e) => setTempvalue([tempvalue[0], Number(e.target.value)])} />
-                          <strong>°C</strong>
-                        </div>
-                      </SliderLabelFlex>
-                    </SliderFlex>
-                    <SliderRangeFlex $rangename={'temp'}>
-                      <Slider
-                        value={tempvalue}
-                        onChange={handleTempChange}
-                        valueLabelDisplay="off"
-                        disableSwap
-                        min={-40}
-                        max={120}
-                        step={.1}
-                      />
-                    </SliderRangeFlex>
-                  </Form.Label>
-                </InputGroup>
-              </Col>
-              <Col lg={6}>
-                <InputGroup className="mb-3">
-                  <Form.Label className="w-100">
-                    <SliderFlex>
-                      <SliderLabelFlex>
-                        <span>{t('humiMin')}</span>
-                        <div>
-                          <RangeInputText type="number"
-                            min={0}
-                            max={humvalue[1]}
-                            step={.1}
-                            value={humvalue[0]}
-                            onChange={(e) => setHumvalue([Number(e.target.value), humvalue[1]])} />
-                          <strong>%</strong>
-                        </div>
-                      </SliderLabelFlex>
-                      <SliderLabelFlex>
-                        <span>{t('humiMax')}</span>
-                        <div>
-                          <RangeInputText type="number"
-                            min={humvalue[0]}
-                            max={100}
-                            step={.1}
-                            value={humvalue[1]}
-                            onChange={(e) => setHumvalue([humvalue[0], Number(e.target.value)])} />
-                          <strong>%</strong>
-                        </div>
-                      </SliderLabelFlex>
-                    </SliderFlex>
-                    <SliderRangeFlex $rangename={'hum'}>
-                      <Slider
-                        value={humvalue}
-                        onChange={handleHumChange}
-                        valueLabelDisplay="off"
-                        disableSwap
-                        min={0}
-                        max={100}
-                        step={.1}
-                      />
-                    </SliderRangeFlex>
-                  </Form.Label>
-                </InputGroup>
-              </Col>
-              <Col lg={6}>
-                <InputGroup className="mb-3">
-                  <Form.Label className="w-100">
-                    <SliderLabelFlex>
-                      <span>{t('adjustTemp')}</span>
-                      <div>
-                        <RangeInputText type="number"
-                          min={-20}
-                          max={20}
-                          step={.1}
-                          disabled={userLevel === '3'}
-                          value={formdata.adjust_temp}
-                          onChange={(e) => setFormdata({ ...formdata, adjust_temp: Number(e.target.value) })} />
-                        <strong>°C</strong>
-                      </div>
-                    </SliderLabelFlex>
-                    <FormSliderRange
-                      $primary="temp"
-                      $disabled={userLevel === '3'}
-                    >
-                      <Slider
-                        color="error"
-                        min={-20}
-                        max={20}
-                        step={.1}
-                        disabled={userLevel === '3'}
-                        value={formdata.adjust_temp}
-                        onChange={handleAdjusttempChange}
-                        valueLabelDisplay="off" />
-                    </FormSliderRange>
-                  </Form.Label>
-                </InputGroup>
-              </Col>
-              <Col lg={6}>
-                <InputGroup className="mb-3">
-                  <Form.Label className="w-100">
-                    <SliderLabelFlex>
-                      <span>{t('adjustHumi')}</span>
-                      <div>
-                        <RangeInputText type="number"
-                          min={-20}
-                          max={20}
-                          step={.1}
-                          disabled={userLevel === '3'}
-                          value={formdata.adjust_hum}
-                          onChange={(e) => setFormdata({ ...formdata, adjust_hum: Number(e.target.value) })} />
-                        <strong>%</strong>
-                      </div>
-                    </SliderLabelFlex>
-                    <FormSliderRange
-                      $primary="hum"
-                      $disabled={userLevel === '3'}
-                    >
-                      <Slider
-                        color="primary"
-                        min={-20}
-                        max={20}
-                        step={.1}
-                        disabled={userLevel === '3'}
-                        value={formdata.adjust_hum}
-                        onChange={handleAdjusthumChange}
-                        valueLabelDisplay="off" />
-                    </FormSliderRange>
-                  </Form.Label>
-                </InputGroup>
-              </Col>
-              <Col lg={12}>
-                <AdjustRealTimeFlex $primary={Number((mqttData.temp + formdata.adjust_temp).toFixed(2)) >= tempvalue[1] || Number((mqttData.temp + formdata.adjust_temp).toFixed(2)) <= tempvalue[0]}>
-                  <div>
-                    <span>{t('currentTemp')}</span>
-                    <div>
-                      <span>
-                        <span>{mqttData.temp.toFixed(2)}</span> °C
-                      </span>
-                    </div>
-                  </div>
-                  <RiArrowRightLine size={32} fill="grey" />
-                  <RiArrowDownLine size={32} fill="grey" />
-                  <div>
-                    <span>{t('adjustAfterTemp')}</span>
-                    <div>
-                      <span>
-                        <span>{(mqttData.temp + formdata.adjust_temp - devicesData.probe[0]?.adjustTemp).toFixed(2)}</span> °C
-                      </span>
-                    </div>
-                  </div>
-                </AdjustRealTimeFlex>
-              </Col>
-              <Col lg={12}>
-                <AdjustRealTimeFlex $primary={Number((mqttData.humi + formdata.adjust_hum).toFixed(2)) >= humvalue[1] || Number((mqttData.humi + formdata.adjust_hum).toFixed(2)) <= humvalue[0]}>
-                  <div>
-                    <span>{t('currentHum')}</span>
-                    <div>
-                      <span>
-                        <span>{mqttData.humi.toFixed(2)}</span> %
-                      </span>
-                    </div>
-                  </div>
-                  <RiArrowRightLine size={32} fill="grey" />
-                  <RiArrowDownLine size={32} fill="grey" />
-                  <div>
-                    <span>{t('adjustAfterHum')}</span>
-                    <div>
-                      <span>
-                        <span>{(mqttData.humi + formdata.adjust_hum - devicesData.probe[0]?.adjustHum).toFixed(2)}</span> %
-                      </span>
-                    </div>
-                  </div>
-                </AdjustRealTimeFlex>
-              </Col>
+              <Adjustment
+                devicesdata={devicesData}
+                formData={formdata}
+                handleAdjusthumChange={handleAdjusthumChange}
+                handleAdjusttempChange={handleAdjusttempChange}
+                handleHumChange={handleHumChange}
+                handleTempChange={handleTempChange}
+                humvalue={humvalue}
+                mqttData={mqttData}
+                setFormData={setFormdata}
+                setHumvalue={setHumvalue}
+                setTempvalue={setTempvalue}
+                tempvalue={tempvalue}
+              />
             </Row>
           </Modal.Body>
           <Modal.Footer>

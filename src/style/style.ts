@@ -1712,33 +1712,76 @@ max-height: 130px;
 overflow: hidden;
 `
 
-export const DevHomeSecctionOne = styled.div<{ $primary?: boolean }>`
+export const DevHomeSecctionOne = styled.div<{ $primary?: boolean, $expand?: boolean }>`
 display: flex;
 justify-content: center;
 align-items: center;
-flex-wrap: wrap;
-background-color: ${props => props.theme.mode === 'dark' ? 'var(--main-seccond-color)' : 'var(--bg-grey)'};
+flex-direction: column;
 gap: .5rem;
 margin-top: 1rem;
 position: sticky;
 top: 60px;
+height: ${props => props.$expand ? '55.38px' : '195.19px'};
 padding: 1rem;
 z-index: 100;
+background-color: ${props => props.theme.mode === 'dark' ? 'rgba(37, 37, 37, .6)' : 'rgba(245, 245, 245, .7)'};
+backdrop-filter: blur(13px);
+-webkit-backdrop-filter: blur(13px);
+border-bottom: ${props => props.$primary ? `1px solid ${props.theme.mode === 'dark' ? 'var(--main-last-color)' : 'var(--soft-grey)'}` : 'unset'};
+transition: height .3s;
+
+&>div:nth-child(1) {
+  display: ${props => props.$expand ? 'none' : 'flex'};
+  justify-content: center;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: .5rem;
+}
+
+&>div:nth-child(2) {
+  display: ${props => !props.$primary ? 'none' : 'flex'};
+  justify-content: center;
+  align-items: center;
+  margin-top: .5rem;
+  width: 100%;
+
+  &>svg:hover {
+    opacity: .5;
+    transition: .3s;
+  }
+
+  &>svg {
+    cursor: pointer;
+  }
+}
 
 @media (max-width: 1185px) {
-  display: grid;
-  grid-template-columns: repeat(4, 0fr);
-  justify-items: center;
-  gap: 1rem;
+  gap: .5rem;
+  padding: .7rem;
+  height: ${props => props.$expand ? '55.38px' : '290.55px'};
+
+  &>div:nth-child(1) {
+    display: ${props => props.$expand ? 'none' : 'grid'};
+    grid-template-columns: repeat(4, 0fr);
+    justify-items: center;
+  }
 }
 
 @media (max-width: 430px) {
-  display: grid;
-  grid-template-columns: repeat(2, 0fr);
-  justify-items: center;
-  gap: 1rem;
   position: unset;
   padding: unset;
+  border-bottom: unset;
+
+  &>div:nth-child(1) {
+    display: grid;
+    grid-template-columns: repeat(2, 0fr);
+    justify-items: center;
+    gap: 1rem;
+  }
+
+  &>div:nth-child(2) {
+    display: none;
+  }
 }
 `
 
@@ -2371,8 +2414,17 @@ overflow: hidden;
 export const DashboardHeadFilter = styled.div<{ $primary?: boolean }>`
 margin-top: 1rem;
 display: grid;
+align-items: center;
 grid-template-columns: repeat(2, 1fr);
-width: 60%;
+
+&>div:nth-child(1) {
+  width: 50%;
+}
+
+&>div:nth-child(2) {
+  display: flex;
+  justify-content: right;
+}
 
 @media (max-width: 1185px) {
   grid-template-columns: repeat(1, 1fr);
@@ -3062,6 +3114,12 @@ display: flex;
 align-items: center;
 justify-content: space-between;
 margin-top: 1rem;
+
+  &>div:nth-child(2) {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
 
 .dropdown-menu.show>a {
     ${props => props.theme.mode === 'dark' &&
@@ -4318,6 +4376,10 @@ export const ListPrivacy = styled.div`
   border-radius: var(--border-radius-big);
   cursor: pointer;
 
+  &>span {
+    font-size: 12px;
+  }
+
   &:hover {
     opacity: .5;
     transition: .3s;
@@ -4345,7 +4407,7 @@ export const ListMenu = styled.div<{ $primary?: boolean, $logout?: boolean }>`
   `}
 
 span {
-  font-size: 18px;
+  font-size: 16px;
 }
 
 svg {

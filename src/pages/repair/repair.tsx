@@ -77,7 +77,7 @@ export default function Repair() {
         showConfirmButton: false,
       })
       fetchData()
-      dispatch(setRefetchdata(!reFetchData))
+      dispatch(setRefetchdata(true))
     } catch (error) {
       if (error instanceof AxiosError) {
         if (error.response?.status === 401) {

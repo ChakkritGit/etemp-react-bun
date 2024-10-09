@@ -13,30 +13,27 @@ import {
   RiPlugLine, RiSdCardMiniLine, RiSettings3Line, RiTempColdLine
 } from "react-icons/ri"
 import { devicesType } from "../../types/device.type"
-import { useState } from "react"
 import { useTranslation } from "react-i18next"
 import Swal from "sweetalert2"
 import { useNavigate } from "react-router-dom"
 import { setDeviceId, setSerial } from "../../stores/utilsStateSlice"
-import { AsyncThunk } from "@reduxjs/toolkit"
 import { useDispatch } from "react-redux"
 import { storeDispatchType } from "../../stores/store"
-import ModalAdjust from "./modal.adjust"
 import { cookieOptions, cookies } from "../../constants/constants"
 import { logtype } from "../../types/log.type"
+import { Dispatch, SetStateAction } from "react"
 
 type DevicesInfoCard = {
   devicesdata: devicesType,
-  keyindex: number,
-  fetchData: AsyncThunk<devicesType[], string, object>,
-  onFilter: boolean
+  onFilter: boolean,
+  setDeviceData: Dispatch<SetStateAction<devicesType | null>>,
+  setShow: Dispatch<SetStateAction<boolean>>
 }
 
 export default function DevicesInfoCard(DevicesInfoCard: DevicesInfoCard) {
-  const { devicesdata, fetchData, onFilter } = DevicesInfoCard
+  const { devicesdata, onFilter, setDeviceData, setShow } = DevicesInfoCard
   const { t } = useTranslation()
   const dispatch = useDispatch<storeDispatchType>()
-  const [show, setShow] = useState(false)
   const navigate = useNavigate()
 
   const openDashboard = (data: {
@@ -60,7 +57,8 @@ export default function DevicesInfoCard(DevicesInfoCard: DevicesInfoCard) {
     }
   }
 
-  const openmodal = () => {
+  const openmodal = (deviceData: devicesType) => {
+    setDeviceData(deviceData)
     setShow(true)
   }
 
@@ -86,7 +84,7 @@ export default function DevicesInfoCard(DevicesInfoCard: DevicesInfoCard) {
                   {t('deviceToolDashboard')}
                 </TooltipSpan>
               </CardDevBtn>
-              <CardDevBtn onClick={openmodal}>
+              <CardDevBtn onClick={() => openmodal(devicesdata)}>
                 <RiSettings3Line />
                 <TooltipSpan>
                   {t('deviceToolAdjust')}
@@ -238,12 +236,6 @@ export default function DevicesInfoCard(DevicesInfoCard: DevicesInfoCard) {
           </DeviceCardFooterI>
         </DeviceCardFooter>
       </DeviceCard>
-      <ModalAdjust
-        fetchData={fetchData}
-        devicesdata={devicesdata}
-        show={show}
-        setShow={setShow}
-      />
     </>
   )
 }

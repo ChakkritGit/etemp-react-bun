@@ -176,7 +176,7 @@ export default function Warranty() {
         showConfirmButton: false,
       })
       fetchData()
-      dispatch(setRefetchdata(!reFetchData))
+      dispatch(setRefetchdata(true))
     } catch (error) {
       if (error instanceof AxiosError) {
         if (error.response?.status === 401) {
@@ -412,7 +412,7 @@ export default function Warranty() {
           timer: 2000,
           showConfirmButton: false,
         })
-        dispatch(setRefetchdata(!reFetchData))
+        dispatch(setRefetchdata(true))
       } catch (error) {
         if (error instanceof AxiosError) {
           if (error.response?.status === 401) {
@@ -477,7 +477,7 @@ export default function Warranty() {
           timer: 2000,
           showConfirmButton: false,
         })
-        dispatch(setRefetchdata(!reFetchData))
+        dispatch(setRefetchdata(true))
       } catch (error) {
         if (error instanceof AxiosError) {
           if (error.response?.status === 401) {

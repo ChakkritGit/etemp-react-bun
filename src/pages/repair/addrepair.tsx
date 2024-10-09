@@ -96,7 +96,7 @@ export default function Addrepair(addrepair: addrepairtype) {
           repairInfo1: '',
           repairInfo2: ''
         })
-        dispatch(setRefetchdata(!reFetchData))
+        dispatch(setRefetchdata(true))
       } catch (error) {
         if (error instanceof AxiosError) {
           if (error.response?.status === 401) {
@@ -151,7 +151,7 @@ export default function Addrepair(addrepair: addrepairtype) {
           showConfirmButton: false,
         })
         fetchdata()
-        dispatch(setRefetchdata(!reFetchData))
+        dispatch(setRefetchdata(true))
       } catch (error) {
         if (error instanceof AxiosError) {
           if (error.response?.status === 401) {

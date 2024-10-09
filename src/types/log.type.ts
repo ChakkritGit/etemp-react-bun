@@ -23,6 +23,15 @@ type logtype = {
   device: devicesType
 }
 
+type CompareType = {
+  devSerial: string,
+  devDetail: string,
+  wardName: string,
+  hosName: string,
+  wardId: string,
+  log: logtype[]
+}
+
 type DoorKey = 'door1' | 'door2' | 'door3'
 
-export type { logtype, DoorKey }
+export type { logtype, DoorKey, CompareType }

@@ -12,7 +12,7 @@ function Policy() {
 
   return (
     <PrivacyContainer>
-      <NavigateTop>
+      <NavigateTop $primary={cookieEncode === undefined}>
         {cookieEncode ? <BackPre onClick={() => navagate('/settings')}>
           <RiArrowLeftSLine size={24} />
           <span>{t('backToPre')}</span>

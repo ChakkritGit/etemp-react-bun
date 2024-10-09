@@ -229,8 +229,10 @@ export default {
     deviceRepairInfo: 'Returned Equipment',
 
     // contact
-    contactUs: 'Contact Us',
+    contactUs: 'Contact',
     contactInfo1: '61/34 Soi Amornphan 4 (Vibhavadi 42), Chatuchak District, Vibhavadi Rangsit Road, Bangkok 10900 Bangkok, Province Bangkok 10900',
+    neddHelp: 'Need help?',
+    contactSupport: 'Contact Support',
 
     // system
     tabAccount: 'Account',

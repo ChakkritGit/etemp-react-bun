@@ -1,6 +1,6 @@
-import styled from "styled-components"
+import styled, { css } from "styled-components"
 
-export const PrivacyContainer = styled.div<{$primary?: boolean}>`
+export const PrivacyContainer = styled.div<{ $primary?: boolean }>`
   display: flex;
   flex-direction: column;
   color: ${props => props.theme.mode === 'dark' ? 'var(--white)' : 'var(--black)'};
@@ -17,7 +17,7 @@ export const PrivacyContainer = styled.div<{$primary?: boolean}>`
   }
 `
 
-export const BR = styled.div `
+export const BR = styled.div`
   margin: .725rem 0;
 `
 
@@ -26,11 +26,17 @@ export const HeadTitle = styled.span`
   font-weight: bold;
 `
 
-export const NavigateTop = styled.div`
+export const NavigateTop = styled.div<{ $primary?: boolean }>`
   display: flex;
   align-items: center;
   justify-content: space-between;
   margin-bottom: 1.5rem;
+
+  ${props => props.$primary && css`
+    &>div:nth-child(1) {
+      width: 84px;
+    }
+  `}
 
   &>h4 {
     margin-bottom: unset;

@@ -24,10 +24,10 @@ export default function Notacess() {
       document.getElementsByTagName('head')[0].appendChild(link)
     }
 
-    changeFavicon('logo.png')
+    changeFavicon('Logo_SM_WBG.jpg')
 
     return () => {
-      changeFavicon('logo.png')
+      changeFavicon('Logo_SM_WBG.jpg')
     }
   }, [])
 

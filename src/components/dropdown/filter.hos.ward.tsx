@@ -58,12 +58,12 @@ function FilterHosAndWard() {
   const getHospital = (hospitalID: string | undefined) => {
     if (hospitalID) {
       updateLocalStorageAndDispatch('selectHos', hospitalID, setHosId)
-      setWardname(wardData.filter((items) => items.hospital.hosId === hospitalID))
+      setWardname(wardData.filter((items) => hospitalID ? items.hospital.hosId.includes(hospitalID) : items))
     }
   }
 
   useEffect(() => {
-    setWardname(wardData.filter((items) => items.hospital.hosId === hosId))
+    setWardname(wardData.filter((items) => hosId ? items.hospital.hosId.includes(hosId) : items))
   }, [wardData, hosId])
 
   const getWard = (wardID: string | undefined) => {

@@ -25,6 +25,10 @@ import { setShowAlert } from '../../../stores/utilsStateSlice'
 import { resizeImage } from '../../../constants/constants'
 import { TabButton, TabContainer } from '../../../style/components/manage.dev'
 
+interface FirmwareItem {
+  fileName: string;
+}
+
 export default function Adddevform(managedevices: managedevices) {
   const { devdata, pagestate } = managedevices
   const { t } = useTranslation()
@@ -587,7 +591,39 @@ export default function Adddevform(managedevices: managedevices) {
     if (devdata.wardId) {
       fetchWard()
     }
-  }, [token]) // ย้ายไป component หลัก
+  }, [token])
+
+  const versionCompare = (a: FirmwareItem, b: FirmwareItem) => {
+    const versionA = a.fileName.match(/(\d+)\.(\d+)\.(\d+)/)
+    const versionB = b.fileName.match(/(\d+)\.(\d+)\.(\d+)/)
+
+    if (a.fileName.startsWith('i-TeM') && !b.fileName.startsWith('i-TeM')) return 1
+    if (b.fileName.startsWith('i-TeM') && !a.fileName.startsWith('i-TeM')) return -1
+
+    if (versionA && versionB) {
+      const majorA = parseInt(versionA[1], 10)
+      const minorA = parseInt(versionA[2], 10)
+      const patchA = parseInt(versionA[3], 10)
+
+      const majorB = parseInt(versionB[1], 10)
+      const minorB = parseInt(versionB[2], 10)
+      const patchB = parseInt(versionB[3], 10)
+
+      return (
+        majorA - majorB ||
+        minorA - minorB ||
+        patchA - patchB
+      )
+    }
+    return 0
+  }
+
+  const combinedList = firmwareList
+    .filter((filter) =>
+      !filter.fileName.startsWith('bootloader') &&
+      !filter.fileName.startsWith('partition')
+    )
+    .sort(versionCompare)
 
   return (
     <div>
@@ -779,8 +815,10 @@ export default function Adddevform(managedevices: managedevices) {
                                 <SendOTAtoBoard>
                                   <Form.Select onChange={(e) => setFirmwareName(e.target.value)} value={firmwareName}>
                                     <option key={'select-option'} value="">{t('selectOTA')}</option>
-                                    {firmwareList.filter((filter) => !filter.fileName.startsWith('bootloader') && !filter.fileName.startsWith('partition')).map((items, index) => (
-                                      <option key={index} value={items.fileName}>{items.fileName}</option>
+                                    {combinedList.map((items, index) => (
+                                      <option key={index} value={items.fileName}>
+                                        {items.fileName.startsWith('eTEMP') ? 'eTEMP: ' : 'i-TeM: '}{items.fileName}
+                                      </option>
                                     ))}
                                   </Form.Select>
                                   <UploadButton type='button' disabled={firmwareName === ''} onClick={() => {
@@ -798,9 +836,6 @@ export default function Adddevform(managedevices: managedevices) {
                                 </SendOTAtoBoard>
                               </Form.Label>
                             </InputGroup>
-                            {/* <Row>
-                              <progress max={100}></progress>
-                            </Row> */}
                           </Row>
                         }
                       </Col>
@@ -841,7 +876,7 @@ export default function Adddevform(managedevices: managedevices) {
           <TabButton $primary={tabs === 3} onClick={() => setTabs(3)}>SIM</TabButton>
         </TabContainer>
         <Form
-          onSubmit={tabs === 1 && Mode.wifi === 0 ? handleSubmitDHCP : tabs === 1 && Mode.wifi === 1 ? handleSubmitManual : tabs === 2 && Mode.lan === 0 ? handleSubmitEthernet : tabs === 2 && Mode.lan === 1 ? handleSubmitEthernetAuto : handleSubmitSim }>
+          onSubmit={tabs === 1 && Mode.wifi === 0 ? handleSubmitDHCP : tabs === 1 && Mode.wifi === 1 ? handleSubmitManual : tabs === 2 && Mode.lan === 0 ? handleSubmitEthernet : tabs === 2 && Mode.lan === 1 ? handleSubmitEthernetAuto : handleSubmitSim}>
           <Modal.Body>
             <Row>
               <Col lg={12} className='mb-3'>

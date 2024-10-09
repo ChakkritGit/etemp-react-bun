@@ -1,4 +1,4 @@
-import styled from "styled-components"
+import styled, { css } from "styled-components"
 
 export const HeaderText = styled.span`
 font-size: 52px;
@@ -114,4 +114,20 @@ export const LoadingButton = styled.div`
     transform: rotate(360deg);
   }
 }
+`
+
+export const LoginContact = styled.div<{ $primary?: boolean }>`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: .5rem;
+  margin-top: 1rem;
+
+  ${props => props.$primary && css`
+  margin: 0 auto;
+  max-width: 700px;  `}
+
+  &>span {
+    color: var(--grey);
+  }
 `

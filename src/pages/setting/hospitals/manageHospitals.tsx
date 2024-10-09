@@ -34,11 +34,11 @@ export default function ManageHospitals() {
     pagestate: 'add',
     warddata: undefined
   })
-  const [formdata, setFormdata] = useState('')
 
   const [show, setShow] = useState(false)
   const [hosid, setHosid] = useState('')
   const { pagestate, warddata } = addwardprop
+  const [formdata, setFormdata] = useState('')
 
   useEffect(() => {
     return () => {
@@ -225,7 +225,7 @@ export default function ManageHospitals() {
       name: t('action'),
       cell: (item, index) => (
         <Actiontablehos key={index}>
-          <ManageWardAdd onClick={() => { openmodal(); setAddwardprop({ ...addwardprop, pagestate: 'edit', warddata: item }) }} $primary >
+          <ManageWardAdd onClick={() => { openmodal(); setAddwardprop({ ...addwardprop, pagestate: 'edit', warddata: item }); setFormdata(item.wardName) }} $primary >
             <RiEditLine size={16} />
           </ManageWardAdd>
           {item.hosId !== "HID-DEVELOPMENT" && (
@@ -301,6 +301,7 @@ export default function ManageHospitals() {
           ...addwardprop, warddata: undefined
         })
         dispatch(fetchHospitals(token))
+        setFormdata('')
       } catch (error) {
         if (error instanceof AxiosError) {
           if (error.response?.status === 401) {
@@ -337,8 +338,7 @@ export default function ManageHospitals() {
 
   const handleSubmitedit = async (e: FormEvent) => {
     e.preventDefault()
-    const url: string = `${import.meta.env.VITE_APP_API}/ward/${addwardprop?.warddata?.wardId}`
-
+    const url: string = `${import.meta.env.VITE_APP_API}/ward/${warddata?.wardId}`
     if (formdata !== '') {
       try {
         const response = await axios.put<responseType<wardsType>>(url, {
@@ -357,6 +357,7 @@ export default function ManageHospitals() {
           showConfirmButton: false,
         })
         dispatch(fetchHospitals(token))
+        setFormdata('')
       } catch (error) {
         if (error instanceof AxiosError) {
           if (error.response?.status === 401) {
@@ -472,7 +473,7 @@ export default function ManageHospitals() {
                       spellCheck={false}
                       autoComplete='off'
                       type='text'
-                      value={warddata?.wardName}
+                      value={formdata}
                       onChange={(e) => setFormdata(e.target.value)}
                     />
                   </Form.Label>

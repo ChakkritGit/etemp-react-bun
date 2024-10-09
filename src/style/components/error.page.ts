@@ -48,6 +48,8 @@ position: relative;
         font-size: 24px;
 
       &>button {
+        display: flex;
+        align-items: center;
         height: 40px;
         width: max-content;
         padding: .5rem .8rem;

@@ -7,8 +7,9 @@ import Swal from "sweetalert2"
 import axios, { AxiosError } from 'axios'
 import { useTranslation } from 'react-i18next'
 import { FormEvent, useState } from 'react'
-import { useNavigate, useLocation } from 'react-router-dom'
+import { useNavigate, useLocation, Link } from 'react-router-dom'
 import { RiLoader3Line } from "react-icons/ri"
+// import { FaLine } from "react-icons/fa"
 import { useEffect } from 'react'
 import { setCookieEncode } from '../../stores/utilsStateSlice'
 import { useDispatch } from 'react-redux'
@@ -19,8 +20,12 @@ import { accessToken, cookieOptions, cookies } from '../../constants/constants'
 import {
   CardContainer, CardFlex, HeaderText, LangContainer, LoadingButton,
   LoginButton,
+  LoginContact,
   TimeStap
 } from '../../style/components/login'
+import { LineHr } from '../../style/style'
+import { Helmet } from 'react-helmet'
+import { AgreeSection } from '../../style/components/contact.styled'
 
 export default function Login() {
   const dispatch = useDispatch<storeDispatchType>()
@@ -45,10 +50,10 @@ export default function Login() {
       document.title = `${location.pathname.split("/")[1] !== '' ? location.pathname.split("/")[1] : 'home'}`
     }
 
-    changeFavicon('logo.png')
+    changeFavicon('Logo_SM_WBG.jpg')
 
     return () => {
-      changeFavicon('logo.png')
+      changeFavicon('Logo_SM_WBG.jpg')
     }
   }, [location])
 
@@ -128,11 +133,14 @@ export default function Login() {
   const formattedTime = currentDate.toLocaleTimeString(t('thTime'), {
     hour: '2-digit',
     minute: '2-digit',
-    second: '2-digit'
+    // second: '2-digit'
   })
 
   return (
     <Container className='p-3'>
+      <Helmet>
+        <title>Login</title>
+      </Helmet>
       <LangContainer>
         <LangguageSelector />
       </LangContainer>
@@ -188,6 +196,14 @@ export default function Login() {
               <RiLoader3Line />
               {t('loginButtonLoading')}</LoadingButton> : t('loginButton')}
             </LoginButton>
+            <LoginContact>
+              <LineHr />
+              <span className=''>{t('contactUs')}</span>
+              <LineHr />
+            </LoginContact>
+            <AgreeSection>
+              <span>{t('neddHelp')} <Link to={'/support'}>{t('contactSupport')}</Link></span>
+            </AgreeSection>
           </Form>
         </CardFlex>
         <TimeStap>

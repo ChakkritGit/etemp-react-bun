@@ -7,8 +7,6 @@ import Table from "../../components/dashboard/table"
 import { DeviceState, DeviceStateStore, LogState, UtilsStateStore } from "../../types/redux.type"
 import { useDispatch, useSelector } from "react-redux"
 import PageLoading from "../../components/loading/page.loading"
-import { motion } from "framer-motion"
-import { items } from "../../animation/animate"
 import { useEffect } from "react"
 import { storeDispatchType } from "../../stores/store"
 import { setDeviceId, setSearchQuery, setSerial } from "../../stores/utilsStateSlice"
@@ -18,6 +16,7 @@ import { useNavigate } from "react-router-dom"
 import { OfflineDataFlex } from "../../style/components/dashboard.styled"
 import { RiBarChartBoxLine, RiTableView } from "react-icons/ri"
 import { useTranslation } from "react-i18next"
+import FilterHosAndWard from "../../components/dropdown/filter.hos.ward"
 
 export default function Dashboard() {
   const dispatch = useDispatch<storeDispatchType>()
@@ -44,79 +43,74 @@ export default function Dashboard() {
 
   return (
     <Container fluid>
-      <motion.div
-        variants={items}
-        initial="hidden"
-        animate="visible"
-      >
-        <DashboardFlex>
-          <DashboardHeadFilter $primary={expand}>
-            <Dropdown />
-          </DashboardHeadFilter>
-          {
-            devicesLogs.log?.length > 0 ?
+      <DashboardFlex>
+        <DashboardHeadFilter $primary={expand}>
+          <Dropdown />
+          <FilterHosAndWard />
+        </DashboardHeadFilter>
+        {
+          devicesLogs.log?.length > 0 ?
+            <>
+              <Devicesinfo
+                devicesData={devicesLogs}
+                index={0}
+              />
+              <Dashboardanalys>
+                <Chart
+                  data={devicesLogs.log.slice(0, 80)}
+                  tempMin={devicesLogs.probe[0]?.tempMin}
+                  tempMax={devicesLogs.probe[0]?.tempMax}
+                />
+                <Table
+                  data={devicesLogs.log.slice(0, 80)}
+                  devSn={devicesLogs.devSerial}
+                  devStatus={devicesLogs.devStatus}
+                  tempMin={devicesLogs.probe[0]?.tempMin}
+                  tempMax={devicesLogs.probe[0]?.tempMax}
+                />
+              </Dashboardanalys>
+            </>
+            :
+            devicesLogs.log?.length === 0 ?
               <>
                 <Devicesinfo
                   devicesData={devicesLogs}
                   index={0}
                 />
-                <Dashboardanalys>
-                  <Chart
-                    data={devicesLogs.log.slice(0, 80)}
-                    tempMin={devicesLogs.probe[0]?.tempMin}
-                    tempMax={devicesLogs.probe[0]?.tempMax}
-                  />
-                  <Table
-                    data={devicesLogs.log.slice(0, 80)}
-                    devSn={devicesLogs.devSerial}
-                    devStatus={devicesLogs.devStatus}
-                    tempMin={devicesLogs.probe[0]?.tempMin}
-                    tempMax={devicesLogs.probe[0]?.tempMax}
-                  />
-                </Dashboardanalys>
-              </>
-              :
-              devicesLogs.log?.length === 0 ?
-                <>
-                  <Devicesinfo
-                    devicesData={devicesLogs}
-                    index={0}
-                  />
-                  <OfflineDataFlex>
-                    <span>{t('todayNoData')}</span>
+                <OfflineDataFlex>
+                  <span>{t('todayNoData')}</span>
+                  <div>
                     <div>
                       <div>
-                        <div>
-                          <RiBarChartBoxLine size={62} />
-                        </div>
-                        <div>
-                          <span>{t('pageChart')}</span>
-                          <button
-                            onClick={() => navigate(`/dashboard/chart`, { state: { tempMin: devicesLogs.probe[0]?.tempMin, tempMax: devicesLogs.probe[0]?.tempMax } })}>
-                            {t('seeLastData')}
-                          </button>
-                        </div>
+                        <RiBarChartBoxLine size={62} />
                       </div>
                       <div>
-                        <div>
-                          <RiTableView size={62} />
-                        </div>
-                        <div>
-                          <span>{t('pageTable')}</span>
-                          <button
-                            onClick={() => navigate(`/dashboard/table`, { state: { tempMin: devicesLogs.probe[0]?.tempMin, tempMax: devicesLogs.probe[0]?.tempMax } })}>
-                            {t('seeLastData')}
-                          </button>
-                        </div>
+                        <span>{t('pageChart')}</span>
+                        <button
+                          onClick={() => navigate(`/dashboard/chart`, { state: { tempMin: devicesLogs.probe[0]?.tempMin, tempMax: devicesLogs.probe[0]?.tempMax } })}>
+                          {t('seeLastData')}
+                        </button>
                       </div>
                     </div>
-                  </OfflineDataFlex>
-                </>
-                :
-                <PageLoading />
-          }
-        </DashboardFlex>
-      </motion.div>
+                    <div>
+                      <div>
+                        <RiTableView size={62} />
+                      </div>
+                      <div>
+                        <span>{t('pageTable')}</span>
+                        <button
+                          onClick={() => navigate(`/dashboard/table`, { state: { tempMin: devicesLogs.probe[0]?.tempMin, tempMax: devicesLogs.probe[0]?.tempMax } })}>
+                          {t('seeLastData')}
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                </OfflineDataFlex>
+              </>
+              :
+              <PageLoading />
+        }
+      </DashboardFlex>
     </Container>
   )
 }

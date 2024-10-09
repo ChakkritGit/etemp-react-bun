@@ -248,6 +248,12 @@ export default function Fulltable() {
       center: true,
     },
     {
+      name: t('deviceConnectTb'),
+      selector: (items) => items.internet === '1' ? t('stateDisconnect') : t('stateConnect'),
+      sortable: false,
+      center: true,
+    },
+    {
       name: t('deviceSdCard'),
       cell: (items) => (
         <span>{items.sdCard === '1' ? t('stateProblem') : t('stateNormal')}</span>
