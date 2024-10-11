@@ -270,11 +270,11 @@ const ModalAdjust = (modalProps: modalAdjustType) => {
             </Col>
             <Col lg={12} className="w-100">
               <MuteFlex>
-                <OpenSettingBuzzer type="button" onClick={openSetting}>
+                <OpenSettingBuzzer type="button" onClick={() => { openSetting(); closemodal(); }}>
                   <RiAlarmWarningFill size={24} />
                   <span>{t('notificationSettings')}</span>
                 </OpenSettingBuzzer>
-                <OpenSettingBuzzer type="button" onClick={openSettingMute}>
+                <OpenSettingBuzzer type="button" onClick={() => { openSettingMute(); closemodal(); }}>
                   <RiBellFill size={24} />
                   <span>{t('muteSettings')}</span>
                 </OpenSettingBuzzer>

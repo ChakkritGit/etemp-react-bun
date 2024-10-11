@@ -96,7 +96,7 @@ function FilterHosAndWard() {
                 {
                   userLevel !== '2' && <Select
                     options={mapOptions<Hospital, keyof Hospital>(hospitalsData, 'hosId', 'hosName')}
-                    defaultValue={mapDefaultValue<Hospital, keyof Hospital>(hospitalsData, hosId || tokenDecode.hosId, 'hosId', 'hosName')}
+                    value={mapDefaultValue<Hospital, keyof Hospital>(hospitalsData, hosId || tokenDecode.hosId, 'hosId', 'hosName')}
                     onChange={(e) => getHospital(e?.value)}
                     autoFocus={false}
                     styles={{
@@ -124,7 +124,7 @@ function FilterHosAndWard() {
                 }
                 <Select
                   options={mapOptions<Ward, keyof Ward>(updatedWardData, 'wardId', 'wardName')}
-                  defaultValue={mapDefaultValue<Ward, keyof Ward>(updatedWardData, wardId ? wardId : '', 'wardId', 'wardName')}
+                  value={mapDefaultValue<Ward, keyof Ward>(updatedWardData, wardId ? wardId : '', 'wardId', 'wardName')}
                   onChange={(e) => getWard(e?.value)}
                   autoFocus={false}
                   styles={{

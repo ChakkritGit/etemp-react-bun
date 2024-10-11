@@ -492,7 +492,7 @@ export default function Adduser(AdduserProp: adduserProp) {
                     {t('userRole')}
                     <Select
                       options={mapOptions<dataType, keyof dataType>(userlevel, 'value', 'name')}
-                      defaultValue={mapDefaultValue<dataType, keyof dataType>(userlevel, form.user_level, 'value', 'name')}
+                      value={mapDefaultValue<dataType, keyof dataType>(userlevel, form.user_level, 'value', 'name')}
                       onChange={setLevel}
                       autoFocus={false}
                       placeholder={t('selectRole')}
@@ -545,7 +545,7 @@ export default function Adduser(AdduserProp: adduserProp) {
                           {t('userStatus')}
                           <Select
                             options={mapOptions<dataType, keyof dataType>(userstatus, 'value', 'name')}
-                            defaultValue={mapDefaultValue<dataType, keyof dataType>(userstatus, String(form.user_status), 'value', 'name')}
+                            value={mapDefaultValue<dataType, keyof dataType>(userstatus, String(form.user_status), 'value', 'name')}
                             onChange={setStatus}
                             autoFocus={false}
                             placeholder={t('selectStatus')}

@@ -32,7 +32,6 @@ export default function WardDropdown(DwardProp: dropDownWardProp) {
     const selectedValue = e?.value
     if (!selectedValue) return
     setStateWard(selectedValue)
-    console.log(selectedValue)
   }
 
   const fetchHospital = async () => {

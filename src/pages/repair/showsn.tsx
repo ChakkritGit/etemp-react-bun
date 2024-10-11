@@ -107,7 +107,7 @@ export default function Showsn(sntype: sntype) {
         devData.length > 0 &&
         <Select
           options={mapOptions<RepairOption, keyof RepairOption>(devData, 'devId', 'devSerial')}
-          defaultValue={mapDefaultValue<RepairOption, keyof RepairOption>(devData, selectedval, 'devId', 'devSerial')}
+          value={mapDefaultValue<RepairOption, keyof RepairOption>(devData, selectedval, 'devId', 'devSerial')}
           onChange={setDevId}
           autoFocus={false}
           placeholder={t('selectDeviceDrop')}

@@ -201,7 +201,7 @@ export default function Moveseqdev({ devData }: moveSeqType) {
                     {t('deviceSerialTb')}
                     <Select
                       options={mapOptions<Seq, keyof Seq>(devices.filter((f) => f.devId !== devId), 'devId', 'devSeq', 'devSerial')}
-                      defaultValue={mapDefaultValue<Seq, keyof Seq>(devices.filter((f) => f.devId !== devId), JSON.stringify(selectDev), 'devId', 'devSeq', 'devSerial')}
+                      value={mapDefaultValue<Seq, keyof Seq>(devices.filter((f) => f.devId !== devId), JSON.stringify(selectDev), 'devId', 'devSeq', 'devSerial')}
                       onChange={setNewSeq}
                       autoFocus={false}
                       placeholder={t('selectDeviceDrop')}

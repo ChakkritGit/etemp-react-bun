@@ -65,12 +65,10 @@ export default function Home() {
   const [expand, setExpand] = useState(false)
 
   const openSettingMute = () => {
-    setShow(false)
     setShowSettingMute(true)
   }
 
   const openSetting = () => {
-    setShow(false)
     setShowSetting(true)
   }
 

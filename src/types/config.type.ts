@@ -33,6 +33,7 @@ type configType = {
     dnsEth?: string,
     muteDoor: string,
     muteLong: string,
+    hardReset?: string
 }
 
 type Option = {

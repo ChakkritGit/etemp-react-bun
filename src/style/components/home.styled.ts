@@ -1,4 +1,4 @@
-import styled from "styled-components"
+import styled, { css } from "styled-components"
 
 export const AdjustRealTimeFlex = styled.div<{ $primary?: boolean }>`
 display: flex;
@@ -116,16 +116,88 @@ export const TagCurrentHos = styled.span`
   border-radius: var(--border-radius-big);
 `
 
-export const NotiActionFlex = styled.div`
+export const NotiActionFlex = styled.div<{ $primary?: boolean }>`
   display: flex;
   flex-direction: column;
   gap: 1rem;
+
+  ${props => props.$primary && css`
+  flex-direction: unset;
+  justify-content: center;
+  align-items: center;
+  padding: 1rem;
+    `}
+
+  & > div:nth-child(1) {
+    & > button:nth-child(2) {
+      background-color: var(--main-color);
+      padding: .5rem .7rem;
+      color: var(--white);
+      border: unset;
+      border-radius: var(--border-radius-small);
+
+      &:hover {
+        background-color: var(--second-color);
+        transition: .3s;
+      }
+    }
+  }
 
   & > div {
     display: flex;
     justify-content: space-between;
     align-items: center;
+
+    & > div:nth-child(1) {
+      display: flex;
+      flex-direction: column;
+      gap: .3rem;
+
+      & > span:nth-child(2) {
+        font-size: 14px;
+        color: var(--main-color);
+      }
+    }
+
+    & > div:nth-child(2) {
+      display: flex;
+      align-items: center;
+      gap: .5rem;
+
+      &>button:nth-child(2) {
+        background-color: var(--main-color);
+        padding: .3rem .7rem;
+        color: var(--white);
+        border: unset;
+        border-radius: var(--border-radius-small);
+
+        &:hover {
+          background-color: var(--second-color);
+          transition: .3s;
+        }
+      }
+
+      &>button:nth-child(3) {
+        background-color: var(--danger-color);
+        padding: .3rem .7rem;
+        color: var(--white);
+        border: unset;
+        border-radius: var(--border-radius-small);
+
+        &:hover {
+          background-color: var(--danger-color-hover);
+          transition: .3s;
+        }
+      }
+    }
   }
+`
+
+export const SpanDivider = styled.span<{ $width: string }>`
+  text-align: center;
+  width: ${props => props.$width};
+  padding: 0 1rem;
+  color: var(--grey);
 `
 
 export const ScheduleFlec = styled.div<{ $primary?: boolean }>`
@@ -331,4 +403,16 @@ export const FloatingTop = styled.div<{ $primary?: boolean }>`
   @media (max-width: 430px) {
     display: none;
 }
+`
+
+export const OnErrorFlex = styled.div<{ $primary?: boolean }>`
+  display: flex;
+  flex-direction: column;
+  gap: .5rem;
+
+  &>span {
+    font-size: 12px;
+    text-align: center;
+    color: var(--danger-color);
+  }
 `

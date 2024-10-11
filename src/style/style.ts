@@ -1142,9 +1142,9 @@ align-items: center;
 justify-content: space-between;
 
 @media (max-width: 430px) {
-    flex-direction: column;
-    align-items: unset;
-    gap: .5rem;
+  flex-direction: column;
+  align-items: unset;
+  gap: .5rem;
 
   & div:nth-child(2) {
     align-items: center;
@@ -1155,6 +1155,7 @@ justify-content: space-between;
 export const PaginitionFlex = styled.div<{ $primary?: boolean }> `
 display: flex;
 align-items: center;
+flex-wrap: wrap;
 gap: 1rem;
 `
 
@@ -1769,8 +1770,9 @@ transition: height .3s;
 
 @media (max-width: 430px) {
   position: unset;
-  padding: unset;
+  padding: 1rem;
   border-bottom: unset;
+  height: max-content;
 
   &>div:nth-child(1) {
     display: grid;

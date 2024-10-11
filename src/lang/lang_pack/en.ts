@@ -63,11 +63,12 @@ export default {
     currentHum: 'Humidity before adjust',
     adjustAfterHum: 'Humidity after adjust',
     muteSetting: 'Mute Settings',
-    notificationSettings: 'Notification Settings',
+    notificationSettings: 'App Notification Settings',
     muteSettings: 'Mute Settings',
     adjustButtonSubmit: 'Save',
     muteTemporary: 'Temporary Mute',
-    muteAlways: 'Mute Always',
+    muteAlways: 'Mute Always (minute)',
+    muteAlert: 'Mute Door Alert (minute)',
     muteDoor: 'Mute Door',
     adjustHumGreater: 'The humidity range cannot be set beyond 0-100%',
     clearShedule: 'Clear',
@@ -122,6 +123,8 @@ export default {
     pageChart: 'Chart',
     pageTable: 'Table',
     pagePDF: 'PDF',
+    doorOpen: 'Open',
+    doorClose: 'Close',
 
     // full chart
     chartDay: 'Day',
@@ -280,6 +283,7 @@ export default {
     SdCardProblem: 'There is an issue with the SD card',
     SdCardBackToNormal: 'The SD card is back to normal',
     doorNum: 'Door',
+    doorAlertText: 'Door Alert Settings',
 
     // devices
     deviceDetail: 'Device Detail',
@@ -381,6 +385,8 @@ export default {
     seccondTime: 'Second Time',
     thirdTime: 'Third Time',
     adjustTime: 'Set time successfully',
+    hardReset: 'Hard Reset',
+    notRegistered: 'Not Registered',
 
     // connect
     ipAddress: 'IP',
@@ -429,6 +435,8 @@ export default {
     thTime: 'en-EN',
     backToPre: 'Back',
     privacy: 'Privacy & Policy',
+    resetHour: 'Hour',
+    resetMinute: 'Minute',
 
     // reload sw
     appOffline: 'App ready to work offline',

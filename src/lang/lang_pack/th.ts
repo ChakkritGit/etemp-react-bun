@@ -63,11 +63,12 @@ export default {
     currentHum: 'ความชื่นก่อนปรับชดเชย',
     adjustAfterHum: 'ความชื่นหลังปรับชดเชย',
     muteSetting: 'ตั้งค่าเสียง',
-    notificationSettings: 'ตั้งค่าการแจ้งเตือน',
+    notificationSettings: 'ตั้งค่าการแจ้งเตือนแอพ',
     muteSettings: 'ตั้งค่าการปิดเสียง',
     adjustButtonSubmit: 'บันทึก',
     muteTemporary: 'ปิดเสียงชั่วคราว',
-    muteAlways: 'ปิดเสียงตลอดเวลา',
+    muteAlways: 'ปิดเสียงตลอดเวลา (นาที)',
+    muteAlert: 'ปิดเสียงประตู (นาที)',
     muteDoor: 'ปิดเสียงประตู',
     adjustHumGreater: 'ช่วงความชื่นไม่สามารถตั้งได้เกินช่วง 0-100%',
     clearShedule: 'ล้าง',
@@ -95,6 +96,7 @@ export default {
     SdCardProblem: 'เอสดีการ์ดมีปัญหา',
     SdCardBackToNormal: 'เอสดีการ์ดกลับมาปกติ',
     doorNum: 'ประตู',
+    doorAlertText: 'ตั้งค่าเสียงประตู',
 
     // device cards
     deviceOnline: 'ออนไลน์',
@@ -130,6 +132,8 @@ export default {
     pageChart: 'กราฟ',
     pageTable: 'ตาราง',
     pagePDF: 'PDF',
+    doorOpen: 'เปิด',
+    doorClose: 'ปิด',
 
     // full chart
     chartDay: 'วัน',
@@ -381,6 +385,8 @@ export default {
     seccondTime: 'ช่วงที่สอง',
     thirdTime: 'ช่วงที่สาม',
     adjustTime: 'ตั้งเวลาเรียบร้อยแล้ว',
+    hardReset: 'รีเซ็ต',
+    notRegistered: 'ยังไม่ลงทะเบียน',
 
     // connect
     ipAddress: 'IP',
@@ -429,6 +435,8 @@ export default {
     thTime: 'th-TH',
     backToPre: 'กลับ',
     privacy: 'นโยบายความเป็นส่วนตัว',
+    resetHour: 'ชั่วโมง',
+    resetMinute: 'นาที',
 
     // reload sw
     appOffline: 'แอพพร้อมใช้งานแบบออฟไลน์',

@@ -332,6 +332,24 @@ export default function Addprobe(addprobe: addprobeProps) {
     }))
   }
 
+  useEffect(() => {
+    if (show) {
+      setFormdata({
+        probeName: pagestate !== "add" ? probeData?.probeName : '',
+        probeType: pagestate !== "add" ? probeData?.probeType : '',
+        probeCh: pagestate !== "add" ? probeData?.probeCh : '',
+        devSerial: pagestate !== "add" ? probeData?.devSerial : '',
+        adjustTemp: pagestate !== "add" ? probeData?.adjustTemp : '',
+        adjustHum: pagestate !== "add" ? probeData?.adjustHum : '',
+        delay_time: pagestate !== "add" ? probeData?.delayTime : '',
+        door: pagestate !== "add" ? probeData?.door : '',
+        location: pagestate !== "add" ? probeData?.location : '',
+        tempvalue: [pagestate !== "add" ? Number(probeData?.tempMin) : 0, pagestate !== "add" ? Number(probeData?.tempMax) : 0],
+        humvalue: [pagestate !== "add" ? Number(probeData?.humMin) : 0, pagestate !== "add" ? Number(probeData?.humMax) : 0]
+      })
+    }
+  }, [show])
+
   return (
     <>
       {
@@ -345,6 +363,7 @@ export default function Addprobe(addprobe: addprobeProps) {
             <RiEditLine size={16} />
           </ManageProbeAdd>
       }
+
       <Modal size={"lg"} show={show} onHide={closemodal}>
         <Modal.Header>
           <ModalHead>
@@ -373,7 +392,7 @@ export default function Addprobe(addprobe: addprobeProps) {
                         {t('selectDeviceDrop')}
                         <Select
                           options={mapOptions<Probe, keyof Probe>(devices, 'devSerial', 'devSerial')}
-                          defaultValue={mapDefaultValue<Probe, keyof Probe>(devices, formdata.devSerial || '0', 'devSerial', 'devSerial')}
+                          value={mapDefaultValue<Probe, keyof Probe>(devices, formdata.devSerial || '0', 'devSerial', 'devSerial')}
                           onChange={deviceSelected}
                           autoFocus={false}
                           placeholder={t('selectDeviceDrop')}
@@ -455,7 +474,7 @@ export default function Addprobe(addprobe: addprobeProps) {
                     {t('delay')}
                     <Select
                       options={mapOptions<OptionData, keyof OptionData>(delayTimeArray, 'value', 'name')}
-                      defaultValue={mapDefaultValue<OptionData, keyof OptionData>(delayTimeArray, formdata.delay_time || '0', 'value', 'name')}
+                      value={mapDefaultValue<OptionData, keyof OptionData>(delayTimeArray, formdata.delay_time || '0', 'value', 'name')}
                       onChange={delayTime}
                       autoFocus={false}
                       placeholder={t('selectDelay')}
@@ -489,7 +508,7 @@ export default function Addprobe(addprobe: addprobeProps) {
                     {t('door')}
                     <Select
                       options={mapOptions<OptionData, keyof OptionData>(doorArray, 'value', 'name')}
-                      defaultValue={mapDefaultValue<OptionData, keyof OptionData>(doorArray, String(formdata.door) || '0', 'value', 'name')}
+                      value={mapDefaultValue<OptionData, keyof OptionData>(doorArray, String(formdata.door) || '0', 'value', 'name')}
                       onChange={doorSelected}
                       autoFocus={false}
                       placeholder={t('selectDoor')}
@@ -523,7 +542,7 @@ export default function Addprobe(addprobe: addprobeProps) {
                     {t('probeChanel')}
                     <Select
                       options={mapOptions<OptionData, keyof OptionData>(channelArray, 'value', 'name')}
-                      defaultValue={mapDefaultValue<OptionData, keyof OptionData>(channelArray, String(formdata.probeCh) || '0', 'value', 'name')}
+                      value={mapDefaultValue<OptionData, keyof OptionData>(channelArray, String(formdata.probeCh) || '0', 'value', 'name')}
                       onChange={channelSelected}
                       autoFocus={false}
                       placeholder={t('selectChanel')}

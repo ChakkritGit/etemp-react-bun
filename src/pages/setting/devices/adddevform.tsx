@@ -22,11 +22,18 @@ import { wardsType } from '../../../types/ward.type'
 import { SendOTAtoBoard, UploadButton } from '../../../style/components/firmwareuoload'
 import { firmwareType } from '../../../types/component.type'
 import { setShowAlert } from '../../../stores/utilsStateSlice'
-import { resizeImage } from '../../../constants/constants'
+import { hoursOptions, mapDefaultValue, mapOptions, minutesOptions, resizeImage } from '../../../constants/constants'
 import { TabButton, TabContainer } from '../../../style/components/manage.dev'
+import Select from 'react-select'
+import { useTheme } from '../../../theme/ThemeProvider'
 
 interface FirmwareItem {
-  fileName: string;
+  fileName: string,
+}
+
+type selectOption = {
+  value: string,
+  label: string
 }
 
 export default function Adddevform(managedevices: managedevices) {
@@ -49,6 +56,13 @@ export default function Adddevform(managedevices: managedevices) {
   const { token, userLevel } = cookieDecode
   const [devicePicture, setDevicePicture] = useState<string>(devdata.locPic ? `${import.meta.env.VITE_APP_IMG}${devdata.locPic}` : '')
   const { config } = devdata
+  const [resetTime, setResetTime] = useState<{
+    resetHour: string | undefined,
+    resetMinute: string | undefined
+  }>({
+    resetHour: config?.hardReset ? config.hardReset.substring(0, 2) : '',
+    resetMinute: config?.hardReset ? config.hardReset.substring(2, 4) : ''
+  })
   const [netConfig, setNetConfig] = useState({
     devSerial: config?.devSerial ? config.devSerial : '',
     SSID: config?.ssid ? config.ssid : '',
@@ -61,7 +75,8 @@ export default function Adddevform(managedevices: managedevices) {
     ipEth: config?.ipEth ? config.ipEth : '',
     subNetEth: config?.subNetEth ? config.subNetEth : '',
     getwayEth: config?.getwayEth ? config.getwayEth : '',
-    dnsEth: config?.dnsEth ? config.dnsEth : ''
+    dnsEth: config?.dnsEth ? config.dnsEth : '',
+    hardReset: ''
   })
   const [firmwareName, setFirmwareName] = useState<string>('')
   const [firmwareList, setFirmwareList] = useState<firmwareType[]>([])
@@ -72,6 +87,8 @@ export default function Adddevform(managedevices: managedevices) {
   })
   const [tabs, setTabs] = useState(1)
   const [hosid, setHosid] = useState('')
+  const { theme } = useTheme()
+  const { resetHour, resetMinute } = resetTime
 
   const fetchWard = async () => {
     try {
@@ -89,6 +106,10 @@ export default function Adddevform(managedevices: managedevices) {
       }
     }
   }
+
+  useEffect(() => {
+    setNetConfig({ ...netConfig, hardReset: `${resetHour}${resetMinute}` })
+  }, [resetHour, resetMinute])
 
   const openmodal = () => {
     setShow(true)
@@ -167,6 +188,7 @@ export default function Adddevform(managedevices: managedevices) {
   const handleSubmitEdit = async (e: FormEvent) => {
     e.preventDefault()
     const url: string = `${import.meta.env.VITE_APP_API}/device/${devdata?.devId}`
+    const urlcongif: string = `${import.meta.env.VITE_APP_API}/config/${netConfig.devSerial}`
     const formData = new FormData()
     formData.append('devZone', formdata.devZone as string)
     formData.append('locInstall', formdata.devLocation as string)
@@ -185,6 +207,15 @@ export default function Adddevform(managedevices: managedevices) {
             authorization: `Bearer ${token}`
           }
         })
+        if (netConfig.hardReset !== '') {
+          await axios.put<responseType<devicesType>>(urlcongif, {
+            hardReset: netConfig.hardReset
+          }, {
+            headers: {
+              authorization: `Bearer ${token}`
+            }
+          })
+        }
         setShow(false)
         Swal.fire({
           title: t('alertHeaderSuccess'),
@@ -836,6 +867,83 @@ export default function Adddevform(managedevices: managedevices) {
                                 </SendOTAtoBoard>
                               </Form.Label>
                             </InputGroup>
+                          </Row>
+                        }
+                        {
+                          userLevel === '0' && <Row>
+                            <Row>
+                              <span className='mb-2'>{t('hardReset')}</span>
+                            </Row>
+                            <Col>
+                              <InputGroup className="mb-3">
+                                <Form.Label className="w-100">
+                                  {t('resetHour')}
+                                  <Select
+                                    id="hours"
+                                    options={mapOptions<selectOption, keyof selectOption>(hoursOptions, 'value', 'label')}
+                                    value={mapDefaultValue<selectOption, keyof selectOption>(hoursOptions, String(resetHour), 'value', 'label')}
+                                    onChange={(e) => setResetTime({ ...resetTime, resetHour: e?.value })}
+                                    autoFocus={false}
+                                    placeholder={t('selectDeviceDrop')}
+                                    styles={{
+                                      control: (baseStyles, state) => ({
+                                        ...baseStyles,
+                                        backgroundColor: theme.mode === 'dark' ? "var(--main-last-color)" : "var(--white-grey-1)",
+                                        borderColor: theme.mode === 'dark' ? "var(--border-dark-color)" : "var(--grey)",
+                                        boxShadow: state.isFocused ? "0 0 0 1px var(--main-color)" : "",
+                                        borderRadius: "var(--border-radius-big)"
+                                      }),
+                                    }}
+                                    theme={(theme) => ({
+                                      ...theme,
+                                      colors: {
+                                        ...theme.colors,
+                                        primary50: 'var(--main-color-opacity2)',
+                                        primary25: 'var(--main-color-opacity2)',
+                                        primary: 'var(--main-color)',
+                                      },
+                                    })}
+                                    className="react-select-container"
+                                    classNamePrefix="react-select"
+                                  />
+                                </Form.Label>
+                              </InputGroup>
+                            </Col>
+                            <Col>
+                              <InputGroup className="mb-3">
+                                <Form.Label className="w-100">
+                                  {t('resetMinute')}
+                                  <Select
+                                    id="minutes"
+                                    options={mapOptions<selectOption, keyof selectOption>(minutesOptions, 'value', 'label')}
+                                    value={mapDefaultValue<selectOption, keyof selectOption>(minutesOptions, String(resetMinute), 'value', 'label')}
+                                    onChange={(e) => setResetTime({ ...resetTime, resetMinute: e?.value })}
+                                    autoFocus={false}
+                                    placeholder={t('selectDeviceDrop')}
+                                    styles={{
+                                      control: (baseStyles, state) => ({
+                                        ...baseStyles,
+                                        backgroundColor: theme.mode === 'dark' ? "var(--main-last-color)" : "var(--white-grey-1)",
+                                        borderColor: theme.mode === 'dark' ? "var(--border-dark-color)" : "var(--grey)",
+                                        boxShadow: state.isFocused ? "0 0 0 1px var(--main-color)" : "",
+                                        borderRadius: "var(--border-radius-big)"
+                                      }),
+                                    }}
+                                    theme={(theme) => ({
+                                      ...theme,
+                                      colors: {
+                                        ...theme.colors,
+                                        primary50: 'var(--main-color-opacity2)',
+                                        primary25: 'var(--main-color-opacity2)',
+                                        primary: 'var(--main-color)',
+                                      },
+                                    })}
+                                    className="react-select-container"
+                                    classNamePrefix="react-select"
+                                  />
+                                </Form.Label>
+                              </InputGroup>
+                            </Col>
                           </Row>
                         }
                       </Col>

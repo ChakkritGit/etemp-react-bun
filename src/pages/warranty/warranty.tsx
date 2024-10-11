@@ -72,7 +72,7 @@ export default function Warranty() {
   const { t } = useTranslation()
   const dispatch = useDispatch<storeDispatchType>()
   const [pagenumber, setpagenumber] = useState(1)
-  const { searchQuery, cookieDecode, reFetchData } = useSelector<DeviceStateStore, UtilsStateStore>((state) => state.utilsState)
+  const { searchQuery, cookieDecode } = useSelector<DeviceStateStore, UtilsStateStore>((state) => state.utilsState)
   const hospitalsData = useSelector<DeviceStateStore, hospitalsType[]>((state) => state.arraySlice.hospital.hospitalsData)
   const { token, userLevel } = cookieDecode
   const [show, setshow] = useState(false)
@@ -653,7 +653,7 @@ export default function Warranty() {
                       {t('selectDeviceDrop')}
                       <Select
                         options={mapOptions<WarrantyOption, keyof WarrantyOption>(devices, 'devName', 'devSerial')}
-                        defaultValue={mapDefaultValue<WarrantyOption, keyof WarrantyOption>(devices, String(devName), 'devName', 'devSerial')}
+                        value={mapDefaultValue<WarrantyOption, keyof WarrantyOption>(devices, String(devName), 'devName', 'devSerial')}
                         onChange={(e) => setWarrantyObject({ ...warrantyObject, devName: String(e?.value), devSerial: String(e?.label.substring(0, 3) === "eTP" ? 'eTEMP' : 'i-TeMS') })}
                         autoFocus={false}
                         placeholder={t('selectDeviceDrop')}
@@ -719,7 +719,7 @@ export default function Warranty() {
                     {t('customerName')}
                     <Select
                       options={mapOptionsHospital<Hospital, keyof Hospital>(hospitalsData, 'hosId', 'hosName')}
-                      defaultValue={mapDefaultValueHospital<Hospital, keyof Hospital>(hospitalsData, String(customerName), 'hosId', 'hosName')}
+                      value={mapDefaultValueHospital<Hospital, keyof Hospital>(hospitalsData, String(customerName), 'hosId', 'hosName')}
                       onChange={setHosId}
                       autoFocus={false}
                       placeholder={t('selectDeviceDrop')}
@@ -762,7 +762,7 @@ export default function Warranty() {
                     {t('distributionCompany')}
                     <Select
                       options={mapOptionsHospital<Company, keyof Company>(companyList, 'key', 'value')}
-                      defaultValue={mapDefaultValueHospital<Company, keyof Company>(companyList, String(saleDept), 'key', 'value')}
+                      value={mapDefaultValueHospital<Company, keyof Company>(companyList, String(saleDept), 'key', 'value')}
                       onChange={setSaleDept}
                       autoFocus={false}
                       placeholder={t('selectDeviceDrop')}

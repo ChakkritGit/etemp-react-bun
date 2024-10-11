@@ -146,17 +146,20 @@ export default function Probesetting() {
 
   return (
     <ManageProbeContainer>
-      {
-        userLevel !== '2' && userLevel !== '3' && <ManageProbeHeader>
-          <h3>{t('titleManageProbe')}</h3>
-          <div>
-            <FilterHosAndWard />
+      <ManageProbeHeader>
+        <h3>{t('titleManageProbe')}</h3>
+        <div>
+          {
+            userLevel !== '4' && <FilterHosAndWard />
+          }
+          {
+            userLevel !== '2' && userLevel !== '3' &&
             <Addprobe
               pagestate={'add'}
             />
-          </div>
-        </ManageProbeHeader>
-      }
+          }
+        </div>
+      </ManageProbeHeader>
       <ManageProbeBody>
         <DataTable
           columns={columns}

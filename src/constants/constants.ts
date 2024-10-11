@@ -1,7 +1,7 @@
 import { CookieType } from "../types/cookie.type"
 import Cookies, { CookieSetOptions } from "universal-cookie"
 import CryptoJS from "crypto-js"
-import { Schedule, ScheduleHour, ScheduleMinute } from "../types/config.type"
+import { Option, Schedule, ScheduleHour, ScheduleMinute } from "../types/config.type"
 import piexif from 'piexifjs'
 
 export const getDateNow = () => {
@@ -593,3 +593,37 @@ export const countryCodes = [
   { code: '+996', country: 'Kyrgyzstan' },
   { code: '+998', country: 'Uzbekistan' },
 ]
+
+export const hoursOptions = Array.from({ length: 24 }, (_, i) => ({
+  value: String(i).padStart(2, '0'),
+  label: String(i).padStart(2, '0'),
+}))
+
+export const minutesOptions = Array.from({ length: 60 }, (_, i) => ({
+  value: String(i).padStart(2, '0'),
+  label: String(i).padStart(2, '0'),
+}))
+
+export const generateOptions = () => {
+  let option = []
+  for (let i = 5; i <= 120; i += 5) {
+    option.push({
+      value: String(i),
+      label: String(i)
+    })
+  }
+  return option
+}
+
+
+export const mapOptions = <T, K extends keyof T>(data: T[], valueKey: K, labelKey: K): Option[] =>
+  data.map(item => ({
+    value: item[valueKey] as unknown as string,
+    label: item[labelKey] as unknown as string
+  }))
+
+export const mapDefaultValue = <T, K extends keyof T>(data: T[], id: string, valueKey: K, labelKey: K): Option | undefined =>
+  data.filter(item => item[valueKey] === id).map(item => ({
+    value: item[valueKey] as unknown as string,
+    label: item[labelKey] as unknown as string
+  }))[0]

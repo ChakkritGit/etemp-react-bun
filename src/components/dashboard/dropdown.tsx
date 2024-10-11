@@ -65,7 +65,7 @@ export default function Dropdown() {
   return (
     <Select
       options={mapOptions<Device, keyof Device>(filteredDevicesList, 'devId', 'devSerial', 'devDetail')}
-      defaultValue={mapDefaultValue<Device, keyof Device>(filteredDevicesList, val, 'devId', 'devSerial', 'devDetail')}
+      value={mapDefaultValue<Device, keyof Device>(filteredDevicesList, val, 'devId', 'devSerial', 'devDetail')}
       onChange={selectchang}
       autoFocus={false}
       placeholder={t('selectDeviceDrop')}
