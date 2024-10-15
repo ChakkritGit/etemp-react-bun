@@ -115,7 +115,7 @@ export const CardListFlex = styled.div`
   display: flex;
   justify-content: center;
   align-items: center;
-  gap: 1rem;
+  gap: .5rem;
   margin-top: 1rem;
 
   &>a {
@@ -123,13 +123,13 @@ export const CardListFlex = styled.div`
     justify-content: center;
     align-items: center;
     flex-direction: column;
-    gap: 1rem;
-    width: 180px;
-    height: 140px;
-    background-color: ${props => props.theme.mode === 'dark' ? 'var(--main-last-color)' : 'var(--white)'};
-    padding: 1rem;
-    border-radius: var(--border-radius-small);
-    box-shadow: rgba(50, 50, 50, 0.1) 0px 12px 28px;
+    /* gap: .5rem; */
+    /* width: 180px;
+    height: 140px; */
+    /* background-color: ${props => props.theme.mode === 'dark' ? 'var(--main-last-color)' : 'var(--white)'}; */
+    padding: .5rem;
+    /* border-radius: var(--border-radius-small); */
+    /* box-shadow: rgba(50, 50, 50, 0.1) 0px 12px 28px; */
     text-decoration: unset;
 
     &>span {
@@ -137,7 +137,7 @@ export const CardListFlex = styled.div`
     }
 
     &>svg {
-      font-size: 42px;
+      font-size: 32px;
       fill: var(--main-color);
     }
   }

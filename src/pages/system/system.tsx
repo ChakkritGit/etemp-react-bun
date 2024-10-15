@@ -86,6 +86,11 @@ export default function System() {
               }
             </div>
             <SubSideBottomContainer>
+              <ListPrivacy onClick={() => navigate('/support')}>
+                <span>
+                  {t('contactSupport')}
+                </span>
+              </ListPrivacy>
               <ListPrivacy onClick={() => navigate('/privacy-policy')}>
                 <span>
                   {t('privacy')}

@@ -18,26 +18,26 @@ function Support() {
 
   return (
     <ContactContainer>
-      <h1>Contact Support</h1>
+      <h1>{t('contactSupport')}</h1>
       <ListGrid>
         <div>
-          <h3>Get in touch</h3>
-          <span>You can reach us anytime</span>
+          <h3>{t('getInTouch')}</h3>
+          <span>{t('contactDes')}</span>
           <Form onSubmit={handleSubmit}>
             <Row>
               <Col lg={6}>
                 <LabelContact htmlFor="first-name">
-                  <InputSupport type="text" id="first-name" name="first-name" placeholder="First Name" />
+                  <InputSupport type="text" id="first-name" name="first-name" placeholder={t('contactFirstName')} />
                 </LabelContact>
               </Col>
               <Col lg={6}>
                 <LabelContact htmlFor="last-name">
-                  <InputSupport type="text" id="last-name" name="last-name" placeholder="Last Name" />
+                  <InputSupport type="text" id="last-name" name="last-name" placeholder={t('contactLastName')} />
                 </LabelContact>
               </Col>
               <Col lg={12}>
                 <LabelContact htmlFor="email">
-                  <InputSupport type="email" id="email" name="email" placeholder="Email" />
+                  <InputSupport type="email" id="email" name="email" placeholder={t('contactEmail')} />
                 </LabelContact>
               </Col>
               <Col lg={12}>
@@ -51,7 +51,7 @@ function Support() {
                         </option>
                       ))}
                     </select>
-                    <InputSupport type="tel" id="email" name="tel" placeholder="Phone Number" />
+                    <InputSupport type="tel" id="email" name="tel" placeholder={t('contactPhone')} />
                   </PhoneGroup>
                 </LabelContact>
               </Col>
@@ -60,17 +60,17 @@ function Support() {
                   <TextAreContact
                     id="howcanwehelp"
                     name="howcanwehelp"
-                    placeholder="How can we help?"
+                    placeholder={t('contactDetail')}
                     rows={4}
                   />
                 </LabelContact>
               </Col>
               <Col lg={12}>
-                <SubmitButton type="submit">Submit</SubmitButton>
+                <SubmitButton type="submit">{t('contactSubmit')}</SubmitButton>
               </Col>
               <AgreeSection>
                 <span>
-                  By contacting us, your agree to our <Link to={'/privacy-policy'}>Privacy Policy</Link>
+                  {t('contactAgree')} <Link to={'/privacy-policy'}>{t('contactAgreeLink')}</Link>
                 </span>
               </AgreeSection>
             </Row>
@@ -83,23 +83,24 @@ function Support() {
         <LineHr />
       </LoginContact>
       <CardListFlex>
-        <a href="tel:027914500">
+        <a href="tel:027914500" target="_blank" rel="noopener noreferrer">
           <RiPhoneFill />
-          <span>Phone</span>
+          {/* <span>Phone</span> */}
         </a>
-        <a href="mailto:thanes@thanesgroup.com">
+        <a href="mailto:thanes@thanesgroup.com" target="_blank" rel="noopener noreferrer">
           <RiMailFill />
-          <span>Mail</span>
+          {/* <span>Mail</span> */}
         </a>
-        <a href="https://line.me/R/ti/p/%40925maysc">
+        <a href="https://line.me/R/ti/p/%40925maysc" target="_blank" rel="noopener noreferrer">
           <FaLine />
-          <span>Line</span>
+          {/* <span>Line</span> */}
         </a>
-        <a href="https://www.facebook.com/thanesgroup">
+        <a href="https://www.facebook.com/thanesgroup" target="_blank" rel="noopener noreferrer">
           <RiFacebookCircleFill />
-          <span>Facebook</span>
+          {/* <span>Facebook</span> */}
         </a>
       </CardListFlex>
+
     </ContactContainer>
   )
 }

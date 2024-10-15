@@ -7,7 +7,7 @@ position: relative;
   &>div:nth-child(1) {
     width: 100%;
     height: 100dvh;
-    background-image: ${`url(${bg})`};
+    /* background-image: ${`url(${bg})`}; */
     background-position: center;
     background-repeat: no-repeat;
     background-size: cover;

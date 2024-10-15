@@ -244,6 +244,16 @@ export default {
     contactInfo1: '61/34 ซอยอมรพันธ์ 4( วิภาวดี42) เขตจตุจักร ถนนวิภาวดีรังสิต กรุงเทพ 10900 Bangkok, จังหวัด กรุงเทพมหานคร 10900',
     neddHelp: 'ต้องการความช่วยเหลือใช่ไหม?',
     contactSupport: 'ติดต่อฝ่ายสนับสนุน',
+    getInTouch: 'ติดต่อเรา',
+    contactDes: 'คุณสามารถติดต่อเราได้ตลอดเวลาe',
+    contactFirstName: 'ชื่อ',
+    contactLastName: 'นามสกุล',
+    contactEmail: 'อีเมล',
+    contactPhone: 'เบอร์โทร',
+    contactDetail: 'เราสามารถช่วยอะไรคุณได้บ้าง?',
+    contactSubmit: 'ส่ง',
+    contactAgree: 'โดยการติดต่อเรา คุณยอมรับที่จะปฏิบัติตาม',
+    contactAgreeLink: 'นโยบายความเป็นส่วนตัว',
 
     // system
     tabAccount: 'บัญชี',

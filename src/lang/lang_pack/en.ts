@@ -236,6 +236,16 @@ export default {
     contactInfo1: '61/34 Soi Amornphan 4 (Vibhavadi 42), Chatuchak District, Vibhavadi Rangsit Road, Bangkok 10900 Bangkok, Province Bangkok 10900',
     neddHelp: 'Need help?',
     contactSupport: 'Contact Support',
+    getInTouch: 'Get in touch',
+    contactDes: 'You can reach us anytime',
+    contactFirstName: 'First Name',
+    contactLastName: 'Last Name',
+    contactEmail: 'Email',
+    contactPhone: 'Phone Number',
+    contactDetail: 'How can we help?',
+    contactSubmit: 'Submit',
+    contactAgree: 'By contacting us, your agree to our',
+    contactAgreeLink: 'Privacy Policy',
 
     // system
     tabAccount: 'Account',

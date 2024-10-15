@@ -18,7 +18,7 @@ export default function Permission() {
   const dispatch = useDispatch<storeDispatchType>()
   const { userData } = useSelector<DeviceStateStore, UserState>((state) => state.user)
   const [currentPage, setCurrentPage] = useState<number>(0)
-  const [cardsPerPage, setCardsPerPage] = useState<number>(50)
+  const [cardsPerPage, setCardsPerPage] = useState<number>(20)
   const [displayedCards, setDisplayedCards] = useState<usersType[]>(userData ? userData.slice(0, cardsPerPage) : [])
   const { searchQuery, expand, tokenDecode, hosId, wardId } = useSelector<DeviceStateStore, UtilsStateStore>((state) => state.utilsState)
   const { userId } = tokenDecode

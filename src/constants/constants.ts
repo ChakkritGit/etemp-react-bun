@@ -41,7 +41,7 @@ export const cookieOptions: CookieSetOptions = {
   domain: import.meta.env.VITE_APP_NODE_ENV === 'development' ? 'localhost' : import.meta.env.VITE_APP_DOMAIN, // ถ้าไม่ต้องการใช้ domain ให้คอมเมนต์หรือเอาบรรทัดนี้ออก
   secure: true, // ใช้ secure cookies เฉพาะเมื่อทำงานบน HTTPS
   httpOnly: false, // กำหนดเป็น true ถ้าต้องการให้ cookies สามารถเข้าถึงได้จากเซิร์ฟเวอร์เท่านั้น
-  sameSite: true // ตัวเลือก 'strict', 'lax', หรือ 'none'
+  sameSite: 'strict' // ตัวเลือก 'strict', 'lax', หรือ 'none'
 }
 
 export const resizeImage = (file: File, targetDPI: number = 300): Promise<File> => {
@@ -370,6 +370,10 @@ export const paginationCardHome = [
 ]
 
 export const paginationCardUsers = [
+  {
+    key: 20,
+    value: '20'
+  },
   {
     key: 50,
     value: '50'

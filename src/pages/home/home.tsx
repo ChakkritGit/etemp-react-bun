@@ -95,8 +95,8 @@ export default function Home() {
   let filteredDevicesList = useMemo(() => {
     return wardId !== ''
       ? devices.filter((item) => item.wardId.toLowerCase().includes(wardId.toLowerCase()))
-      : devices;
-  }, [wardId, devices])
+      : hosId === 'HID-DEVELOPMENT' ? devices : devices.filter((item) => item.ward.hospital.hosName.toLowerCase().includes(hosName.toLowerCase()))
+  }, [wardId, devices, hosId])
 
   useEffect(() => {
     filteredDevicesList = filteredDevicesList.filter((item) =>

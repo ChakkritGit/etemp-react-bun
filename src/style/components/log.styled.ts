@@ -26,6 +26,7 @@ margin: 1rem 1.5rem 1rem 0;
 `
 
 export const PreLine = styled.pre<{ $primary?: boolean }>`
+  height: calc(100dvh - 250px);
   max-height: calc(100dvh - 250px);
   max-width: ${props => props.$primary ? 'calc(100vw - 420px)' : 'calc(100vw - 550px)'};
   overflow-y: scroll;
