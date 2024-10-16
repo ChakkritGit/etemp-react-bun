@@ -39,17 +39,17 @@ const ModalAdjust = (modalProps: modalAdjustType) => {
   const dispatch = useDispatch<storeDispatchType>()
   const { cookieDecode } = useSelector<DeviceStateStore, UtilsStateStore>((state) => state.utilsState)
   const { token } = cookieDecode
+  const { devSerial } = devicesdata
   const [tempvalue, setTempvalue] = useState<number[]>([Number(devicesdata.probe[0]?.tempMin), Number(devicesdata.probe[0]?.tempMax)])
   const [humvalue, setHumvalue] = useState<number[]>([Number(devicesdata.probe[0]?.humMin), Number(devicesdata.probe[0]?.humMax)])
-
   const [formData, setFormData] = useState({
     adjustTemp: devicesdata.probe[0]?.adjustTemp,
     adjustHum: devicesdata.probe[0]?.adjustHum
   })
-
+  const deviceModel = devSerial.substring(0, 3) === "eTP" ? "etemp" : "items"
+  const version = devSerial.substring(3, 5).toLowerCase()
   const [mqttData, setMqttData] = useState({ temp: 0, humi: 0 })
   const [selectProbeI, setSelectProbeI] = useState(devicesdata.probe[0]?.probeId)
-
   const { theme } = useTheme()
 
   const handleTempChange = (_event: Event, newValue: number | number[]) => {
@@ -101,11 +101,10 @@ const ModalAdjust = (modalProps: modalAdjustType) => {
         showConfirmButton: false,
       })
       fetchData(token)
-      const deviceModel = devicesdata.devSerial.substring(0, 3) === "eTP" ? "eTEMP" : "iTEMP"
-      if (deviceModel === 'eTEMP') {
-        client.publish(`siamatic/etemp/v1/${devicesdata.devSerial}/adj`, 'on')
+      if (deviceModel === 'etemp') {
+        client.publish(`siamatic/${deviceModel}/${version}/${devicesdata.devSerial}/adj`, 'on')
       } else {
-        client.publish(`siamatic/items/v3/${devicesdata.devSerial}/adj`, 'on')
+        client.publish(`siamatic/${deviceModel}/${version}/${devicesdata.devSerial}/adj`, 'on')
       }
       client.publish(`${devicesdata.devSerial}/adj`, 'on')
       dispatch(setRefetchdata(true))
@@ -135,11 +134,10 @@ const ModalAdjust = (modalProps: modalAdjustType) => {
   }
 
   const closemodal = () => {
-    const deviceModel = devicesdata.devSerial.substring(0, 3) === "eTP" ? "eTEMP" : "iTEMP"
-    if (deviceModel === 'eTEMP') {
-      client.publish(`siamatic/etemp/v1/${devicesdata.devSerial}/temp`, 'off')
+    if (deviceModel === 'etemp') {
+      client.publish(`siamatic/${deviceModel}/${version}/${devicesdata.devSerial}/temp`, 'off')
     } else {
-      client.publish(`siamatic/items/v3/${devicesdata.devSerial}/temp`, 'off')
+      client.publish(`siamatic/${deviceModel}/${version}/${devicesdata.devSerial}/temp`, 'off')
     }
     client.publish(`${devicesdata.devSerial}/temp`, 'off')
     setShow(false)
@@ -153,11 +151,10 @@ const ModalAdjust = (modalProps: modalAdjustType) => {
         }
       })
 
-      const deviceModel = devicesdata.devSerial.substring(0, 3) === "eTP" ? "eTEMP" : "iTEMP"
-      if (deviceModel === 'eTEMP') {
-        client.publish(`siamatic/etemp/v1/${devicesdata.devSerial}/temp`, 'on')
+      if (deviceModel === 'etemp') {
+        client.publish(`siamatic/${deviceModel}/${version}/${devicesdata.devSerial}/temp`, 'on')
       } else {
-        client.publish(`siamatic/items/v3/${devicesdata.devSerial}/temp`, 'on')
+        client.publish(`siamatic/${deviceModel}/${version}/${devicesdata.devSerial}/temp`, 'on')
       }
       client.publish(`${devicesdata.devSerial}/temp`, 'on')
 

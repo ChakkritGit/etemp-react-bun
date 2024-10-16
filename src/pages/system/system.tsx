@@ -5,7 +5,7 @@ import {
   SubSideBottomContainer
 } from "../../style/style"
 import { useTranslation } from "react-i18next"
-import { RiAlarmWarningLine, RiFileTextLine, RiLogoutBoxRLine, RiPaletteLine, RiTranslate2, RiUser6Line } from "react-icons/ri"
+import { RiAlarmWarningLine, RiContactsBook2Line, RiFileTextLine, RiLogoutBoxRLine, RiPaletteLine, RiShieldCheckLine, RiTranslate2, RiUser6Line } from "react-icons/ri"
 import { useState } from "react"
 import Color from "./display"
 import { useNavigate } from "react-router-dom"
@@ -87,11 +87,13 @@ export default function System() {
             </div>
             <SubSideBottomContainer>
               <ListPrivacy onClick={() => navigate('/support')}>
+                <RiContactsBook2Line />
                 <span>
                   {t('contactSupport')}
                 </span>
               </ListPrivacy>
               <ListPrivacy onClick={() => navigate('/privacy-policy')}>
+                <RiShieldCheckLine />
                 <span>
                   {t('privacy')}
                 </span>

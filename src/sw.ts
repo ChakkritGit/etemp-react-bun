@@ -4,7 +4,7 @@ import { CacheFirst, NetworkFirst, NetworkOnly } from "workbox-strategies"
 import { BackgroundSyncPlugin } from "workbox-background-sync"
 
 declare let self: ServiceWorkerGlobalScope
-const CACHE_NAME = 'SMTrackPlus-v15'
+const CACHE_NAME = 'SMTrackPlus-cache-v24'
 
 cleanupOutdatedCaches()
 
@@ -281,7 +281,15 @@ self.addEventListener('activate', event => {
             return caches.delete(cacheName)
           }
         })
-      )
+      ).then(() => {
+        return self.clients.matchAll().then(clients => {
+          clients.forEach(client => {
+            client.postMessage({
+              type: 'RELOAD_PAGE'
+            })
+          })
+        })
+      })
     })
   )
 })

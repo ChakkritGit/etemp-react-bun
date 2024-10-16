@@ -53,7 +53,7 @@ export default function Dropdown() {
   const mapDefaultValue = <T, K extends keyof T>(data: T[], id: string, valueKey: K, valueKey2: K, labelKey: K): Option | undefined =>
     data.filter(item => `${item[valueKey]}-${item[valueKey2]}` === id).map(item => ({
       value: `${item[valueKey]}-${item[valueKey2]}` as unknown as string,
-      label: item[labelKey] as unknown as string
+      label: item[labelKey] && item[labelKey] !== "null" ? item[labelKey] as unknown as string : '- -'
     }))[0]
 
   let filteredDevicesList = useMemo(() => {

@@ -72,7 +72,7 @@ function ModalMute(modalProps: modalAdjustType) {
       client.publish(`siamatic/${deviceModel}/${version}/${devSerial}/mute/door/alarm`, 'on')
       client.publish(`${devSerial}/mute/long`, 'on')
     } else {
-      client.publish(`siamatic/${deviceModel}/${version}/${devSerial}/mute/door/alarm`, 'off')
+      client.publish(`siamatic/${deviceModel}/${version}/${devSerial}/mm`, 'off')
       client.publish(`${devSerial}/mute/long`, 'off')
     }
   }

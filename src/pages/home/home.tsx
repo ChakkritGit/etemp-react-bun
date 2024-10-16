@@ -530,7 +530,11 @@ export default function Home() {
                 </TagCurrentHos>
               }
             </DevHomeHeadTile>
-            <DevHomeSecctionOne $primary={scrolled} $expand={expand}>
+            <DevHomeSecctionOne
+              $primary={scrolled}
+              $expand={expand}
+              $inList={listAndgrid === 1}
+            >
               <div>
                 <HomeCard
                   deviceData={devices}

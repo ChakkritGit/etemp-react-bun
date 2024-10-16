@@ -60,6 +60,9 @@ function ModalNotification(modalProps: modalAdjustType) {
   const { choichOne, choichfour, choichthree, choichtwo } = muteMode
   const { theme } = useTheme()
   const { token } = cookieDecode
+  const { devSerial } = devicesdata
+  const deviceModel = devSerial.substring(0, 3) === "eTP" ? "etemp" : "items"
+  const version = devSerial.substring(3, 5).toLowerCase()
 
   const handleSubmitNoti = async (e: FormEvent) => {
     e.preventDefault()
@@ -92,11 +95,10 @@ function ModalNotification(modalProps: modalAdjustType) {
           showConfirmButton: false,
         })
         fetchData(token)
-        const deviceModel = devicesdata.devSerial.substring(0, 3) === "eTP" ? "eTEMP" : "iTEMP"
-        if (deviceModel === 'eTEMP') {
-          client.publish(`siamatic/etemp/v1/${devicesdata.devSerial}/adj`, 'on')
+        if (deviceModel === 'etemp') {
+          client.publish(`siamatic/${deviceModel}/${version}/${devicesdata.devSerial}/adj`, 'on')
         } else {
-          client.publish(`siamatic/items/v3/${devicesdata.devSerial}/adj`, 'on')
+          client.publish(`siamatic/${deviceModel}/${version}/${devicesdata.devSerial}/adj`, 'on')
         }
         client.publish(`${devicesdata.devSerial}/adj`, 'on')
         dispatch(setRefetchdata(true))

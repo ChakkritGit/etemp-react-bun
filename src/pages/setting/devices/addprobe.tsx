@@ -57,17 +57,18 @@ export default function Addprobe(addprobe: addprobeProps) {
   })
   const [mqttData, setMqttData] = useState({ temp: 0, humi: 0 })
   const { theme } = useTheme()
+  const deviceModel = probeData?.device.devSerial?.substring(0, 3) === "eTP" ? "etemp" : "items"
+  const version = probeData?.device.devSerial?.substring(3, 5).toLowerCase()
 
   const openmodal = () => {
     setShow(true)
   }
 
   const closemodal = () => {
-    const deviceModel = probeData?.devSerial.substring(0, 3) === "eTP" ? "eTEMP" : "iTEMP"
-    if (deviceModel === 'eTEMP') {
-      client.publish(`siamatic/etemp/v1/${probeData?.device.devSerial}/temp`, 'off')
+    if (deviceModel === 'etemp') {
+      client.publish(`siamatic/${deviceModel}/${version}/${probeData?.device.devSerial}/temp`, 'off')
     } else {
-      client.publish(`siamatic/items/v3/${probeData?.device.devSerial}/temp`, 'off')
+      client.publish(`siamatic/${deviceModel}/${version}/${probeData?.device.devSerial}/temp`, 'off')
     }
     client.publish(`${probeData?.devSerial}/temp`, 'off')
     setShow(false)
@@ -161,7 +162,7 @@ export default function Addprobe(addprobe: addprobeProps) {
       humMax: formdata.humvalue[1],
     }
     if (formdata.devSerial !== '' && formdata.adjustTemp !== '' && formdata.adjustHum !== '' && formdata.door !== '' && formdata.delay_time !== ''
-      && formdata.probeName !== '' && formdata.probeType !== '' && formdata.probeCh !== '' && formdata.location !== '' && formdata.tempvalue !== null && formdata.humvalue !== null) {
+      && formdata.probeName !== '' && formdata.probeType !== '' && formdata.probeCh !== '' && formdata.location !== null && formdata.tempvalue !== null && formdata.humvalue !== null) {
       try {
         const response = await axios.put<responseType<probeType>>(`${import.meta.env.VITE_APP_API}/probe/${probeData?.probeId}`, bodyData, {
           headers: {
@@ -177,11 +178,10 @@ export default function Addprobe(addprobe: addprobeProps) {
         })
         closemodal()
         dispatch(setRefetchdata(true))
-        const deviceModel = probeData?.devSerial.substring(0, 3) === "eTP" ? "eTEMP" : "iTEMP"
-        if (deviceModel === 'eTEMP') {
-          client.publish(`siamatic/etemp/v1/${probeData?.device.devSerial}/adj`, 'on')
+        if (deviceModel === 'etemp') {
+          client.publish(`siamatic/${deviceModel}/${version}/${probeData?.device.devSerial}/adj`, 'on')
         } else {
-          client.publish(`siamatic/items/v3/${probeData?.device.devSerial}/adj`, 'on')
+          client.publish(`siamatic/${deviceModel}/${version}/${probeData?.device.devSerial}/adj`, 'on')
         }
         client.publish(`${probeData?.device.devSerial}/adj`, 'on')
       } catch (error) {
@@ -282,11 +282,10 @@ export default function Addprobe(addprobe: addprobeProps) {
         }
       })
 
-      const deviceModel = probeData?.devSerial.substring(0, 3) === "eTP" ? "eTEMP" : "iTEMP"
-      if (deviceModel === 'eTEMP') {
-        client.publish(`siamatic/etemp/v1/${probeData?.device.devSerial}/temp`, 'on')
+      if (deviceModel === 'etemp') {
+        client.publish(`siamatic/${deviceModel}/${version}/${probeData?.device.devSerial}/temp`, 'on')
       } else {
-        client.publish(`siamatic/items/v3/${probeData?.device.devSerial}/temp`, 'on')
+        client.publish(`siamatic/i${deviceModel}/${version}/${probeData?.device.devSerial}/temp`, 'on')
       }
 
       client.publish(`${probeData?.devSerial}/temp`, 'on')
@@ -366,15 +365,18 @@ export default function Addprobe(addprobe: addprobeProps) {
 
       <Modal size={"lg"} show={show} onHide={closemodal}>
         <Modal.Header>
-          <ModalHead>
-            <strong>
-              {
-                pagestate === "add" ?
-                  t('addProbe')
-                  :
-                  t('editProbe')
-              }
-            </strong>
+          <ModalHead $primary>
+            <div>
+              <strong>
+                {
+                  pagestate === "add" ?
+                    t('addProbe')
+                    :
+                    t('editProbe')
+                }
+              </strong>
+              <span>{probeData?.devSerial}</span>
+            </div>
             {/* <pre>{JSON.stringify(formdata, null, 2)}</pre> */}
             <button onClick={closemodal}>
               <RiCloseLine />

@@ -13,7 +13,7 @@ import { useTranslation } from "react-i18next"
 import { swalWithBootstrapButtons } from "../../components/dropdown/sweetalertLib"
 import { RiCloseLine, RiDeleteBin2Line, RiPrinterLine } from "react-icons/ri"
 import Swal from "sweetalert2"
-import ReactToPrint from "react-to-print"
+import { useReactToPrint } from "react-to-print"
 import PrintComponent from "./printComponent"
 import { useDispatch, useSelector } from "react-redux"
 import { DeviceStateStore, UtilsStateStore } from "../../types/redux.type"
@@ -26,12 +26,16 @@ import { storeDispatchType } from "../../stores/store"
 export default function Repair() {
   const { t } = useTranslation()
   const dispatch = useDispatch<storeDispatchType>()
-  const { searchQuery, cookieDecode, reFetchData } = useSelector<DeviceStateStore, UtilsStateStore>((state) => state.utilsState)
+  const { searchQuery, cookieDecode } = useSelector<DeviceStateStore, UtilsStateStore>((state) => state.utilsState)
   const { token } = cookieDecode
   const [repairData, setRepairdata] = useState<repairType[]>([])
   const [repairDataPrint, setRepairdataprint] = useState<repairType[]>([])
   const [show, setshow] = useState(false)
-  const componentRef = useRef<HTMLDivElement | null>(null)
+  const contentRef = useRef<HTMLDivElement | null>(null)
+  const reactToPrintFn = useReactToPrint({
+    contentRef,
+    pageStyle: `@page { size: portrait; margin: 5mm; padding: 0mm; }`,
+  })
 
   useEffect(() => {
     return () => {
@@ -262,20 +266,21 @@ export default function Repair() {
           <Modal.Body>
             <PrintComponent
               data={repairDataPrint}
-              componentRef={componentRef}
+              componentRef={contentRef}
             />
           </Modal.Body>
           <Modal.Footer>
             <FormFlexBtn>
-              <ReactToPrint
+              <FormBtn type="submit" onClick={() => reactToPrintFn()}>
+                <RiPrinterLine />
+                Print
+              </FormBtn>
+              {/* <ReactToPrint
                 trigger={() =>
-                  <FormBtn type="submit">
-                    <RiPrinterLine />
-                    Print
-                  </FormBtn>}
+                  }
                 content={() => componentRef.current}
                 pageStyle={`@page { size: portrait; margin: 5mm; padding: 0mm; }`}
-              />
+              /> */}
             </FormFlexBtn>
           </Modal.Footer>
         </Modal>

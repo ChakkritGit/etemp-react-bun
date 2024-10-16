@@ -1713,7 +1713,7 @@ max-height: 130px;
 overflow: hidden;
 `
 
-export const DevHomeSecctionOne = styled.div<{ $primary?: boolean, $expand?: boolean }>`
+export const DevHomeSecctionOne = styled.div<{ $primary?: boolean, $expand?: boolean, $inList?: boolean }>`
 display: flex;
 justify-content: center;
 align-items: center;
@@ -1722,7 +1722,7 @@ gap: .5rem;
 margin-top: 1rem;
 position: sticky;
 top: 60px;
-height: ${props => props.$expand ? '55.38px' : '195.19px'};
+height: ${props => props.$expand ? '55.38px' : props.$inList ? 'max-content' : '195.19px'};
 padding: 1rem;
 z-index: 100;
 background-color: ${props => props.theme.mode === 'dark' ? 'rgba(37, 37, 37, .6)' : 'rgba(245, 245, 245, .7)'};
@@ -2289,6 +2289,13 @@ justify-content: space-between;
 align-items: center;
 width: 100%;
 padding: 0 .5rem 0 0;
+
+${props => props.$primary && css`
+  &>div:nth-child(1) {
+  display: flex;
+  flex-direction: column;
+}
+`}
 
 & button {
   display: flex;
@@ -4386,6 +4393,23 @@ export const ListPrivacy = styled.div`
     opacity: .5;
     transition: .3s;
   }
+
+  &>svg {
+    display: none;
+  }
+
+  @media (max-width: 430px) {
+    justify-content: center;
+
+  &>svg {
+    display: block;
+    font-size: 24px;
+  }
+
+  &>span {
+    display: none;
+  }
+}
 `
 
 export const ListMenu = styled.div<{ $primary?: boolean, $logout?: boolean }>`
@@ -5427,6 +5451,7 @@ export const ProfileFlex = styled.div<{ $radius?: number, $dimension?: number, $
 display: flex;
 gap: 2rem;
 margin: 1rem 0;
+justify-content: center;
 
 &>div {
   display: block;

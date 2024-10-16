@@ -69,7 +69,7 @@ export default {
     muteTemporary: 'ปิดเสียงชั่วคราว',
     muteAlways: 'ปิดเสียงตลอดเวลา (นาที)',
     muteAlert: 'ปิดเสียงประตู (นาที)',
-    muteDoor: 'ปิดเสียงประตู',
+    muteDoor: 'เสียงประตู',
     adjustHumGreater: 'ช่วงความชื่นไม่สามารถตั้งได้เกินช่วง 0-100%',
     clearShedule: 'ล้าง',
     everyDays: 'ทุกวัน',

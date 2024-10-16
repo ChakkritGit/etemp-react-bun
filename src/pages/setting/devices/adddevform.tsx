@@ -89,6 +89,9 @@ export default function Adddevform(managedevices: managedevices) {
   const [hosid, setHosid] = useState('')
   const { theme } = useTheme()
   const { resetHour, resetMinute } = resetTime
+  const { devSerial } = devdata
+  const deviceModel = devSerial?.substring(0, 3) === "eTP" ? "etemp" : "items"
+  const version = devSerial?.substring(3, 5).toLowerCase()
 
   const fetchWard = async () => {
     try {
@@ -225,11 +228,10 @@ export default function Adddevform(managedevices: managedevices) {
           showConfirmButton: false,
         })
         dispatch(fetchDevicesData(token))
-        const deviceModel = devdata.devSerial.substring(0, 3) === "eTP" ? "eTEMP" : "iTEMP"
-        if (deviceModel === 'eTEMP') {
-          client.publish(`siamatic/etemp/v1/${devdata.devSerial}/adj`, 'on')
+        if (deviceModel === 'etemp') {
+          client.publish(`siamatic/${deviceModel}/${version}/${devdata.devSerial}/adj`, 'on')
         } else {
-          client.publish(`siamatic/items/v3/${devdata.devSerial}/adj`, 'on')
+          client.publish(`siamatic/${deviceModel}/${version}/${devdata.devSerial}/adj`, 'on')
         }
         client.publish(`${devdata.devSerial}/adj`, 'on')
       } catch (error) {
@@ -290,11 +292,10 @@ export default function Adddevform(managedevices: managedevices) {
         showConfirmButton: false,
       })
       dispatch(fetchDevicesData(token))
-      const deviceModel = devdata.devSerial.substring(0, 3) === "eTP" ? "eTEMP" : "iTEMP"
-      if (deviceModel === 'eTEMP') {
-        client.publish(`siamatic/etemp/v1/${devdata.devSerial}/adj`, 'on')
+      if (deviceModel === 'etemp') {
+        client.publish(`siamatic/${deviceModel}/${version}/${devdata.devSerial}/adj`, 'on')
       } else {
-        client.publish(`siamatic/items/v3/${devdata.devSerial}/adj`, 'on')
+        client.publish(`siamatic/${deviceModel}/${version}/${devdata.devSerial}/adj`, 'on')
       }
       client.publish(`${devdata.devSerial}/adj`, 'on')
     } catch (error) {
@@ -348,11 +349,10 @@ export default function Adddevform(managedevices: managedevices) {
           showConfirmButton: false,
         })
         dispatch(fetchDevicesData(token))
-        const deviceModel = devdata.devSerial.substring(0, 3) === "eTP" ? "eTEMP" : "iTEMP"
-        if (deviceModel === 'eTEMP') {
-          client.publish(`siamatic/etemp/v1/${devdata.devSerial}/adj`, 'on')
+        if (deviceModel === 'etemp') {
+          client.publish(`siamatic/${deviceModel}/${version}/${devdata.devSerial}/adj`, 'on')
         } else {
-          client.publish(`siamatic/items/v3/${devdata.devSerial}/adj`, 'on')
+          client.publish(`siamatic/${deviceModel}/${version}/${devdata.devSerial}/adj`, 'on')
         }
         client.publish(`${devdata.devSerial}/adj`, 'on')
       } catch (error) {
@@ -415,11 +415,10 @@ export default function Adddevform(managedevices: managedevices) {
           showConfirmButton: false,
         })
         dispatch(fetchDevicesData(token))
-        const deviceModel = devdata.devSerial.substring(0, 3) === "eTP" ? "eTEMP" : "iTEMP"
-        if (deviceModel === 'eTEMP') {
-          client.publish(`siamatic/etemp/v1/${devdata.devSerial}/adj`, 'on')
+        if (deviceModel === 'etemp') {
+          client.publish(`siamatic/${deviceModel}/${version}/${devdata.devSerial}/adj`, 'on')
         } else {
-          client.publish(`siamatic/items/v3/${devdata.devSerial}/adj`, 'on')
+          client.publish(`siamatic/${deviceModel}/${version}/${devdata.devSerial}/adj`, 'on')
         }
         client.publish(`${devdata.devSerial}/adj`, 'on')
       } catch (error) {
@@ -477,11 +476,10 @@ export default function Adddevform(managedevices: managedevices) {
           showConfirmButton: false,
         })
         dispatch(fetchDevicesData(token))
-        const deviceModel = devdata.devSerial.substring(0, 3) === "eTP" ? "eTEMP" : "iTEMP"
-        if (deviceModel === 'eTEMP') {
-          client.publish(`siamatic/etemp/v1/${devdata.devSerial}/adj`, 'on')
+        if (deviceModel === 'etemp') {
+          client.publish(`siamatic/${deviceModel}/${version}/${devdata.devSerial}/adj`, 'on')
         } else {
-          client.publish(`siamatic/items/v3/${devdata.devSerial}/adj`, 'on')
+          client.publish(`siamatic/${deviceModel}/${version}/${devdata.devSerial}/adj`, 'on')
         }
         client.publish(`${devdata.devSerial}/adj`, 'on')
       } catch (error) {
@@ -539,11 +537,10 @@ export default function Adddevform(managedevices: managedevices) {
         showConfirmButton: false,
       })
       dispatch(fetchDevicesData(token))
-      const deviceModel = devdata.devSerial.substring(0, 3) === "eTP" ? "eTEMP" : "iTEMP"
-      if (deviceModel === 'eTEMP') {
-        client.publish(`siamatic/etemp/v1/${devdata.devSerial}/adj`, 'on')
+      if (deviceModel === 'etemp') {
+        client.publish(`siamatic/${deviceModel}/${version}/${devdata.devSerial}/adj`, 'on')
       } else {
-        client.publish(`siamatic/items/v3/${devdata.devSerial}/adj`, 'on')
+        client.publish(`siamatic/${deviceModel}/${version}/${devdata.devSerial}/adj`, 'on')
       }
       client.publish(`${devdata.devSerial}/adj`, 'on')
     } catch (error) {
@@ -811,14 +808,18 @@ export default function Adddevform(managedevices: managedevices) {
                     </Col>
                     <Col lg={6}>
                       <InputGroup className="mb-3">
-                        <Form.Label className="w-auto">
+                        <Form.Label className="w-100">
                           {t('devicePicture')}
                           <ProfileFlex $radius={10} $dimension={250}>
                             <div>
                               <img src={devicePicture ? devicePicture : `${import.meta.env.VITE_APP_IMG}/img/default-pic.png`} alt="down-picture" />
-                              <label htmlFor={'user-file-upload'} >
+                              <label htmlFor={'user-file-upload'}>
                                 <RiEditLine />
-                                <input id="user-file-upload" type="file" accept="image/gif, image/jpg, image/jpeg, image/png" onChange={fileSelected} />
+                                <input
+                                  id="user-file-upload"
+                                  type="file"
+                                  accept="image/gif, image/jpg, image/jpeg, image/png"
+                                  onChange={fileSelected} />
                               </label>
                             </div>
                           </ProfileFlex>
@@ -853,11 +854,10 @@ export default function Adddevform(managedevices: managedevices) {
                                     ))}
                                   </Form.Select>
                                   <UploadButton type='button' disabled={firmwareName === ''} onClick={() => {
-                                    const deviceModel = devdata.devSerial.substring(0, 3) === "eTP" ? "eTEMP" : "iTEMP"
-                                    if (deviceModel === 'eTEMP') {
-                                      client.publish(`siamatic/etemp/v1/${devdata.devSerial}/firmware`, firmwareName)
+                                    if (deviceModel === 'etemp') {
+                                      client.publish(`siamatic/${deviceModel}/${version}/${devdata.devSerial}/firmware`, firmwareName)
                                     } else {
-                                      client.publish(`siamatic/items/v3/${devdata.devSerial}/firmware`, firmwareName)
+                                      client.publish(`siamatic/${deviceModel}/${version}/${devdata.devSerial}/firmware`, firmwareName)
                                     }
                                     client.publish(`${devdata.devSerial}/firmware`, firmwareName)
                                   }}>

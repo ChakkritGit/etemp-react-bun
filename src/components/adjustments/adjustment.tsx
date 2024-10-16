@@ -206,7 +206,7 @@ function Adjustment(adjustProps: AdjustmentType) {
             <span>{t('currentTemp')}</span>
             <div>
               <span>
-                <span>{mqttData.temp.toFixed(2)}</span> °C
+                <span>{mqttData.temp ? mqttData.temp.toFixed(2) : '- -'}</span> °C
               </span>
             </div>
           </div>
@@ -216,7 +216,7 @@ function Adjustment(adjustProps: AdjustmentType) {
             <span>{t('adjustAfterTemp')}</span>
             <div>
               <span>
-                <span>{(mqttData.temp + formData.adjustTemp - devicesdata.probe[0]?.adjustTemp).toFixed(2)}</span> °C
+                <span>{(mqttData.temp + formData.adjustTemp - devicesdata.probe[0]?.adjustTemp) ? (mqttData.temp + formData.adjustTemp - devicesdata.probe[0]?.adjustTemp).toFixed(2) : '- -'}</span> °C
               </span>
             </div>
           </div>
@@ -228,7 +228,7 @@ function Adjustment(adjustProps: AdjustmentType) {
             <span>{t('currentHum')}</span>
             <div>
               <span>
-                <span>{mqttData.humi.toFixed(2)}</span> %
+                <span>{mqttData.humi ? mqttData.humi.toFixed(2) : '- -'}</span> %
               </span>
             </div>
           </div>
@@ -238,7 +238,7 @@ function Adjustment(adjustProps: AdjustmentType) {
             <span>{t('adjustAfterHum')}</span>
             <div>
               <span>
-                <span>{(mqttData.humi + formData.adjustHum - devicesdata.probe[0]?.adjustHum).toFixed(2)}</span> %
+                <span>{(mqttData.humi + formData.adjustHum - devicesdata.probe[0]?.adjustHum) ? (mqttData.humi + formData.adjustHum - devicesdata.probe[0]?.adjustHum).toFixed(2) : '- -'}</span> %
               </span>
             </div>
           </div>

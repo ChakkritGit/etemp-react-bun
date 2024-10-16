@@ -35,7 +35,7 @@ const Comparechart = () => {
   const { t } = useTranslation()
   const dispatch = useDispatch<storeDispatchType>()
   const navigate = useNavigate()
-  const { expand, cookieDecode, deviceId, wardId } = useSelector<DeviceStateStore, UtilsStateStore>((state) => state.utilsState)
+  const { expand, cookieDecode, deviceId, wardId, hosId } = useSelector<DeviceStateStore, UtilsStateStore>((state) => state.utilsState)
   const { hosName, token, hosImg } = cookieDecode
   const [pageNumber, setPagenumber] = useState(1)
   const canvasChartRef = useRef<HTMLDivElement | null>(null)
@@ -253,8 +253,10 @@ const Comparechart = () => {
   let filteredDevicesList = useMemo(() => {
     return wardId !== ''
       ? devices.filter((item) => item.wardId.includes(wardId))
-      : devices;
-  }, [wardId, devices])
+      : hosId && hosId !== ''
+        ? devices.filter((item) => item.hosId.includes(hosId))
+        : devices
+  }, [wardId, devices, hosId])
 
   return (
     <Container fluid>

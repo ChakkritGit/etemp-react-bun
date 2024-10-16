@@ -1,4 +1,3 @@
-// ThemeProvider.tsx
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react'
 import { ThemeProvider as StyledThemeProvider } from 'styled-components'
 
@@ -40,6 +39,32 @@ const ThemeProviders: React.FC<ThemeProvidersProps> = ({ children }) => {
       : 'light'
     setTheme({ mode: storedTheme || defaultTheme })
   }, [])
+
+  // Use effect to update the status bar color based on the theme
+  useEffect(() => {
+    const themeColorMetaTag = document.querySelector('meta[name="theme-color"]')
+    const currentColor = theme.mode === 'light' ? '#ffffffb3' : '#35353599'
+
+    if (themeColorMetaTag) {
+      themeColorMetaTag.setAttribute('content', currentColor)
+    } else {
+      const newMetaTag = document.createElement('meta')
+      newMetaTag.setAttribute('name', 'theme-color')
+      newMetaTag.setAttribute('content', currentColor)
+      document.head.appendChild(newMetaTag)
+    }
+
+    // For iOS Safari
+    const statusBarMetaTag = document.querySelector('meta[name="apple-mobile-web-app-status-bar-style"]')
+    if (statusBarMetaTag) {
+      statusBarMetaTag.setAttribute('content', currentColor)
+    } else {
+      const newStatusBarMetaTag = document.createElement('meta')
+      newStatusBarMetaTag.setAttribute('name', 'apple-mobile-web-app-status-bar-style')
+      newStatusBarMetaTag.setAttribute('content', currentColor)
+      document.head.appendChild(newStatusBarMetaTag)
+    }
+  }, [theme.mode])
 
   return (
     <ThemeContext.Provider value={{ theme, toggleTheme }}>

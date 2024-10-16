@@ -1,5 +1,7 @@
 import {
+  RiAlarmWarningFill,
   RiBatteryChargeLine,
+  RiBellFill,
   RiCloseLine, RiCollageLine, RiCpuLine, RiDoorClosedLine, RiFolderSettingsLine,
   RiPlugLine, RiSdCardMiniLine, RiSettings3Line, RiShieldCheckLine,
   RiSignalWifi1Line, RiTempColdLine
@@ -9,7 +11,7 @@ import {
   DashboardDevicesDetails, DashboardDevicesInfo,
   DeviceDetailsBody, DeviceDetailsBodyInfo, DeviceDetailsBodyimg,
   DeviceDetailsHead, DevicesBodyStatus, ExpandPicture, FormBtn,
-  FormFlexBtn, ModalHead, SpanCardDash, TooltipSpanLeft
+  FormFlexBtn, LineHr, ModalHead, SpanCardDash, TooltipSpanLeft
 } from "../../style/style"
 import { devicesType } from "../../types/device.type"
 import { CardstatusNomal, CardstatusSpecial } from "./cardstatus"
@@ -27,6 +29,10 @@ import { setRefetchdata, setShowAlert } from "../../stores/utilsStateSlice"
 import { storeDispatchType } from "../../stores/store"
 import { fetchDevicesLog } from "../../stores/LogsSlice"
 import Adjustment from "../adjustments/adjustment"
+import ModalNotification from "../home/modal.noti"
+import ModalMute from "../home/modal.mute"
+import { filtersDevices } from "../../stores/dataArraySlices"
+import { MuteFlex, OpenSettingBuzzer } from "../../style/components/home.styled"
 
 type devicesinfo = {
   devicesData: devicesType,
@@ -48,7 +54,7 @@ export default function Devicesinfo(devicesinfo: devicesinfo) {
   const { token } = cookieDecode
   const [show, setShow] = useState(false)
   const [showPic, setShowpic] = useState(false)
-  const { probe } = devicesData
+  const { probe, devSerial } = devicesData
   const [formdata, setFormdata] = useState({
     adjustTemp: probe[0]?.adjustTemp,
     adjustHum: probe[0]?.adjustHum
@@ -57,6 +63,10 @@ export default function Devicesinfo(devicesinfo: devicesinfo) {
   const [humvalue, setHumvalue] = useState<number[]>([probe[0]?.humMin, probe[0]?.humMax])
   const [mqttData, setMqttData] = useState({ temp: 0, humi: 0 })
   const [dataData, setDateData] = useState<dateCalType>({} as dateCalType)
+  const [showSetting, setShowSetting] = useState(false)
+  const [showSettingMute, setShowSettingMute] = useState(false)
+  const deviceModel = devSerial.substring(0, 3) === "eTP" ? "etemp" : "items"
+  const version = devSerial.substring(3, 5).toLowerCase()
 
   const handleTempChange = (_event: Event, newValue: number | number[]) => {
     setTempvalue(newValue as number[])
@@ -78,11 +88,10 @@ export default function Devicesinfo(devicesinfo: devicesinfo) {
   }
 
   const closemodal = () => {
-    const deviceModel = devicesData.devSerial.substring(0, 3) === "eTP" ? "eTEMP" : "iTEMP"
-    if (deviceModel === 'eTEMP') {
-      client.publish(`siamatic/etemp/v1/${devicesData.devSerial}/temp`, 'off')
+    if (deviceModel === 'etemp') {
+      client.publish(`siamatic/${deviceModel}/${version}/${devicesData.devSerial}/temp`, 'off')
     } else {
-      client.publish(`siamatic/items/v3/${devicesData.devSerial}/temp`, 'off')
+      client.publish(`siamatic/${deviceModel}/${version}/${devicesData.devSerial}/temp`, 'off')
     }
     client.publish(`${devicesData.devSerial}/temp`, 'off')
     setShow(false)
@@ -155,11 +164,10 @@ export default function Devicesinfo(devicesinfo: devicesinfo) {
         }
       })
 
-      const deviceModel = devicesData.devSerial.substring(0, 3) === "eTP" ? "eTEMP" : "iTEMP"
-      if (deviceModel === 'eTEMP') {
-        client.publish(`siamatic/etemp/v1/${devicesData.devSerial}/temp`, 'on')
+      if (deviceModel === 'etemp') {
+        client.publish(`siamatic/${deviceModel}/${version}/${devicesData.devSerial}/temp`, 'on')
       } else {
-        client.publish(`siamatic/items/v3/${devicesData.devSerial}/temp`, 'on')
+        client.publish(`siamatic/${deviceModel}/${version}/${devicesData.devSerial}/temp`, 'on')
       }
       client.publish(`${devicesData.devSerial}/temp`, 'on')
 
@@ -249,6 +257,14 @@ export default function Devicesinfo(devicesinfo: devicesinfo) {
     }
   }, [show])
 
+  const openSettingMute = () => {
+    setShowSettingMute(true)
+  }
+
+  const openSetting = () => {
+    setShowSetting(true)
+  }
+
   return (
     <DashboardDevicesInfo>
       <DashboardDevicesDetails>
@@ -294,7 +310,7 @@ export default function Devicesinfo(devicesinfo: devicesinfo) {
         <CardstatusSpecial
           title={t('dashProbe')}
           svg={<RiCpuLine />}
-          valuesone={`Temp: ${devicesData?.log[0]?.tempAvg ? devicesData?.log[0]?.tempAvg.toFixed(2) : '- -'}`}
+          valuesone={`Temp: ${Number(devicesData?.log[0]?.tempAvg.toFixed(2)) <= probe[0]?.tempMin ? '↓' : Number(devicesData?.log[0]?.tempAvg.toFixed(2)) >= probe[0]?.tempMax ? '↑' : ''} ${devicesData?.log[0]?.tempAvg ? devicesData?.log[0]?.tempAvg.toFixed(2) : '- -'}`}
           valuestwo={`Hum: ${devicesData?.log[0]?.humidityAvg ? devicesData?.log[0]?.humidityAvg.toFixed(2) : '- -'}`}
           pipeone={'°C'}
           pipetwo={'%RH'}
@@ -418,6 +434,20 @@ export default function Devicesinfo(devicesinfo: devicesinfo) {
                 setTempvalue={setTempvalue}
                 tempvalue={tempvalue}
               />
+              <Form.Label className="w-100 form-label">
+                <span><b>{t('muteSetting')}</b></span>
+                <LineHr />
+              </Form.Label>
+              <MuteFlex>
+                <OpenSettingBuzzer type="button" onClick={() => { openSetting(); closemodal(); }}>
+                  <RiAlarmWarningFill size={24} />
+                  <span>{t('notificationSettings')}</span>
+                </OpenSettingBuzzer>
+                <OpenSettingBuzzer type="button" onClick={() => { openSettingMute(); closemodal(); }}>
+                  <RiBellFill size={24} />
+                  <span>{t('muteSettings')}</span>
+                </OpenSettingBuzzer>
+              </MuteFlex>
             </Row>
           </Modal.Body>
           <Modal.Footer>
@@ -454,6 +484,26 @@ export default function Devicesinfo(devicesinfo: devicesinfo) {
           </Modal.Body>
         </Form>
       </Modal>
+
+      {
+        showSetting && devicesData && <ModalNotification
+          key={devicesData.devId}
+          devicesdata={devicesData}
+          fetchData={filtersDevices}
+          setShow={setShow}
+          showSetting={showSetting}
+          setShowSetting={setShowSetting}
+        />
+      }
+      {
+        showSettingMute && devicesData && <ModalMute
+          key={devicesData.devId}
+          devicesdata={devicesData}
+          setShow={setShow}
+          showSettingMute={showSettingMute}
+          setShowSettingMute={setShowSettingMute}
+        />
+      }
     </DashboardDevicesInfo>
   )
 }

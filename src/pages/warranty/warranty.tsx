@@ -5,7 +5,7 @@ import Loading from "../../components/loading/loading"
 import { useTranslation } from "react-i18next"
 import { RiAddLine, RiCloseLine, RiDeleteBin2Line, RiEditLine, RiFileCloseLine, RiInformationLine, RiLoader3Line, RiPrinterLine } from "react-icons/ri"
 import DataTable, { TableColumn } from "react-data-table-component"
-import ReactToPrint from "react-to-print"
+import { useReactToPrint } from "react-to-print"
 import Printwarranty from "./printwarranty"
 import { useDispatch, useSelector } from "react-redux"
 import { DeviceState, DeviceStateStore, UtilsStateStore } from "../../types/redux.type"
@@ -14,8 +14,6 @@ import { warrantyType } from "../../types/warranty.type"
 import { responseType } from "../../types/response.type"
 import { swalWithBootstrapButtons } from "../../components/dropdown/sweetalertLib"
 import Swal from "sweetalert2"
-import { motion } from "framer-motion"
-import { items } from "../../animation/animate"
 import Select from 'react-select'
 import { setRefetchdata, setSearchQuery, setShowAlert } from "../../stores/utilsStateSlice"
 import { storeDispatchType } from "../../stores/store"
@@ -79,7 +77,7 @@ export default function Warranty() {
   const [deviceDetails, setDevicedetails] = useState<warrantyType[]>([])
   const [warrantyData, setWarrantyData] = useState<warrantyType[]>([])
   const [isLoading, setIsLoading] = useState<boolean>(false)
-  const componentRef = useRef<HTMLDivElement | null>(null)
+  const contentRef = useRef<HTMLDivElement>(null)
   const { devices } = useSelector<DeviceStateStore, DeviceState>((state) => state.devices)
   const [showTwo, setShowTwo] = useState(false)
   const [warrantyObject, setWarrantyObject] = useState({
@@ -97,6 +95,10 @@ export default function Warranty() {
   const { wardId, devName, expireData, installDate, invoice, devSerial, productName, customerAddress, customerName, saleDept } = warrantyObject
   const { theme } = useTheme()
   const [pagestate, setPagestate] = useState<string>('add')
+  const reactToPrintFn = useReactToPrint({
+    contentRef,
+    pageStyle: `@page { size: portrait; margin: 5mm; padding: 0mm; }`,
+  })
 
   useEffect(() => {
     dispatch(setSearchQuery(''))
@@ -542,185 +544,114 @@ export default function Warranty() {
 
   return (
     <Container fluid>
-      <motion.div
-        variants={items}
-        initial="hidden"
-        animate="visible"
-      >
-        <WarrantyHead>
-          <div>
-            <WarrantyHeadBtn $primary={pagenumber === 1} onClick={() => setpagenumber(1)}>{t('tabWarrantyExpired')}</WarrantyHeadBtn>
-            <WarrantyHeadBtn $primary={pagenumber === 2} onClick={() => setpagenumber(2)}>{t('tabWarrantyAfterSale')}</WarrantyHeadBtn>
-            <WarrantyHeadBtn $primary={pagenumber === 3} onClick={() => setpagenumber(3)}>{t('tabWarrantyAll')}</WarrantyHeadBtn>
-          </div>
-          {userLevel !== '2' && userLevel !== '3' && <div>
-            <AddWarrantyButton onClick={() => { openModalTwo(); setPagestate('add') }}>
-              {t('addWarrantyButton')}
-              <RiAddLine />
-            </AddWarrantyButton>
-          </div>}
-        </WarrantyHead>
-        <WarrantyBody>
-          {
-            !isLoading ?
-              pagenumber === 1 ?
+      <WarrantyHead>
+        <div>
+          <WarrantyHeadBtn $primary={pagenumber === 1} onClick={() => setpagenumber(1)}>{t('tabWarrantyExpired')}</WarrantyHeadBtn>
+          <WarrantyHeadBtn $primary={pagenumber === 2} onClick={() => setpagenumber(2)}>{t('tabWarrantyAfterSale')}</WarrantyHeadBtn>
+          <WarrantyHeadBtn $primary={pagenumber === 3} onClick={() => setpagenumber(3)}>{t('tabWarrantyAll')}</WarrantyHeadBtn>
+        </div>
+        {userLevel !== '2' && userLevel !== '3' && <div>
+          <AddWarrantyButton onClick={() => { openModalTwo(); setPagestate('add') }}>
+            {t('addWarrantyButton')}
+            <RiAddLine />
+          </AddWarrantyButton>
+        </div>}
+      </WarrantyHead>
+      <WarrantyBody>
+        {
+          !isLoading ?
+            pagenumber === 1 ?
+              <>
+                {
+                  expiredArray.length > 0 ?
+                    <DataTableComponent
+                      warrantyData={expiredArray}
+                    />
+                    :
+                    <Loading loading={false} title={t('nodata')} icn={<RiFileCloseLine />} />
+                }
+              </>
+              :
+              pagenumber === 2 ?
                 <>
                   {
-                    expiredArray.length > 0 ?
+                    onwarrantyArray.length > 0 ?
                       <DataTableComponent
-                        warrantyData={expiredArray}
+                        warrantyData={onwarrantyArray}
                       />
                       :
                       <Loading loading={false} title={t('nodata')} icn={<RiFileCloseLine />} />
                   }
                 </>
                 :
-                pagenumber === 2 ?
-                  <>
-                    {
-                      onwarrantyArray.length > 0 ?
-                        <DataTableComponent
-                          warrantyData={onwarrantyArray}
-                        />
-                        :
-                        <Loading loading={false} title={t('nodata')} icn={<RiFileCloseLine />} />
-                    }
-                  </>
-                  :
-                  <>
-                    {
-                      devicesArray.length > 0 ?
-                        <DataTableComponent
-                          warrantyData={devicesArray}
-                        />
-                        :
-                        <Loading loading={false} title={t('nodata')} icn={<RiFileCloseLine />} />
-                    }
-                  </>
-              :
-              <Loading loading={true} title={t('loading')} icn={<RiLoader3Line />} />
-          }
-        </WarrantyBody>
+                <>
+                  {
+                    devicesArray.length > 0 ?
+                      <DataTableComponent
+                        warrantyData={devicesArray}
+                      />
+                      :
+                      <Loading loading={false} title={t('nodata')} icn={<RiFileCloseLine />} />
+                  }
+                </>
+            :
+            <Loading loading={true} title={t('loading')} icn={<RiLoader3Line />} />
+        }
+      </WarrantyBody>
 
-        <Modal size='lg' show={showTwo} onHide={closeModalTwo}>
-          <Modal.Header>
-            <ModalHead>
-              <strong>
-                {
-                  pagestate === "add" ?
-                    t('addWarrantyButton')
-                    :
-                    t('editWarranty')
-                }
-              </strong>
-              <button onClick={closeModalTwo}>
-                <RiCloseLine />
-              </button>
-            </ModalHead>
-          </Modal.Header>
-          <Form onSubmit={pagestate === "add" ? handleSubmit : handleSubmitEdit}>
-            <Modal.Body>
-              <Row>
-                {/* <pre>
+      <Modal size='lg' show={showTwo} onHide={closeModalTwo}>
+        <Modal.Header>
+          <ModalHead>
+            <strong>
+              {
+                pagestate === "add" ?
+                  t('addWarrantyButton')
+                  :
+                  t('editWarranty')
+              }
+            </strong>
+            <button onClick={closeModalTwo}>
+              <RiCloseLine />
+            </button>
+          </ModalHead>
+        </Modal.Header>
+        <Form onSubmit={pagestate === "add" ? handleSubmit : handleSubmitEdit}>
+          <Modal.Body>
+            <Row>
+              {/* <pre>
                   {JSON.stringify(warrantyObject, null, 2)}
                 </pre> */}
+              <Col lg={12}>
+                <Form.Label className="w-100">
+                  {t('invoice')}
+                  <Form.Control
+                    type="text"
+                    value={invoice}
+                    onChange={(e) => setWarrantyObject({ ...warrantyObject, invoice: e.target.value })}
+                    className="mt-2"
+                  />
+                </Form.Label>
+              </Col>
+              <Col sm={12}>
+                <Form.Label className="w-100">
+                  {t('productName')}
+                  <Form.Control
+                    type="text"
+                    value={productName}
+                    onChange={(e) => setWarrantyObject({ ...warrantyObject, productName: e.target.value })}
+                    className="mt-2"
+                  />
+                </Form.Label>
+              </Col>
+              {
+                pagestate === 'add' &&
                 <Col lg={12}>
                   <Form.Label className="w-100">
-                    {t('invoice')}
-                    <Form.Control
-                      type="text"
-                      value={invoice}
-                      onChange={(e) => setWarrantyObject({ ...warrantyObject, invoice: e.target.value })}
-                      className="mt-2"
-                    />
-                  </Form.Label>
-                </Col>
-                <Col sm={12}>
-                  <Form.Label className="w-100">
-                    {t('productName')}
-                    <Form.Control
-                      type="text"
-                      value={productName}
-                      onChange={(e) => setWarrantyObject({ ...warrantyObject, productName: e.target.value })}
-                      className="mt-2"
-                    />
-                  </Form.Label>
-                </Col>
-                {
-                  pagestate === 'add' &&
-                  <Col lg={12}>
-                    <Form.Label className="w-100">
-                      {t('selectDeviceDrop')}
-                      <Select
-                        options={mapOptions<WarrantyOption, keyof WarrantyOption>(devices, 'devName', 'devSerial')}
-                        value={mapDefaultValue<WarrantyOption, keyof WarrantyOption>(devices, String(devName), 'devName', 'devSerial')}
-                        onChange={(e) => setWarrantyObject({ ...warrantyObject, devName: String(e?.value), devSerial: String(e?.label.substring(0, 3) === "eTP" ? 'eTEMP' : 'i-TeMS') })}
-                        autoFocus={false}
-                        placeholder={t('selectDeviceDrop')}
-                        styles={{
-                          control: (baseStyles, state) => ({
-                            ...baseStyles,
-                            backgroundColor: theme.mode === 'dark' ? "var(--main-last-color)" : "var(--white-grey-1)",
-                            borderColor: theme.mode === 'dark' ? "var(--border-dark-color)" : "var(--grey)",
-                            boxShadow: state.isFocused ? "0 0 0 1px var(--main-color)" : "",
-                            borderRadius: "var(--border-radius-big)"
-                          }),
-                        }}
-                        theme={(theme) => ({
-                          ...theme,
-                          colors: {
-                            ...theme.colors,
-                            primary50: 'var(--main-color-opacity2)',
-                            primary25: 'var(--main-color-opacity2)',
-                            primary: 'var(--main-color)',
-                          },
-                        })}
-                        className="react-select-container"
-                        classNamePrefix="react-select"
-                      />
-                    </Form.Label>
-                  </Col>
-                }
-                <Col sm={12}>
-                  <Form.Label className="w-100">
-                    {t('modelName')}
-                    <Form.Control
-                      type="text"
-                      value={devSerial}
-                      onChange={(e) => setWarrantyObject({ ...warrantyObject, devSerial: e.target.value })}
-                      className="mt-2"
-                    />
-                  </Form.Label>
-                </Col>
-                <Col lg={6}>
-                  <Form.Label className="w-100">
-                    {t('installDate')}
-                    <Form.Control
-                      type="date"
-                      value={installDate}
-                      onChange={(e) => setWarrantyObject({ ...warrantyObject, installDate: e.target.value })}
-                      className="mt-2"
-                    />
-                  </Form.Label>
-                </Col>
-                <Col lg={6}>
-                  <Form.Label className="w-100">
-                    {t('endDate')}
-                    <Form.Control
-                      type="date"
-                      value={expireData}
-                      onChange={(e) => setWarrantyObject({ ...warrantyObject, expireData: e.target.value })}
-                      className="mt-2"
-                    />
-                  </Form.Label>
-                </Col>
-                <Col sm={12}>
-                  <Form.Label className="w-100">
-                    {t('customerName')}
+                    {t('selectDeviceDrop')}
                     <Select
-                      options={mapOptionsHospital<Hospital, keyof Hospital>(hospitalsData, 'hosId', 'hosName')}
-                      value={mapDefaultValueHospital<Hospital, keyof Hospital>(hospitalsData, String(customerName), 'hosId', 'hosName')}
-                      onChange={setHosId}
+                      options={mapOptions<WarrantyOption, keyof WarrantyOption>(devices, 'devName', 'devSerial')}
+                      value={mapDefaultValue<WarrantyOption, keyof WarrantyOption>(devices, String(devName), 'devName', 'devSerial')}
+                      onChange={(e) => setWarrantyObject({ ...warrantyObject, devName: String(e?.value), devSerial: String(e?.label.substring(0, 3) === "eTP" ? 'eTEMP' : 'i-TeMS') })}
                       autoFocus={false}
                       placeholder={t('selectDeviceDrop')}
                       styles={{
@@ -746,98 +677,158 @@ export default function Warranty() {
                     />
                   </Form.Label>
                 </Col>
-                <Col sm={12}>
-                  <Form.Label className="w-100">
-                    {t('customerAddress')}
-                    <Form.Control
-                      type="text"
-                      value={customerAddress}
-                      onChange={(e) => setWarrantyObject({ ...warrantyObject, customerAddress: e.target.value })}
-                      className="mt-2"
-                    />
-                  </Form.Label>
-                </Col>
-                <Col sm={12}>
-                  <Form.Label className="w-100">
-                    {t('distributionCompany')}
-                    <Select
-                      options={mapOptionsHospital<Company, keyof Company>(companyList, 'key', 'value')}
-                      value={mapDefaultValueHospital<Company, keyof Company>(companyList, String(saleDept), 'key', 'value')}
-                      onChange={setSaleDept}
-                      autoFocus={false}
-                      placeholder={t('selectDeviceDrop')}
-                      styles={{
-                        control: (baseStyles, state) => ({
-                          ...baseStyles,
-                          backgroundColor: theme.mode === 'dark' ? "var(--main-last-color)" : "var(--white-grey-1)",
-                          borderColor: theme.mode === 'dark' ? "var(--border-dark-color)" : "var(--grey)",
-                          boxShadow: state.isFocused ? "0 0 0 1px var(--main-color)" : "",
-                          borderRadius: "var(--border-radius-big)"
-                        }),
-                      }}
-                      theme={(theme) => ({
-                        ...theme,
-                        colors: {
-                          ...theme.colors,
-                          primary50: 'var(--main-color-opacity2)',
-                          primary25: 'var(--main-color-opacity2)',
-                          primary: 'var(--main-color)',
-                        },
-                      })}
-                      className="react-select-container"
-                      classNamePrefix="react-select"
-                    />
-                  </Form.Label>
-                </Col>
-              </Row>
-            </Modal.Body>
-            <Modal.Footer>
-              <FormFlexBtn>
-                <FormBtn type="submit">
-                  {t('saveButton')}
-                </FormBtn>
-              </FormFlexBtn>
-            </Modal.Footer>
-          </Form>
-        </Modal>
-
-        <Modal scrollable show={show} onHide={closemodal} size="lg">
-          <Modal.Header>
-            <ModalHead>
-              <strong>
-                Details
-              </strong>
-              <button onClick={closemodal}>
-                <RiCloseLine />
-              </button>
-            </ModalHead>
-          </Modal.Header>
-          <Modal.Body>
-            {
-              deviceDetails.length > 0 ?
-                <Printwarranty
-                  data={deviceDetails}
-                  componentRef={componentRef}
-                />
-                :
-                <Loading loading={false} title={t('nodata')} icn={<RiFileCloseLine />} />
-            }
+              }
+              <Col sm={12}>
+                <Form.Label className="w-100">
+                  {t('modelName')}
+                  <Form.Control
+                    type="text"
+                    value={devSerial}
+                    onChange={(e) => setWarrantyObject({ ...warrantyObject, devSerial: e.target.value })}
+                    className="mt-2"
+                  />
+                </Form.Label>
+              </Col>
+              <Col lg={6}>
+                <Form.Label className="w-100">
+                  {t('installDate')}
+                  <Form.Control
+                    type="date"
+                    value={installDate}
+                    onChange={(e) => setWarrantyObject({ ...warrantyObject, installDate: e.target.value })}
+                    className="mt-2"
+                  />
+                </Form.Label>
+              </Col>
+              <Col lg={6}>
+                <Form.Label className="w-100">
+                  {t('endDate')}
+                  <Form.Control
+                    type="date"
+                    value={expireData}
+                    onChange={(e) => setWarrantyObject({ ...warrantyObject, expireData: e.target.value })}
+                    className="mt-2"
+                  />
+                </Form.Label>
+              </Col>
+              <Col sm={12}>
+                <Form.Label className="w-100">
+                  {t('customerName')}
+                  <Select
+                    options={mapOptionsHospital<Hospital, keyof Hospital>(hospitalsData, 'hosId', 'hosName')}
+                    value={mapDefaultValueHospital<Hospital, keyof Hospital>(hospitalsData, String(customerName), 'hosId', 'hosName')}
+                    onChange={setHosId}
+                    autoFocus={false}
+                    placeholder={t('selectDeviceDrop')}
+                    styles={{
+                      control: (baseStyles, state) => ({
+                        ...baseStyles,
+                        backgroundColor: theme.mode === 'dark' ? "var(--main-last-color)" : "var(--white-grey-1)",
+                        borderColor: theme.mode === 'dark' ? "var(--border-dark-color)" : "var(--grey)",
+                        boxShadow: state.isFocused ? "0 0 0 1px var(--main-color)" : "",
+                        borderRadius: "var(--border-radius-big)"
+                      }),
+                    }}
+                    theme={(theme) => ({
+                      ...theme,
+                      colors: {
+                        ...theme.colors,
+                        primary50: 'var(--main-color-opacity2)',
+                        primary25: 'var(--main-color-opacity2)',
+                        primary: 'var(--main-color)',
+                      },
+                    })}
+                    className="react-select-container"
+                    classNamePrefix="react-select"
+                  />
+                </Form.Label>
+              </Col>
+              <Col sm={12}>
+                <Form.Label className="w-100">
+                  {t('customerAddress')}
+                  <Form.Control
+                    type="text"
+                    value={customerAddress}
+                    onChange={(e) => setWarrantyObject({ ...warrantyObject, customerAddress: e.target.value })}
+                    className="mt-2"
+                  />
+                </Form.Label>
+              </Col>
+              <Col sm={12}>
+                <Form.Label className="w-100">
+                  {t('distributionCompany')}
+                  <Select
+                    options={mapOptionsHospital<Company, keyof Company>(companyList, 'key', 'value')}
+                    value={mapDefaultValueHospital<Company, keyof Company>(companyList, String(saleDept), 'key', 'value')}
+                    onChange={setSaleDept}
+                    autoFocus={false}
+                    placeholder={t('selectDeviceDrop')}
+                    styles={{
+                      control: (baseStyles, state) => ({
+                        ...baseStyles,
+                        backgroundColor: theme.mode === 'dark' ? "var(--main-last-color)" : "var(--white-grey-1)",
+                        borderColor: theme.mode === 'dark' ? "var(--border-dark-color)" : "var(--grey)",
+                        boxShadow: state.isFocused ? "0 0 0 1px var(--main-color)" : "",
+                        borderRadius: "var(--border-radius-big)"
+                      }),
+                    }}
+                    theme={(theme) => ({
+                      ...theme,
+                      colors: {
+                        ...theme.colors,
+                        primary50: 'var(--main-color-opacity2)',
+                        primary25: 'var(--main-color-opacity2)',
+                        primary: 'var(--main-color)',
+                      },
+                    })}
+                    className="react-select-container"
+                    classNamePrefix="react-select"
+                  />
+                </Form.Label>
+              </Col>
+            </Row>
           </Modal.Body>
           <Modal.Footer>
             <FormFlexBtn>
-              <ReactToPrint
-                trigger={() =>
-                  <FormBtn type="submit">
-                    <RiPrinterLine />
-                    {t('print')}
-                  </FormBtn>}
-                content={() => componentRef.current}
-                pageStyle={`@page { size: portrait; margin: 5mm; padding: 0mm; }`}
-              />
+              <FormBtn type="submit">
+                {t('saveButton')}
+              </FormBtn>
             </FormFlexBtn>
           </Modal.Footer>
-        </Modal>
-      </motion.div>
+        </Form>
+      </Modal>
+
+      <Modal scrollable show={show} onHide={closemodal} size="lg">
+        <Modal.Header>
+          <ModalHead>
+            <strong>
+              Details
+            </strong>
+            <button onClick={closemodal}>
+              <RiCloseLine />
+            </button>
+          </ModalHead>
+        </Modal.Header>
+        <Modal.Body>
+          {
+            deviceDetails.length > 0 ?
+              <Printwarranty
+                data={deviceDetails}
+                componentRef={contentRef}
+              />
+              :
+              <Loading loading={false} title={t('nodata')} icn={<RiFileCloseLine />} />
+          }
+        </Modal.Body>
+        <Modal.Footer>
+          <FormFlexBtn>
+            <FormBtn type="submit" onClick={() => reactToPrintFn()}>
+              <RiPrinterLine />
+              {t('print')}
+            </FormBtn>
+          </FormFlexBtn>
+        </Modal.Footer>
+      </Modal>
     </Container>
   )
 }

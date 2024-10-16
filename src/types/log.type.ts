@@ -29,6 +29,7 @@ type CompareType = {
   wardName: string,
   hosName: string,
   wardId: string,
+  hosId: string,
   log: logtype[]
 }
 
