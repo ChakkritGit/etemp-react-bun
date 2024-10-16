@@ -1,4 +1,4 @@
-import { devicesType } from "./device.type"
+import { ProbeDeviceType } from "./device.type"
 
 type probeType = {
   probeId: string,
@@ -17,7 +17,7 @@ type probeType = {
   devSerial: string,
   createAt: string,
   updateAt: string,
-  device: devicesType
+  device: ProbeDeviceType
 }
 
 export type { probeType }

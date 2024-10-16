@@ -373,6 +373,7 @@ export default {
     door: 'Number of door',
     nodata: 'Data not found',
     loading: 'Loading...',
+    loadingConfig: 'Loading settings...',
     searchItemsNav: 'Search',
     uploadLabel: 'Upload or drop a file right here',
     uploadLabelNotSupport: 'File type is not supported',

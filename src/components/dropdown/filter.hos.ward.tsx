@@ -56,9 +56,12 @@ function FilterHosAndWard() {
   }
 
   const getHospital = (hospitalID: string | undefined) => {
-    if (hospitalID) {
+    if (hospitalID !== '') {
       updateLocalStorageAndDispatch('selectHos', hospitalID, setHosId)
       setWardname(wardData.filter((items) => hospitalID ? items.hospital.hosId.includes(hospitalID) : items))
+    } else {
+      cookies.remove('selectHos', cookieOptions)
+      dispatch(setHosId(''))
     }
   }
 
@@ -79,6 +82,10 @@ function FilterHosAndWard() {
 
   const updatedWardData = [allWard, ...wardName]
 
+  const allHos = { hosId: '', hosName: 'ALL', createAt: '', updateAt: '', hospital: {} as hospitalsType }
+
+  const updatedHosData = [allHos, ...hospitalsData]
+
   return (
     <div>
       {
@@ -95,8 +102,8 @@ function FilterHosAndWard() {
               <DevHomeHead>
                 {
                   userLevel !== '2' && <Select
-                    options={mapOptions<Hospital, keyof Hospital>(hospitalsData, 'hosId', 'hosName')}
-                    value={mapDefaultValue<Hospital, keyof Hospital>(hospitalsData, hosId || tokenDecode.hosId, 'hosId', 'hosName')}
+                    options={mapOptions<Hospital, keyof Hospital>(updatedHosData, 'hosId', 'hosName')}
+                    value={mapDefaultValue<Hospital, keyof Hospital>(updatedHosData, hosId ? hosId : '', 'hosId', 'hosName')}
                     onChange={(e) => getHospital(e?.value)}
                     autoFocus={false}
                     styles={{

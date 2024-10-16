@@ -1,5 +1,5 @@
 import axios, { AxiosError } from "axios"
-import { useEffect } from "react"
+import { useEffect, useMemo } from "react"
 import DataTable, { TableColumn } from "react-data-table-component"
 import { useTranslation } from "react-i18next"
 import { devicesType } from "../../../types/device.type"
@@ -31,7 +31,7 @@ export default function Managedev() {
   const { t, i18n } = useTranslation()
   const langs = localStorage.getItem("lang")
   const dispatch = useDispatch<storeDispatchType>()
-  const { searchQuery, cookieDecode, wardId } = useSelector<DeviceStateStore, UtilsStateStore>((state) => state.utilsState)
+  const { searchQuery, cookieDecode, wardId, hosId } = useSelector<DeviceStateStore, UtilsStateStore>((state) => state.utilsState)
   const { token, userLevel } = cookieDecode
   const { devices } = useSelector<DeviceStateStore, DeviceState>((state) => state.devices)
 
@@ -214,7 +214,14 @@ export default function Managedev() {
   ]
 
   // Filter Data
-  const filteredItems = wardId !== '' ? devices.filter(item => item.wardId.toLowerCase().includes(wardId.toLowerCase())) : devices
+  let filteredItems = useMemo(() => {
+    return wardId !== ''
+      ? devices.filter((item) => item.wardId.includes(wardId))
+      : hosId && hosId !== ''
+        ? devices.filter((item) => item.ward.hospital.hosId.includes(hosId))
+        : devices
+  }, [wardId, devices, hosId])
+
   const filter = filteredItems.filter((f) => f.devSerial && f.devSerial.toLowerCase().includes(searchQuery.toLowerCase()))
 
   return (

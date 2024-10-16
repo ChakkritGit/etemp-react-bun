@@ -79,9 +79,9 @@ function ModalMute(modalProps: modalAdjustType) {
 
   const muteAlways = (status: boolean) => {
     if (status) {
-      client.publish(`siamatic/${deviceModel}/${version}/${devSerial}/mute/alway`, always)
+      client.publish(`siamatic/${deviceModel}/${version}/${devSerial}/mute/always`, always)
     } else {
-      client.publish(`siamatic/${deviceModel}/${version}/${devSerial}/mute/alway`, '0')
+      client.publish(`siamatic/${deviceModel}/${version}/${devSerial}/mute/always`, '0')
     }
   }
 
@@ -95,7 +95,7 @@ function ModalMute(modalProps: modalAdjustType) {
 
   useEffect(() => {
     if (showSettingMute) {
-      client.subscribe(`siamatic/${deviceModel}/${version}/${devSerial}/mute/receive`, (err) => {
+      client.subscribe(`${devSerial}/mute/status/receive`, (err) => {
         if (err) {
           console.error("MQTT Suubscribe Error", err)
         }
@@ -229,7 +229,7 @@ function ModalMute(modalProps: modalAdjustType) {
                 </div>
               </>
               :
-              <div>{t('loading')}</div>
+              <div>{t('loadingConfig')}</div>
           }
         </NotiActionFlex>
 

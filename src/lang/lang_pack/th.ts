@@ -373,6 +373,7 @@ export default {
     door: 'จำนวนประตู',
     nodata: 'ไม่พบข้อมูล',
     loading: 'กำลังโหลด...',
+    loadingConfig: 'กำลังโหลดการตั้งค่า...',
     searchItemsNav: 'ค้นหา',
     uploadLabel: 'อัปโหลดหรือวางไฟล์ที่นี่',
     uploadLabelNotSupport: 'ไม่รองรับประเภทไฟล์',

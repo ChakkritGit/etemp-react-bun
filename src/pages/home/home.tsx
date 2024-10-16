@@ -94,8 +94,10 @@ export default function Home() {
 
   let filteredDevicesList = useMemo(() => {
     return wardId !== ''
-      ? devices.filter((item) => item.wardId.toLowerCase().includes(wardId.toLowerCase()))
-      : hosId === 'HID-DEVELOPMENT' ? devices : devices.filter((item) => item.ward.hospital.hosName.toLowerCase().includes(hosName.toLowerCase()))
+      ? devices.filter((item) => item.wardId.includes(wardId))
+      : hosId && hosId !== ''
+        ? devices.filter((item) => item.ward.hospital.hosId.includes(hosId))
+        : devices
   }, [wardId, devices, hosId])
 
   useEffect(() => {
@@ -134,7 +136,7 @@ export default function Home() {
         break;
     }
 
-  }, [searchQuery, devices, wardId, cardActive])
+  }, [searchQuery, devices, wardId, cardActive, filteredDevicesList])
 
   const isLeapYear = (year: number): boolean => {
     return (year % 4 === 0 && year % 100 !== 0) || (year % 400 === 0)
@@ -523,7 +525,7 @@ export default function Home() {
               {
                 userLevel === '0' && <TagCurrentHos>
                   {
-                    `${hospitalsData.filter((f) => f.hosId?.toLowerCase().includes(hosId?.toLowerCase()))[0]?.hosName ?? hosName} - ${wardData?.filter((w) => w.wardId?.toLowerCase().includes(wardId?.toLowerCase()))[0]?.wardName ?? 'ALL'}`
+                    `${hospitalsData.filter((f) => f.hosId?.includes(hosId))[0]?.hosName ?? hosName} - ${wardData?.filter((w) => w.wardId?.includes(wardId))[0]?.wardName ?? 'ALL'}`
                   }
                 </TagCurrentHos>
               }

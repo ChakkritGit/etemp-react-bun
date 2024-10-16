@@ -1,4 +1,4 @@
-import { Dispatch, SetStateAction } from "react"
+import { Dispatch, SetStateAction, useMemo } from "react"
 import { devicesType } from "../../types/device.type"
 import { useTranslation } from "react-i18next"
 import {
@@ -13,6 +13,8 @@ import {
 } from "react-icons/ri"
 import { notificationType } from "../../types/notification.type"
 import { CountStyle, HomeCardItem } from "../../style/components/home.styled"
+import { RootState } from "../../stores/store"
+import { useSelector } from "react-redux"
 
 type HomeCardData = {
   deviceData: devicesType[]
@@ -24,8 +26,14 @@ type HomeCardData = {
 
 function HomeCard({ cardActive, deviceData, wardId, setCardActive, setOnFilteres }: HomeCardData) {
   const { t } = useTranslation()
+  const { hosId, cookieDecode } = useSelector((state: RootState) => state.utilsState)
+  const hId = cookieDecode.hosId
 
-  const filter = wardId !== '' ? deviceData.filter((f) => f.wardId.toLowerCase().includes(wardId.toLowerCase())) : deviceData
+  let filter = useMemo(() => {
+    return wardId !== ''
+      ? deviceData.filter((item) => item.wardId.includes(wardId))
+      : deviceData.filter((item) => hosId ? item.ward.hospital.hosId.includes(hosId) : item)
+  }, [wardId, deviceData, hosId, hId])
 
   const getSum = (key: keyof NonNullable<devicesType['_count']>) =>
     filter.reduce((acc, devItems) => acc + (devItems._count?.[key] ?? 0), 0)

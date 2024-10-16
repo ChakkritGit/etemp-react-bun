@@ -1,7 +1,7 @@
 import { Container } from "react-bootstrap"
 import { CardUserBody, CardUserHead, PaginitionContainer } from "../../style/style"
 import { useTranslation } from "react-i18next"
-import { ChangeEvent, useEffect, useState } from "react"
+import { ChangeEvent, useEffect, useMemo, useState } from "react"
 import CardUser from "../../components/users/cardUser"
 import { usersType } from "../../types/user.type"
 import Adduser from "./adduser"
@@ -23,7 +23,15 @@ export default function Permission() {
   const { searchQuery, expand, tokenDecode, hosId, wardId } = useSelector<DeviceStateStore, UtilsStateStore>((state) => state.utilsState)
   const { userId } = tokenDecode
   // Filter Data
-  const filteredItems = wardId !== '' ? userData.filter(item => item.wardId.toLowerCase().includes(wardId.toLowerCase())) : userData
+
+  let filteredItems = useMemo(() => {
+    return wardId !== ''
+      ? userData.filter((item) => item.wardId.includes(wardId))
+      : hosId && hosId !== ''
+        ? userData.filter((item) => item.ward.hosId.includes(hosId))
+        : userData
+  }, [wardId, userData, hosId])
+
   const totalPages = Math.ceil(filteredItems.length / cardsPerPage)
 
   useEffect(() => {

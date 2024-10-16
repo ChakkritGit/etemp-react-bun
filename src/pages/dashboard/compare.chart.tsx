@@ -252,7 +252,7 @@ const Comparechart = () => {
 
   let filteredDevicesList = useMemo(() => {
     return wardId !== ''
-      ? devices.filter((item) => item.wardId.toLowerCase().includes(wardId.toLowerCase()))
+      ? devices.filter((item) => item.wardId.includes(wardId))
       : devices;
   }, [wardId, devices])
 

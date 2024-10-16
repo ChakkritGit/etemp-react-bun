@@ -13,13 +13,13 @@ import { fetchProbeData } from "../../../stores/probeSlice"
 import Swal from "sweetalert2"
 import { responseType } from "../../../types/response.type"
 import { setSearchQuery, setShowAlert } from "../../../stores/utilsStateSlice"
-import { useEffect } from "react"
+import { useEffect, useMemo } from "react"
 import FilterHosAndWard from "../../../components/dropdown/filter.hos.ward"
 
 export default function Probesetting() {
   const { t } = useTranslation()
   const dispatch = useDispatch<storeDispatchType>()
-  const { searchQuery, cookieDecode, wardId } = useSelector<DeviceStateStore, UtilsStateStore>((state) => state.utilsState)
+  const { searchQuery, cookieDecode, wardId, hosId } = useSelector<DeviceStateStore, UtilsStateStore>((state) => state.utilsState)
   const { probeData } = useSelector<DeviceStateStore, ProbeState>((state) => state.probe)
   const { token, userLevel } = cookieDecode
 
@@ -141,7 +141,14 @@ export default function Probesetting() {
   ]
 
   // Filter Data
-  const filteredItems = wardId !== '' ? probeData.filter(item => item.device.wardId.toLowerCase().includes(wardId.toLowerCase())) : probeData
+  let filteredItems = useMemo(() => {
+    return wardId !== ''
+      ? probeData.filter((item) => item.device.wardId.includes(wardId))
+      : hosId && hosId !== ''
+        ? probeData.filter((item) => item.device.ward.hosId.includes(hosId))
+        : probeData
+  }, [wardId, probeData, hosId])
+
   const filter = filteredItems.filter((f) => f.devSerial && f.devSerial.toLowerCase().includes(searchQuery.toLowerCase()))
 
   return (
