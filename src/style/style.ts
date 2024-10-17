@@ -504,16 +504,24 @@ min-height: 55px;
 border-bottom: .5px solid var(--soft-grey);
 box-shadow: 0px 15px 10px -15px rgba(0, 0, 0, .05);
 
-@media (max-width: 430px) {
-  padding: 0 .8rem;
-}
-
 ${props => props.theme.mode === 'dark' &&
     css`
   background-color: rgba(53, 53, 53, .6);
   border-color: var(--border-dark-color);
   color: var(--white-grey-1);
 `}
+
+@media (max-width: 430px) {
+  padding: 0 .8rem;
+  backdrop-filter: unset;
+  -webkit-backdrop-filter: unset;
+  background-color: #fcfcfc;
+
+  ${props => props.theme.mode === 'dark' &&
+  css`
+    background-color: #2f2f2f;
+  `}
+}
 `
 
 export const GlobalsearchInput = styled.input <{ $primary?: boolean }> `

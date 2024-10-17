@@ -38,6 +38,17 @@ export const NavigationBottom = styled.nav<{ $primary?: boolean }>`
   border-color: var(--border-dark-color);
   color: var(--white-grey-1-grey-1);
 `}
+
+@media (max-width: 430px) {
+  backdrop-filter: unset;
+  -webkit-backdrop-filter: unset;
+  background-color: #fcfcfc;
+
+  ${props => props.theme.mode === 'dark' &&
+  css`
+    background-color: #2f2f2f;
+  `}
+}
 `
 
 export const NavigationItems = styled.button<{ $primary?: boolean }>`
@@ -95,4 +106,10 @@ ${props => props.$primary && css`
   bottom: 20px;
   z-index: -1;
 `}
+
+@media (max-width: 430px) {
+  backdrop-filter: unset;
+  -webkit-backdrop-filter: unset;
+  background-color: unset;
+}
 `

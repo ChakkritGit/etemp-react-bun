@@ -27,6 +27,7 @@ export default function Notification() {
   const countupRef = useRef(null)
   const notiSound = new Audio(notificationSound)
   const { theme } = useTheme()
+  let isPlaying = false
 
   const openModal = () => {
     setShow(true)
@@ -67,8 +68,21 @@ export default function Notification() {
   }, [socketData, token])
 
   useEffect(() => {
-    if (socketData && !soundMode && !popUpMode) {
-      notiSound.play()
+    const isMessageValid = socketData?.message?.toLowerCase()
+    if (socketData &&
+      !popUpMode &&
+      !soundMode &&
+      isMessageValid &&
+      !isMessageValid.includes('device offline') &&
+      !isMessageValid.includes('device online')) {
+      if (!isPlaying) {
+        notiSound.play()
+        isPlaying = true
+
+        setTimeout(() => {
+          isPlaying = false
+        }, 3000)
+      }
     }
 
     if (socketData && !popUpMode && !socketData.message.includes('Device offline') && !socketData.message.includes('Device online')) {
@@ -104,6 +118,7 @@ export default function Notification() {
           padding: '.5rem .7rem',
           backdropFilter: 'blur(13px)',
           WebkitBackdropFilter: 'blur(13px)',
+          width: 'max-content'
         }
       })
     }

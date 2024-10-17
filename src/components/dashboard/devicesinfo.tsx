@@ -273,7 +273,7 @@ export default function Devicesinfo(devicesinfo: devicesinfo) {
             <SpanCardDash>
               <b>{t('deviceNameBox')}</b>
               <span>•</span>
-              <span>{devicesData?.devDetail}</span>
+              <span>{devicesData?.devDetail && devicesData?.devDetail !== null && devicesData?.devDetail !== "null" ? devicesData?.devDetail : '- -'}</span>
             </SpanCardDash>
             <SpanCardDash>
               <b>{t('deviceSnBox')}</b>
@@ -296,7 +296,7 @@ export default function Devicesinfo(devicesinfo: devicesinfo) {
             loading="lazy" />
           <DeviceDetailsBodyInfo>
             <div>
-              <li><b title={devicesData?.locInstall ? devicesData?.locInstall : '- -'}>{devicesData?.locInstall ? devicesData?.locInstall : '- -'}</b></li>
+              <li><b title={devicesData?.locInstall && devicesData?.locInstall !== null && devicesData?.locInstall !== "null" ? devicesData?.locInstall : '- -'}>{devicesData?.locInstall && devicesData?.locInstall !== null && devicesData?.locInstall !== "null" ? devicesData?.locInstall : '- -'}</b></li>
               <li><b>{t('tempValueUnit')}</b>: {probe[0]?.tempMin} - {probe[0]?.tempMax} °C</li>
               <li><b>{t('humValueUnit')}</b>: {probe[0]?.humMin} - {probe[0]?.humMax} %RH</li>
               <li><b>{t('ipAddress')}</b>: {devicesData?.config?.ip ? devicesData?.config?.ip : '- -'}</li>

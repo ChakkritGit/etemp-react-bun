@@ -14,7 +14,7 @@ import { ThemeProviders } from './theme/ThemeProvider'
 import { ColorProvider } from './theme/ColorsProvider'
 import { store } from './stores/store'
 import { Provider } from 'react-redux'
-import ReloadPrompt from './components/reloadSW/ReloadPrompt'
+// import ReloadPrompt from './components/reloadSW/ReloadPrompt'
 import React from 'react'
 
 if (import.meta.env.VITE_APP_NODE_ENV === 'production') {
@@ -31,7 +31,7 @@ ReactDOM.createRoot(document.getElementById('appWrapper')!).render(
             minBreakpoint="xxs">
             <ThemeProviders>
               <ColorProvider>
-                <ReloadPrompt />
+                {/* <ReloadPrompt /> */}
                 <GlobalStyles />
                 <GlobalColors />
                 <RoutesComponent />
